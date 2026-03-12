@@ -4,10 +4,17 @@
 [![Forks](https://img.shields.io/github/forks/adil1248/sxsw-2026-music-schedule?style=social)](https://github.com/adil1248/sxsw-2026-music-schedule/network/members)
 
 # 🎸 SXSW 2026 Music Schedule — Interactive Gantt App
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-adil1248.github.io-blue)](https://adil1248.github.io/sxsw-2026-music-schedule/)
 
 A fan-made interactive schedule viewer for **SXSW 2026** (March 12–18, Austin TX). Browse all ~800+ acts across all venues in a color-coded Gantt chart, filter by genre, build your personal schedule, and hear 30-second song previews — all in a single HTML file you can run locally with no install required.
 
 ## 🚀 How to Use
+
+### 🌐 Option 0: Use it Live (No Download Needed!)
+
+**[https://adil1248.github.io/sxsw-2026-music-schedule/](https://adil1248.github.io/sxsw-2026-music-schedule/)**
+
+Open in any browser — no download, no install, works instantly.
 
 ### Option 1: Download & Open (Easiest)
 1. Download `SXSW-2026-Schedule-by-Genre.html` from this repo
