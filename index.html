@@ -2,18 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>SXSW 2026 — Full Schedule by Venue</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body, #root { width: 100%; height: 100%; }
-  body { background: #08080d; }
+  body { background: #08080d; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
   @media print { .no-print { display: none !important; } }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #111; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
 </style>
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="root"></div>
@@ -1605,6 +1609,7 @@ const EVENTS=RAW.map((r,i)=>({
 }));
 
 const DAYS=["Thu","Fri","Sat","Sun","Mon","Tue","Wed"];
+const TODAY_CODE=(()=>{const d=new Date();const m=d.getMonth()+1;const dd=d.getDate();if(m===3&&dd>=12&&dd<=18)return DAYS[dd-12];return null;})();
 const DAY_LABEL={Thu:"THU MAR 12",Fri:"FRI MAR 13",Sat:"SAT MAR 14",Sun:"SUN MAR 15",Mon:"MON MAR 16",Tue:"TUE MAR 17",Wed:"WED MAR 18"};
 
 
@@ -2282,10 +2287,22 @@ function App(){
   const[zoom,setZoom]=useState(1); // 1=normal, 1.25=large, 1.5=xl
   const[tZoom,setTZoom]=useState(1); // timeline horizontal zoom 1-4x
   const[audioState,setAudioState]=useState("idle");
+  const[showFilters,setShowFilters]=useState(false);
+  const[mob,setMob]=useState(typeof window!=="undefined"&&window.innerWidth<768);
   const previewTimer=useRef(null);
   const panelRef=useRef(null);
   const audioRef=useRef(null);
   const audioCache=useRef({});
+
+  // Responsive resize
+  useMemo(()=>{
+    if(typeof window==="undefined") return;
+    const fn=()=>setMob(window.innerWidth<768);
+    window.addEventListener("resize",fn);
+    return()=>window.removeEventListener("resize",fn);
+  },[]);
+
+  const vcW=mob?110:200*zoom;
 
   const killAudio=useCallback(()=>{
     if(audioRef.current){audioRef.current.pause();audioRef.current.src="";audioRef.current=null;}
@@ -2399,6 +2416,14 @@ function App(){
   const tStart=11,tEnd=26;
   const tMarks=["11A","12P","1P","2P","3P","4P","5P","6P","7P","8P","9P","10P","11P","12A","1A"];
 
+  // Current time for "now" indicator
+  const nowH=useMemo(()=>{
+    if(!TODAY_CODE||day!==TODAY_CODE) return -1;
+    const d=new Date();
+    let h=d.getHours()+d.getMinutes()/60;
+    return h;
+  },[day]);
+
   function timeToLeft(h){
     if(h<0) return -1;
     if(h<6) h+=24;
@@ -2407,52 +2432,79 @@ function App(){
   }
 
   return(
-    <div style={{fontFamily:"'IBM Plex Mono',monospace",background:"#08080d",color:"#d4d4d4",minHeight:"100vh"}}
+    <div style={{fontFamily:"'IBM Plex Sans','Helvetica Neue',sans-serif",background:"#08080d",color:"#d4d4d4",minHeight:"100vh"}}
       onMouseMove={e=>setMp({x:e.clientX,y:e.clientY})}>
-      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-      <div style={{padding:"16px 20px",maxWidth:1500,margin:"0 auto"}}>
+      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+      <div style={{padding:mob?"10px 8px":"16px 20px",maxWidth:1500,margin:"0 auto"}}>
         {/* Header */}
         <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4,flexWrap:"wrap"}}>
-          <h1 style={{fontSize:28,fontWeight:700,margin:0,background:"linear-gradient(90deg,#E63946,#FFB703,#06D6A0,#8338EC,#FF006E)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
+          <h1 style={{fontSize:mob?20:28,fontWeight:700,margin:0,background:"linear-gradient(90deg,#E63946,#FFB703,#06D6A0,#8338EC,#FF006E)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
             SXSW 2026
           </h1>
-          <span style={{fontSize:14,color:"#555"}}>OFFICIAL SCHEDULE — GANTT BY VENUE</span>
+          <span style={{fontSize:mob?10:14,color:"#555"}}>OFFICIAL SCHEDULE — GANTT BY VENUE</span>
           <span style={{fontSize:11,color:"#444",marginLeft:"auto"}}>{EVENTS.length} total acts · {dayEvts.length} today · {gf.size<allGenres.size?`${venues.filter(([v,e])=>e.some(x=>gf.has(x.genre))).length}/`:""}{venues.length} venues</span>
         </div>
-        <p style={{fontSize:11,color:"#4a4a55",margin:"0 0 12px",lineHeight:1.4}}>
+        {!mob&&<p style={{fontSize:11,color:"#7a7a88",margin:"0 0 12px",lineHeight:1.4}}>
           Source: schedule.sxsw.com. Color = genre from your artist CSV. Hover for details. Click genre to filter. Search to find specific acts.
-        </p>
+        </p>}
 
         {/* Controls */}
-        <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap",alignItems:"center"}}>
+        <div style={{display:"flex",gap:mob?3:6,marginBottom:mob?8:12,flexWrap:"wrap",alignItems:"center"}}>
           {DAYS.map(d=>{
             const cnt=EVENTS.filter(e=>e.day===d).length;
             return(
               <button key={d} onClick={()=>setDay(d)} style={{
-                padding:"8px 16px",borderRadius:6,cursor:"pointer",fontSize:13,fontWeight:day===d?700:500,
+                padding:mob?"6px 8px":"8px 16px",borderRadius:6,cursor:"pointer",fontSize:mob?10:13,fontWeight:day===d?700:500,
                 fontFamily:"inherit",background:day===d?"#fff":"#13131d",color:day===d?"#08080d":"#777",
-                border:day===d?"1px solid #fff":"1px solid #222",transition:"all .15s"
-              }}>{DAY_LABEL[d]} <span style={{opacity:.5}}>({cnt})</span></button>
+                border:day===d?"1px solid #fff":"1px solid #222",transition:"all .15s",
+                flex:mob?"1 0 auto":"none",textAlign:"center"
+              }}>{mob?d:DAY_LABEL[d]}{d===TODAY_CODE&&<span style={{marginLeft:4,fontSize:mob?7:9,background:"#06D6A0",color:"#000",padding:"1px 5px",borderRadius:4,fontWeight:700,verticalAlign:"middle"}}> NOW</span>}{!mob&&<span style={{opacity:.5}}> ({cnt})</span>}</button>
             );
           })}
-          <div style={{position:"relative",marginLeft:8}}>
-            <input placeholder="Search artist, venue, presenter..." value={search} onChange={e=>setSearch(e.target.value)}
+        </div>
+        <div style={{display:"flex",gap:6,marginBottom:mob?8:12,flexWrap:"wrap",alignItems:"center"}}>
+          <div style={{position:"relative",flex:mob?"1 1 100%":"0 0 auto"}}>
+            <input placeholder={mob?"Search...":"Search artist, venue, presenter..."} value={search} onChange={e=>setSearch(e.target.value)}
               style={{padding:"8px 12px",paddingRight:search?30:12,borderRadius:6,border:"1px solid #222",background:"#13131d",color:"#aaa",
-              fontSize:13,fontFamily:"inherit",width:280,outline:"none"}}/>
+              fontSize:mob?12:13,fontFamily:"inherit",width:mob?"100%":280,outline:"none"}}/>
             {search&&<button onClick={()=>setSearch("")} style={{position:"absolute",right:6,top:"50%",transform:"translateY(-50%)",
               padding:"2px 6px",background:"transparent",color:"#E63946",border:"none",cursor:"pointer",fontSize:14,fontFamily:"inherit"}}>✕</button>}
           </div>
           <button onClick={()=>setViewMode(viewMode==="gantt"?"mysched":"gantt")} style={{
-            padding:"8px 16px",borderRadius:6,cursor:"pointer",fontSize:13,fontWeight:700,
-            fontFamily:"inherit",marginLeft:8,transition:"all .15s",
+            padding:mob?"8px 12px":"8px 16px",borderRadius:6,cursor:"pointer",fontSize:mob?11:13,fontWeight:700,
+            fontFamily:"inherit",transition:"all .15s",flex:mob?"1 1 100%":"none",
             background:viewMode==="mysched"?"linear-gradient(135deg,#FFB703,#F77F00)":"#13131d",
             color:viewMode==="mysched"?"#000":"#FFB703",
             border:viewMode==="mysched"?"1px solid #FFB703":"1px solid #FFB70355",
           }}>★ My Schedule{mySched.size>0?` (${mySched.size})`:""}</button>
+          {TODAY_CODE&&day===TODAY_CODE&&<button onClick={()=>{
+            const now=new Date();let h=now.getHours()+now.getMinutes()/60;
+            const scrollContainer=document.querySelector('[style*="overflowX"]')||document.querySelector('[style*="overflow-x"]');
+            if(scrollContainer){
+              let nh=h<6?h+24:h;
+              const frac=(nh-tStart)/(tEnd-tStart);
+              const totalW=scrollContainer.scrollWidth;
+              scrollContainer.scrollLeft=Math.max(0,totalW*frac-scrollContainer.clientWidth/2);
+            }
+          }} style={{
+            padding:mob?"8px 12px":"8px 16px",borderRadius:6,cursor:"pointer",fontSize:mob?11:13,fontWeight:700,
+            fontFamily:"inherit",transition:"all .15s",
+            background:"linear-gradient(135deg,#06D6A0,#049c76)",color:"#000",
+            border:"1px solid #06D6A0",animation:"pulse 2s ease infinite"
+          }}>⚡ What's On Now</button>}
         </div>
 
         {viewMode==="gantt"&&(<>
+        {/* Genre filter toggle (mobile) + controls */}
+        {mob&&<button onClick={()=>setShowFilters(!showFilters)} style={{width:"100%",padding:"8px",
+          background:"#13131d",border:"1px solid #222",borderRadius:6,cursor:"pointer",
+          fontSize:11,color:"#888",fontFamily:"inherit",fontWeight:600,marginBottom:8,
+          display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <span>Filters & Controls {gf.size<allGenres.size?`(${allGenres.size-gf.size} hidden)`:""}</span>
+          <span style={{transform:showFilters?"rotate(180deg)":"none",transition:"transform .2s"}}>▼</span>
+        </button>}
         {/* Genre filter + Zoom controls */}
+        <div style={{display:mob&&!showFilters?"none":"block"}}>
         <div style={{display:"flex",gap:4,marginBottom:6,flexWrap:"wrap",alignItems:"center"}}>
           <span style={{fontSize:10,color:"#555",textTransform:"uppercase",letterSpacing:".08em",marginRight:3}}>Genre:</span>
           {Object.entries(G).filter(([g])=>genreCounts[g]).sort((a,b)=>(genreCounts[b[0]]||0)-(genreCounts[a[0]]||0)).map(([genre,color])=>(
@@ -2477,7 +2529,7 @@ function App(){
             border:"1px solid #E6394655",borderRadius:8,cursor:"pointer",fontSize:9,fontWeight:600,fontFamily:"inherit"}}>
             Clear All
           </button>
-          <span style={{color:"#2a2a35",margin:"0 4px"}}>|</span>
+          <span style={{color:"#4a4a55",margin:"0 4px"}}>|</span>
           <span style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:".08em"}}>DPI:</span>
           <button onClick={()=>setZoom(z=>Math.max(0.5,z-0.25))} style={{width:28,height:28,
             display:"flex",alignItems:"center",justifyContent:"center",
@@ -2491,7 +2543,7 @@ function App(){
             display:"flex",alignItems:"center",justifyContent:"center",
             background:"#13131d",color:zoom>=4?"#333":"#aaa",border:"1px solid #222",borderRadius:6,
             cursor:zoom>=4?"default":"pointer",fontSize:16,fontWeight:700,fontFamily:"inherit",lineHeight:1}}>+</button>
-          <span style={{color:"#2a2a35",margin:"0 4px"}}>|</span>
+          <span style={{color:"#4a4a55",margin:"0 4px"}}>|</span>
           <span style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:".08em"}}>Timeline:</span>
           <button onClick={()=>setTZoom(z=>Math.max(1,z-0.5))} style={{width:28,height:28,
             display:"flex",alignItems:"center",justifyContent:"center",
@@ -2514,6 +2566,7 @@ function App(){
           </span>}
         </div>
 
+        </div>
         {/* Search results */}
         {filtered&&filtered.length>0&&(
           <div style={{marginBottom:12,padding:"8px 12px",background:"#12121a",borderRadius:6,border:"1px solid #222"}}>
@@ -2531,18 +2584,31 @@ function App(){
         )}
 
         {/* Gantt */}
-        <div style={{overflowX:"auto",position:"relative"}}>
+        <div style={{overflowX:"auto",overflowY:"auto",position:"relative",
+          maxHeight:mob?"calc(100vh - 180px)":"calc(100vh - 220px)",
+          borderRadius:6,border:"1px solid #1a1a22"}}>
           <div style={{minWidth:(1000+200*zoom)*tZoom}}>
-            {/* Time ruler */}
-            <div style={{display:"flex",marginLeft:200*zoom,marginBottom:2,position:"sticky",top:0,zIndex:5,background:"#08080d"}}>
+            {/* Time ruler - frozen row */}
+            <div style={{display:"flex",position:"sticky",top:0,zIndex:8,
+              background:"#0c0c14",borderBottom:"2px solid #222"}}>
+              {/* Frozen corner */}
+              <div style={{width:vcW,minWidth:vcW,position:"sticky",left:0,zIndex:9,
+                background:"#0c0c14",borderRight:"2px solid #1e1e2a",
+                padding:mob?"4px":"6px 10px",display:"flex",alignItems:"center",
+                boxShadow:"4px 0 12px rgba(0,0,0,0.4)"}}>
+                <span style={{fontSize:mob?8:10,color:"#666",fontWeight:600,textTransform:"uppercase",
+                  letterSpacing:".06em",fontFamily:"'IBM Plex Mono',monospace"}}>Venue</span>
+              </div>
+              <div style={{flex:1,display:"flex",paddingTop:4,paddingBottom:4}}>
               {tMarks.map((t,i)=>(
                 <div key={t} style={{flex:1,fontSize:Math.min(13,10*zoom),
-                  color:["12P","6P","12A"].includes(t)?"#888":"#3a3a44",
-                  fontWeight:["12P","6P","12A"].includes(t)?700:400,
-                  borderLeft:"1px solid #151520",paddingLeft:4,paddingBottom:2}}>
+                  color:["12P","6P","12A"].includes(t)?"#aaa":"#555",
+                  fontWeight:["12P","6P","12A"].includes(t)?700:400,fontFamily:"'IBM Plex Mono',monospace",
+                  borderLeft:"1px solid #1e1e28",paddingLeft:5}}>
                   {t}
                 </div>
               ))}
+              </div>
             </div>
 
             {/* Venue rows */}
@@ -2574,16 +2640,17 @@ function App(){
                 <div key={venue} style={{display:"flex",borderBottom:"1px solid #141420",minHeight:numRows*rowH+6,
                   background:vi%2===0?"#0a0a12":"#0c0c15"}}>
                   {/* Sticky venue label */}
-                  <div style={{width:200,minWidth:200,padding:"5px 10px",borderRight:"2px solid #1e1e2a",
+                  <div style={{width:vcW,minWidth:vcW,padding:mob?"3px 4px":"5px 10px",borderRight:"2px solid #1e1e2a",
                     display:"flex",flexDirection:"column",justifyContent:"center",
-                    position:"sticky",left:0,zIndex:3,
+                    position:"sticky",left:0,zIndex:5,
                     background:vi%2===0?"#0a0a12":"#0c0c15",
                     boxShadow:"4px 0 12px rgba(0,0,0,0.4)"}}>
-                    <div style={{fontSize:11,fontWeight:700,color:"#ccc",lineHeight:1.3}}>{venue}</div>
-                    <div style={{fontSize:9,color:"#4a4a55",marginTop:2,lineHeight:1.2,
-                      whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:178}}>
+                    <div style={{fontSize:mob?8:11*zoom,fontWeight:700,color:"#ccc",lineHeight:1.2,
+                      overflow:"hidden",textOverflow:"ellipsis",whiteSpace:mob?"nowrap":"normal"}}>{venue}</div>
+                    {!mob&&<div style={{fontSize:9*zoom,color:"#7a7a88",marginTop:2,lineHeight:1.2,
+                      whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:vcW-20}}>
                       {[...new Set(evts.map(e=>e.presenter).filter(Boolean))].slice(0,2).join(" · ")}
-                    </div>
+                    </div>}
                   </div>
                   {/* Timeline */}
                   <div style={{flex:1,position:"relative",minHeight:numRows*rowH}}>
@@ -2591,6 +2658,21 @@ function App(){
                       <div key={i} style={{position:"absolute",left:`${(i/tMarks.length)*100}%`,top:0,bottom:0,width:1,
                         background:[1,7,13].includes(i)?"#1e1e28":"#12121a"}}/>
                     ))}
+                    {/* NOW indicator */}
+                    {nowH>0&&(()=>{
+                      let nh=nowH<6?nowH+24:nowH;
+                      if(nh>=tStart&&nh<=tEnd){
+                        const left=((nh-tStart)/(tEnd-tStart))*100;
+                        return <div style={{position:"absolute",left:`${left}%`,top:0,bottom:0,width:2,
+                          background:"#06D6A0",zIndex:25,pointerEvents:"none",
+                          boxShadow:"0 0 8px #06D6A088"}}>
+                          <div style={{position:"absolute",top:-2,left:-10,background:"#06D6A0",
+                            color:"#000",fontSize:8,fontWeight:800,padding:"1px 4px",borderRadius:3,
+                            fontFamily:"'IBM Plex Mono',monospace",whiteSpace:"nowrap"}}>NOW</div>
+                        </div>;
+                      }
+                      return null;
+                    })()}
                     {rows.map((row,ri)=>row.map(evt=>{
                       const color=G[evt.genre]||"#555";
                       const filt=!gf.has(evt.genre);
@@ -2604,14 +2686,14 @@ function App(){
                       const width=Math.max(1.5,((eH-sH)/(tEnd-tStart))*100);
                       return(
                         <div key={evt.id}
-                          onClick={()=>toggleSched(evt.id)}
-                          onMouseEnter={(e)=>{const r=e.currentTarget.getBoundingClientRect();setHov(evt.id);setHovRect(r);setExpanded(false);startExpand(evt);}}
-                          onMouseLeave={()=>{stopExpand();
+                          onClick={(e)=>{if(mob){const r=e.currentTarget.getBoundingClientRect();if(hov===evt.id){toggleSched(evt.id);}else{setHov(evt.id);setHovRect(r);setExpanded(true);startExpand(evt);}}else{toggleSched(evt.id);}}}
+                          onMouseEnter={(e)=>{if(mob)return;const r=e.currentTarget.getBoundingClientRect();setHov(evt.id);setHovRect(r);setExpanded(false);startExpand(evt);}}
+                          onMouseLeave={()=>{if(mob)return;stopExpand();
                             setTimeout(()=>{if(panelRef.current&&panelRef.current.matches(':hover'))return;setHov(null);setExpanded(false);killAudio();},300);}}
                           style={{
                             position:"absolute",left:`${left}%`,width:`${width}%`,
                             top:ri*rowH+1,height:rowH-2,
-                            background:filt?"#14141c":isSaved?`linear-gradient(135deg,${color},${color}dd)`:`linear-gradient(135deg,${color}cc,${color}88)`,
+                            background:filt?"#14141c":isSaved?`linear-gradient(135deg,#FFB703cc,${color}cc)`:`linear-gradient(135deg,${color}cc,${color}88)`,
                             borderRadius:3,
                             border:isSaved?`2px solid #FFB703`:isHov?`1.5px solid ${color}`:searchHit?`1.5px solid #fff`:`1px solid ${color}22`,
                             display:"flex",alignItems:"center",padding:"0 5px",gap:3,
@@ -2620,10 +2702,10 @@ function App(){
                             zIndex:isSaved?15:isHov?20:searchHit?10:1,
                             boxShadow:isSaved?`0 0 8px #FFB70344`:isHov?`0 2px 10px ${color}55`:searchHit?"0 0 6px #fff44":"none",
                           }}>
-                          {isSaved&&<span style={{fontSize:Math.min(12,rowH-6),lineHeight:1,flexShrink:0}}>★</span>}
+                          {isSaved&&<span style={{fontSize:Math.min(14,rowH-4),lineHeight:1,flexShrink:0,filter:"drop-shadow(0 0 3px #FFB703)"}}>★</span>}
                           <span style={{fontSize:Math.min(10+zoom,Math.max(7+zoom*0.5,width*0.9)),fontWeight:600,
                             color:filt?"#222":"#fff",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",
-                            textShadow:filt?"none":"0 1px 2px rgba(0,0,0,.5)"}}>{evt.name}</span>
+                            textShadow:filt?"none":"0 1px 2px rgba(0,0,0,.5)",fontFamily:"'IBM Plex Mono',monospace"}}>{evt.name}</span>
                         </div>
                       );
                     }))}
@@ -2643,16 +2725,26 @@ function App(){
           const px=hovRect?Math.min(hovRect.right+10,window.innerWidth-390):mp.x+14;
           const py=hovRect?Math.max(hovRect.top-20,10):Math.max(mp.y-100,10);
           return(
+            <>
+            {mob&&<div onClick={()=>{setHov(null);setExpanded(false);killAudio();}}
+              style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:199}}/>}
             <div ref={panelRef}
-              onMouseEnter={()=>{if(previewTimer.current)clearTimeout(previewTimer.current);}}
-              onMouseLeave={()=>{setHov(null);setExpanded(false);killAudio();}}
-              style={{position:"fixed",left:px,top:Math.min(py,window.innerHeight-(expanded?420:200)),
+              onMouseEnter={()=>{if(!mob&&previewTimer.current)clearTimeout(previewTimer.current);}}
+              onMouseLeave={()=>{if(!mob){setHov(null);setExpanded(false);killAudio();}}}
+              style={mob?{position:"fixed",bottom:0,left:0,right:0,
+                zIndex:200,background:"#12121e",borderRadius:"16px 16px 0 0",
+                border:`1px solid ${color}66`,borderBottom:"none",
+                overflow:"hidden",maxHeight:"85vh",overflowY:"auto",
+                boxShadow:`0 -8px 32px rgba(0,0,0,.8),0 0 24px ${color}33`,
+                animation:"slideUp .25s ease"}
+              :{position:"fixed",left:px,top:Math.min(py,window.innerHeight-(expanded?420:200)),
                 zIndex:200,width:370,background:"#12121e",borderRadius:10,
                 border:`1px solid ${expanded&&audioState==="playing"?color:color+"66"}`,
                 overflow:"hidden",
                 boxShadow:`0 12px 32px rgba(0,0,0,.8),0 0 ${expanded?"24":"12"}px ${color}${expanded?"33":"18"}`,
                 transition:"box-shadow .3s, border .3s"}}>
               <style>{`
+                @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
                 @keyframes eqBar1{0%,100%{height:4px}50%{height:18px}}
                 @keyframes eqBar2{0%,100%{height:12px}50%{height:6px}}
                 @keyframes eqBar3{0%,100%{height:8px}50%{height:20px}}
@@ -2661,6 +2753,15 @@ function App(){
                 @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
                 @keyframes spin{to{transform:rotate(360deg)}}
               `}</style>
+              {/* Mobile close handle */}
+              {mob&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"8px 14px 0",
+                background:`linear-gradient(135deg,${color}12,#12121e)`}}>
+                <div style={{width:40,height:4,borderRadius:2,background:"#444",marginBottom:6}}/>
+                <button onClick={()=>{setHov(null);setExpanded(false);killAudio();}} style={{position:"absolute",
+                  right:12,top:10,background:"#ffffff22",border:"none",color:"#aaa",fontSize:18,
+                  width:32,height:32,borderRadius:16,cursor:"pointer",fontFamily:"inherit",display:"flex",
+                  alignItems:"center",justifyContent:"center"}}>✕</button>
+              </div>}
               {/* Artist info - always visible */}
               <div style={{display:"flex",gap:12,padding:"12px 14px",
                 background:`linear-gradient(135deg,${color}12,#12121e)`}}>
@@ -2764,33 +2865,12 @@ function App(){
                 Click to {mySched.has(evt.id)?"remove from":"add to"} schedule · Keep hovering for music
               </div>}
             </div>
+            </>
           );
         })()}
 
-        {/* Genre stats bar */}
-        <div style={{marginTop:18,borderTop:"1px solid #1a1a22",paddingTop:14}}>
-          <div style={{display:"flex",height:8,borderRadius:4,overflow:"hidden",background:"#111",marginBottom:10}}>
-            {Object.entries(G).filter(([g])=>genreCounts[g]).sort((a,b)=>(genreCounts[b[0]]||0)-(genreCounts[a[0]]||0)).map(([genre,color])=>(
-              <div key={genre} onClick={()=>{const next=new Set(gf);if(next.has(genre))next.delete(genre);else next.add(genre);setGf(next);}}
-                style={{width:`${(genreCounts[genre]/dayEvts.length)*100}%`,background:color,cursor:"pointer",
-                transition:"opacity .2s",opacity:!gf.has(genre)?0.2:1}} title={`${genre}: ${genreCounts[genre]}`}/>
-            ))}
-          </div>
-          <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-            {Object.entries(G).filter(([g])=>genreCounts[g]).sort((a,b)=>(genreCounts[b[0]]||0)-(genreCounts[a[0]]||0)).map(([genre,color])=>(
-              <div key={genre} onClick={()=>{const next=new Set(gf);if(next.has(genre))next.delete(genre);else next.add(genre);setGf(next);}} style={{
-                padding:"5px 10px",background:gf.has(genre)?color+"22":"#0e0e16",borderRadius:5,cursor:"pointer",
-                border:`1px solid ${color}${gf.has(genre)?"":"33"}`,display:"flex",alignItems:"center",gap:6,
-                opacity:gf.has(genre)?1:0.35}}>
-                <div style={{width:9,height:9,borderRadius:2,background:color,flexShrink:0}}/>
-                <span style={{fontSize:11,fontWeight:600,color}}>{genre}</span>
-                <span style={{fontSize:11,color:"#444"}}>{genreCounts[genre]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <div style={{marginTop:12,fontSize:10,color:"#3a3a44",lineHeight:1.5}}>
+        <div style={{marginTop:12,fontSize:10,color:"#6a6a77",lineHeight:1.5}}>
           Source: schedule.sxsw.com via Thunderbit. {EVENTS.length} acts across all 7 days (Thu Mar 12 – Wed Mar 18).
         </div>
         </>)}
@@ -2815,8 +2895,8 @@ function App(){
             ):(
               <div>
                 {/* Controls */}
-                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16,flexWrap:"wrap"}} className="no-print">
-                  <div style={{fontSize:18,fontWeight:700,color:"#FFB703"}}>★ My Schedule — {mySched.size} acts</div>
+                <div style={{display:"flex",alignItems:"center",gap:mob?8:12,marginBottom:16,flexWrap:"wrap"}} className="no-print">
+                  <div style={{fontSize:mob?15:18,fontWeight:700,color:"#FFB703",flex:mob?"1 1 100%":"none"}}>★ My Schedule — {mySched.size} acts</div>
                   <button onClick={()=>{
                     const el=document.getElementById("print-schedule");
                     if(!el) return;
@@ -2842,20 +2922,58 @@ function App(){
                     setTimeout(()=>w.print(),500);
                   }}
                     style={{padding:"8px 20px",background:"#fff",color:"#000",border:"none",borderRadius:6,
-                    fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+                    fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",
+                    flex:mob?"1 1 45%":"none"}}>
                     🖨 Print / PDF
                   </button>
                   <button onClick={()=>{if(confirm("Clear all saved acts?"))setMySched(new Set());}}
                     style={{padding:"8px 16px",background:"transparent",color:"#E63946",
                     border:"1px solid #E63946",borderRadius:6,fontSize:12,fontWeight:600,
-                    cursor:"pointer",fontFamily:"inherit"}}>
+                    cursor:"pointer",fontFamily:"inherit",flex:mob?"1 1 45%":"none"}}>
                     Clear All
                   </button>
                 </div>
 
                 {/* Schedule content (visible + used for print) */}
                 <div id="print-schedule">
-                  <h1 style={{fontSize:22,fontWeight:800,color:"#fff",marginBottom:2}}>My SXSW 2026 Schedule</h1>
+                  {/* Mini visual timeline */}
+                  <div style={{marginBottom:20,padding:"12px 14px",background:"#0e0e18",borderRadius:8,border:"1px solid #1a1a2a"}} className="no-print">
+                    <div style={{fontSize:12,fontWeight:700,color:"#888",marginBottom:10}}>Visual Timeline</div>
+                    {DAYS.map(d=>{
+                      const de=EVENTS.filter(e=>mySched.has(e.id)&&e.day===d&&e.startH>=0)
+                        .sort((a,b)=>(a.startH<6?a.startH+24:a.startH)-(b.startH<6?b.startH+24:b.startH));
+                      if(de.length===0) return null;
+                      return <div key={d} style={{marginBottom:6}}>
+                        <div style={{fontSize:10,fontWeight:600,color:"#FFB703",marginBottom:3}}>{DAY_LABEL[d]}</div>
+                        <div style={{position:"relative",height:28,background:"#111",borderRadius:4,overflow:"hidden"}}>
+                          {/* Hour markers */}
+                          {[12,14,16,18,20,22,24].map(h=>(
+                            <div key={h} style={{position:"absolute",left:`${((h-11)/15)*100}%`,top:0,bottom:0,
+                              width:1,background:"#1a1a22"}}/>
+                          ))}
+                          {[12,16,20,24].map(h=>(
+                            <span key={h} style={{position:"absolute",left:`${((h-11)/15)*100}%`,top:1,
+                              fontSize:7,color:"#444",transform:"translateX(-50%)"}}>{h>12?(h>24?`${h-24}a`:h>12?`${h-12}p`:"12p"):"12p"}</span>
+                          ))}
+                          {de.map(evt=>{
+                            const color=G[evt.genre]||"#555";
+                            let s=evt.startH<6?evt.startH+24:evt.startH;
+                            let e2=evt.endH<6?evt.endH+24:(evt.endH<0?s+0.5:evt.endH);
+                            const l=Math.max(0,((s-11)/15)*100);
+                            const w=Math.max(2,((e2-s)/15)*100);
+                            return <div key={evt.id} title={`${evt.name} ${evt.time}`}
+                              style={{position:"absolute",left:`${l}%`,width:`${w}%`,top:10,height:16,
+                              background:color,borderRadius:2,border:"1px solid #fff2",
+                              display:"flex",alignItems:"center",padding:"0 2px",overflow:"hidden"}}>
+                              <span style={{fontSize:7,color:"#fff",fontWeight:600,whiteSpace:"nowrap",
+                                overflow:"hidden",textOverflow:"ellipsis"}}>{evt.name}</span>
+                            </div>;
+                          })}
+                        </div>
+                      </div>;
+                    })}
+                  </div>
+                  <h1 style={{fontSize:mob?18:22,fontWeight:800,color:"#fff",marginBottom:2}}>My SXSW 2026 Schedule</h1>
                   <div style={{fontSize:11,color:"#666",marginBottom:16}}>{mySched.size} acts selected · March 12–18, Austin TX</div>
                   {DAYS.map(d=>{
                     const dayEvts=EVENTS.filter(e=>mySched.has(e.id)&&e.day===d)
@@ -2867,25 +2985,27 @@ function App(){
                     if(dayEvts.length===0) return null;
                     return(
                       <div key={d} style={{marginBottom:20}}>
-                        <h2 style={{fontSize:15,fontWeight:800,color:"#FFB703",marginBottom:8,
+                        <h2 style={{fontSize:mob?13:15,fontWeight:800,color:"#FFB703",marginBottom:8,
                           paddingBottom:4,borderBottom:"2px solid #FFB70333"}}>{DAY_LABEL[d]} — {dayEvts.length} acts</h2>
                         {dayEvts.map(evt=>{
                           const color=G[evt.genre]||"#555";
                           return(
-                            <div key={evt.id} style={{display:"flex",gap:10,padding:"8px 4px",
+                            <div key={evt.id} style={{display:"flex",gap:mob?6:10,padding:mob?"8px 2px":"8px 4px",
                               borderBottom:"1px solid #1a1a22",alignItems:"center",flexWrap:"wrap"}}>
-                              <div style={{minWidth:130,fontSize:11,fontWeight:700,color:"#aaa",fontVariantNumeric:"tabular-nums"}}>
+                              <div style={{fontSize:mob?9:11,fontWeight:700,color:"#aaa",fontVariantNumeric:"tabular-nums",
+                                flex:mob?"1 1 100%":"none",minWidth:mob?"auto":130}}>
                                 {evt.time}
                               </div>
-                              <div style={{minWidth:180,fontSize:13,fontWeight:700,color:"#fff"}}>{evt.name}</div>
-                              <div style={{minWidth:160,fontSize:11,color:"#777"}}>{evt.venue}</div>
-                              <span style={{fontSize:10,padding:"2px 8px",borderRadius:10,
+                              <div style={{fontSize:mob?12:13,fontWeight:700,color:"#fff",
+                                flex:mob?"1 1 auto":"none",minWidth:mob?"auto":180}}>{evt.name}</div>
+                              <div style={{fontSize:mob?9:11,color:"#777",flex:mob?"1 1 100%":"none",
+                                minWidth:mob?"auto":160}}>{evt.venue}</div>
+                              <span style={{fontSize:mob?8:10,padding:"2px 8px",borderRadius:10,
                                 background:color+"28",color:color,fontWeight:600}}>{evt.genre}</span>
-                              {evt.presenter&&<span style={{fontSize:10,color:"#555",fontStyle:"italic"}}>{evt.presenter}</span>}
                               <button onClick={()=>toggleSched(evt.id)} className="no-print"
                                 style={{marginLeft:"auto",padding:"4px 10px",background:"transparent",
                                 color:"#E63946",border:"1px solid #E6394644",borderRadius:4,
-                                fontSize:10,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>✕ Remove</button>
+                                fontSize:10,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>✕</button>
                             </div>
                           );
                         })}
