@@ -2694,7 +2694,7 @@ function App(){
                 <span style={{fontSize:mob?8:10,color:"#666",fontWeight:600,textTransform:"uppercase",
                   letterSpacing:".06em",fontFamily:"'IBM Plex Mono',monospace"}}>Venue</span>
               </div>
-              <div style={{flex:1,display:"flex",paddingTop:4,paddingBottom:4}}>
+              <div style={{flex:1,display:"flex",paddingTop:4,paddingBottom:4,position:"relative"}}>
               {tMarks.map((t,i)=>(
                 <div key={t} style={{flex:1,fontSize:Math.min(13,10*zoom),
                   color:["12P","6P","12A"].includes(t)?"#aaa":"#555",
@@ -2703,6 +2703,21 @@ function App(){
                   {t}
                 </div>
               ))}
+              {/* Single NOW marker in header */}
+              {nowH>0&&(()=>{
+                let nh=nowH<6?nowH+24:nowH;
+                if(nh>=tStart&&nh<=tEnd){
+                  const left=((nh-tStart)/(tEnd-tStart))*100;
+                  return <div style={{position:"absolute",left:`${left}%`,top:0,bottom:0,width:2,
+                    background:"#06D6A0",zIndex:10,pointerEvents:"none"}}>
+                    <div style={{position:"absolute",bottom:-1,left:"50%",transform:"translateX(-50%)",
+                      background:"#06D6A0",color:"#000",fontSize:8,fontWeight:800,
+                      padding:"1px 5px",borderRadius:"0 0 3px 3px",
+                      fontFamily:"'IBM Plex Mono',monospace",whiteSpace:"nowrap"}}>NOW</div>
+                  </div>;
+                }
+                return null;
+              })()}
               </div>
             </div>
 
@@ -2753,18 +2768,14 @@ function App(){
                       <div key={i} style={{position:"absolute",left:`${(i/tMarks.length)*100}%`,top:0,bottom:0,width:1,
                         background:[1,7,13].includes(i)?"#1e1e28":"#12121a"}}/>
                     ))}
-                    {/* NOW indicator */}
+                    {/* NOW line (label is in the time ruler) */}
                     {nowH>0&&(()=>{
                       let nh=nowH<6?nowH+24:nowH;
                       if(nh>=tStart&&nh<=tEnd){
                         const left=((nh-tStart)/(tEnd-tStart))*100;
                         return <div style={{position:"absolute",left:`${left}%`,top:0,bottom:0,width:2,
                           background:"#06D6A0",zIndex:25,pointerEvents:"none",
-                          boxShadow:"0 0 8px #06D6A088"}}>
-                          <div style={{position:"absolute",top:-2,left:-10,background:"#06D6A0",
-                            color:"#000",fontSize:8,fontWeight:800,padding:"1px 4px",borderRadius:3,
-                            fontFamily:"'IBM Plex Mono',monospace",whiteSpace:"nowrap"}}>NOW</div>
-                        </div>;
+                          opacity:0.7}}/>;
                       }
                       return null;
                     })()}
