@@ -2287,19 +2287,29 @@ function App(){
   const[zoom,setZoom]=useState(1); // 1=normal, 1.25=large, 1.5=xl
   const[tZoom,setTZoom]=useState(1); // timeline horizontal zoom 1-4x
   const[audioState,setAudioState]=useState("idle");
+  const[scrollHint,setScrollHint]=useState(false);
   const[showFilters,setShowFilters]=useState(false);
   const[mob,setMob]=useState(typeof window!=="undefined"&&window.innerWidth<768);
   const previewTimer=useRef(null);
   const panelRef=useRef(null);
+  const ganttRef=useRef(null);
   const audioRef=useRef(null);
   const audioCache=useRef({});
 
-  // Responsive resize
+  // Responsive resize + audio warmup on first interaction
   useMemo(()=>{
     if(typeof window==="undefined") return;
     const fn=()=>setMob(window.innerWidth<768);
     window.addEventListener("resize",fn);
-    return()=>window.removeEventListener("resize",fn);
+    // Warm audio context on first user interaction (mobile requirement)
+    const warmOnTouch=()=>{
+      warmAudio();
+      window.removeEventListener("touchstart",warmOnTouch);
+      window.removeEventListener("click",warmOnTouch);
+    };
+    window.addEventListener("touchstart",warmOnTouch,{once:true});
+    window.addEventListener("click",warmOnTouch,{once:true});
+    return()=>{window.removeEventListener("resize",fn);};
   },[]);
 
   const vcW=mob?110:200*zoom;
@@ -2309,10 +2319,30 @@ function App(){
     setAudioState("idle");
   },[]);
 
+  // Warm up audio context on first interaction (mobile requirement)
+  const audioCtxWarmed=useRef(false);
+  const warmAudio=useCallback(()=>{
+    if(audioCtxWarmed.current) return;
+    try{
+      const ctx=new (window.AudioContext||window.webkitAudioContext)();
+      ctx.resume().then(()=>{audioCtxWarmed.current=true;}).catch(()=>{});
+      const a=new Audio();a.volume=0;a.src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+      a.play().then(()=>{a.pause();audioCtxWarmed.current=true;}).catch(()=>{});
+    }catch(e){}
+  },[]);
+
+  const fetchWithTimeout=useCallback((url,ms=4000)=>{
+    const ctrl=new AbortController();
+    const timer=setTimeout(()=>ctrl.abort(),ms);
+    return fetch(url,{signal:ctrl.signal}).finally(()=>clearTimeout(timer));
+  },[]);
+
   const playPreview=useCallback(async(name)=>{
     killAudio();
+    warmAudio();
     setAudioState("loading");
-    const key=name.toLowerCase();
+    const key=name.toLowerCase().replace(/[^a-z0-9 ]/g,"").trim();
+    const nameClean=name.replace(/[()\[\]&+]/g," ").trim();
     // Check cache
     if(audioCache.current[key]){
       const url=audioCache.current[key];
@@ -2326,52 +2356,84 @@ function App(){
       }catch(e){setAudioState("error");}
       return;
     }
-    // Helper to play a URL
     const doPlay=async(url)=>{
       audioCache.current[key]=url;
-      const a=new Audio(url);a.volume=0.6;audioRef.current=a;
+      const a=new Audio();a.volume=0.6;a.preload="auto";audioRef.current=a;
       a.onplay=()=>setAudioState("playing");
-      a.onerror=()=>setAudioState("error");
+      a.onerror=()=>{audioCache.current[key]="NONE";setAudioState("error");};
       a.onended=()=>setAudioState("idle");
-      await a.play();
+      a.src=url;
+      try{
+        await a.play();
+      }catch(e){
+        // Mobile autoplay blocked - show tap-to-play state
+        if(e.name==="NotAllowedError"){
+          setAudioState("blocked");
+        }else{
+          setAudioState("error");
+        }
+      }
     };
-    // Try multiple strategies in sequence
+    // Try multiple strategies with timeouts and name variations
+    const queries=[nameClean];
+    if(nameClean.split(" ").length>2) queries.push(nameClean.split(" ").slice(0,2).join(" "));
     const strategies=[
-      // 1. Deezer API (has CORS support)
-      async()=>{
-        const r=await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(name)}&limit=1`);
+      // 1. Deezer (best CORS support for previews)
+      async(q)=>{
+        const r=await fetchWithTimeout(`https://api.deezer.com/search?q=artist:"${encodeURIComponent(q)}"&limit=5`,5000);
         const d=await r.json();
-        if(d?.data?.[0]?.preview) return d.data[0].preview;
-        return null;
+        const track=d?.data?.find(t=>t.preview&&t.preview.length>10);
+        if(track?.preview) return track.preview;
+        // Fallback: try without artist: prefix
+        const r2=await fetchWithTimeout(`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=5`,5000);
+        const d2=await r2.json();
+        const track2=d2?.data?.find(t=>t.preview&&t.preview.length>10);
+        return track2?.preview||null;
       },
       // 2. iTunes via corsproxy.io
-      async()=>{
-        const r=await fetch(`https://corsproxy.io/?${encodeURIComponent(`https://itunes.apple.com/search?term=${encodeURIComponent(name)}&media=music&limit=1`)}`);
+      async(q)=>{
+        const r=await fetchWithTimeout(`https://corsproxy.io/?url=${encodeURIComponent(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=5`)}`,5000);
         const d=await r.json();
-        if(d?.results?.[0]?.previewUrl) return d.results[0].previewUrl;
-        return null;
+        const track=d?.results?.find(t=>t.previewUrl);
+        return track?.previewUrl||null;
       },
       // 3. iTunes via allorigins
-      async()=>{
-        const target=encodeURIComponent(`https://itunes.apple.com/search?term=${encodeURIComponent(name)}&media=music&limit=1`);
-        const r=await fetch(`https://api.allorigins.win/get?url=${target}`);
+      async(q)=>{
+        const target=`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=5`;
+        const r=await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(target)}`,5000);
         const wrapper=await r.json();
         if(wrapper?.contents){
           const d=JSON.parse(wrapper.contents);
-          if(d?.results?.[0]?.previewUrl) return d.results[0].previewUrl;
+          const track=d?.results?.find(t=>t.previewUrl);
+          return track?.previewUrl||null;
+        }
+        return null;
+      },
+      // 4. Deezer via allorigins fallback
+      async(q)=>{
+        const target=`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=5`;
+        const r=await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(target)}`,5000);
+        const wrapper=await r.json();
+        if(wrapper?.contents){
+          const d=JSON.parse(wrapper.contents);
+          const track=d?.data?.find(t=>t.preview&&t.preview.length>10);
+          return track?.preview||null;
         }
         return null;
       },
     ];
-    for(const strat of strategies){
-      try{
-        const url=await strat();
-        if(url){await doPlay(url);return;}
-      }catch(e){/* try next */}
+    // Try each strategy with primary name, then simplified name
+    for(const q of queries){
+      for(const strat of strategies){
+        try{
+          const url=await strat(q);
+          if(url){await doPlay(url);return;}
+        }catch(e){/* try next */}
+      }
     }
     audioCache.current[key]="NONE";
     setAudioState("error");
-  },[killAudio]);
+  },[killAudio,warmAudio,fetchWithTimeout]);
 
   const startExpand=useCallback((evt)=>{
     if(previewTimer.current) clearTimeout(previewTimer.current);
@@ -2509,13 +2571,16 @@ function App(){
           <span style={{fontSize:10,color:"#555",textTransform:"uppercase",letterSpacing:".08em",marginRight:3}}>Genre:</span>
           {Object.entries(G).filter(([g])=>genreCounts[g]).sort((a,b)=>(genreCounts[b[0]]||0)-(genreCounts[a[0]]||0)).map(([genre,color])=>(
             <button key={genre} onClick={()=>{const next=new Set(gf);if(next.has(genre))next.delete(genre);else next.add(genre);setGf(next);}} style={{
-              padding:"3px 9px",borderRadius:12,cursor:"pointer",fontSize:10,fontWeight:600,
+              padding:"4px 10px",borderRadius:12,cursor:"pointer",fontSize:10,fontWeight:600,
               fontFamily:"inherit",transition:"all .15s",whiteSpace:"nowrap",
-              background:gf.has(genre)?color:"#0a0a10",
-              color:gf.has(genre)?"#fff":"#333",
-              border:`1px solid ${gf.has(genre)?color:"#222"}`,
-              opacity:gf.has(genre)?1:0.4,
-            }}>{genre} ({genreCounts[genre]||0})</button>
+              background:gf.has(genre)?color:"transparent",
+              color:gf.has(genre)?"#fff":color,
+              border:`1px solid ${gf.has(genre)?color:color+"55"}`,
+              opacity:gf.has(genre)?1:0.35,
+              textDecoration:gf.has(genre)?"none":"line-through",
+            }}>
+              {genre} ({genreCounts[genre]||0})
+            </button>
           ))}
         </div>
         <div style={{display:"flex",gap:4,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
@@ -2545,7 +2610,7 @@ function App(){
             cursor:zoom>=4?"default":"pointer",fontSize:16,fontWeight:700,fontFamily:"inherit",lineHeight:1}}>+</button>
           <span style={{color:"#4a4a55",margin:"0 4px"}}>|</span>
           <span style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:".08em"}}>Timeline:</span>
-          <button onClick={()=>setTZoom(z=>Math.max(1,z-0.5))} style={{width:28,height:28,
+          <button onClick={()=>{const g=ganttRef.current;const oldLeft=g?g.scrollLeft:0;const oldWidth=g?g.scrollWidth:1;setTZoom(z=>{const nz=Math.max(1,z-0.5);if(g)setTimeout(()=>{g.scrollLeft=oldLeft*(g.scrollWidth/oldWidth);},30);return nz;});}} style={{width:28,height:28,
             display:"flex",alignItems:"center",justifyContent:"center",
             background:"#13131d",color:tZoom<=1?"#333":"#aaa",border:"1px solid #222",borderRadius:6,
             cursor:tZoom<=1?"default":"pointer",fontSize:16,fontWeight:700,fontFamily:"inherit",lineHeight:1}}>−</button>
@@ -2553,38 +2618,68 @@ function App(){
             color:"#06D6A0",minWidth:44,textAlign:"center",border:"1px solid #06D6A033"}}>
             {tZoom}x
           </div>
-          <button onClick={()=>setTZoom(z=>Math.min(6,z+0.5))} style={{width:28,height:28,
+          <button onClick={()=>{const g=ganttRef.current;const oldLeft=g?g.scrollLeft:0;const oldWidth=g?g.scrollWidth:1;setTZoom(z=>{const nz=Math.min(6,z+0.5);if(g)setTimeout(()=>{g.scrollLeft=oldLeft*(g.scrollWidth/oldWidth);},30);return nz;});setScrollHint(true);setTimeout(()=>setScrollHint(false),2000);}} style={{width:28,height:28,
             display:"flex",alignItems:"center",justifyContent:"center",
             background:"#13131d",color:tZoom>=6?"#333":"#aaa",border:"1px solid #222",borderRadius:6,
             cursor:tZoom>=6?"default":"pointer",fontSize:16,fontWeight:700,fontFamily:"inherit",lineHeight:1}}>+</button>
-          <button onClick={()=>{setZoom(1);setTZoom(1);}} style={{padding:"3px 9px",
+          <button onClick={()=>{setZoom(1);setTZoom(1);setGf(new Set(Object.keys(G)));setSearch("");if(ganttRef.current){ganttRef.current.scrollTo({left:0,top:0,behavior:"smooth"});}}} style={{padding:"3px 9px",
             background:zoom===1&&tZoom===1?"#222":"#13131d",color:zoom===1&&tZoom===1?"#555":"#888",
             border:"1px solid #33333355",borderRadius:6,cursor:"pointer",
             fontSize:9,fontWeight:600,fontFamily:"inherit"}}>Reset All</button>
           {gf.size<allGenres.size&&<span style={{fontSize:9,color:"#FFB703",marginLeft:8}}>
             {allGenres.size-gf.size} genre{allGenres.size-gf.size>1?"s":""} hidden
           </span>}
+          {tZoom>1&&<span style={{fontSize:9,color:"#06D6A0",marginLeft:4,display:"inline-flex",alignItems:"center",gap:3}}>
+            ⟵ scroll to see full timeline ⟶
+          </span>}
         </div>
 
         </div>
         {/* Search results */}
-        {filtered&&filtered.length>0&&(
-          <div style={{marginBottom:12,padding:"8px 12px",background:"#12121a",borderRadius:6,border:"1px solid #222"}}>
-            <div style={{fontSize:11,color:"#666",marginBottom:5}}>Found {filtered.length} for "{search}":</div>
-            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-              {filtered.slice(0,25).map(e=>(
-                <span key={e.id} style={{fontSize:10,padding:"3px 8px",borderRadius:4,
-                  background:G[e.genre]+"33",color:G[e.genre],fontWeight:600,border:`1px solid ${G[e.genre]}44`}}>
-                  {e.name} <span style={{color:"#666"}}>@ {e.venue} {e.time.split("--")[0].trim()}</span>
-                </span>
-              ))}
-              {filtered.length>25&&<span style={{fontSize:10,color:"#444"}}>+{filtered.length-25} more</span>}
+        {search.length>0&&filtered&&(
+          filtered.length>0?(
+            <div style={{marginBottom:12,padding:"8px 12px",background:"#12121a",borderRadius:6,border:"1px solid #222"}}>
+              <div style={{fontSize:11,color:"#666",marginBottom:5}}>Found {filtered.length} for \"{search}\":</div>
+              <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                {filtered.slice(0,25).map(e=>(
+                  <span key={e.id} style={{fontSize:10,padding:"3px 8px",borderRadius:4,
+                    background:G[e.genre]+"33",color:G[e.genre],fontWeight:600,border:`1px solid ${G[e.genre]}44`}}>
+                    {e.name} <span style={{color:"#666"}}>@ {e.venue} {e.time.split("--")[0].trim()}</span>
+                  </span>
+                ))}
+                {filtered.length>25&&<span style={{fontSize:10,color:"#444"}}>+{filtered.length-25} more</span>}
+              </div>
             </div>
-          </div>
+          ):(
+            <div style={{marginBottom:12,padding:"12px 14px",background:"#12121a",borderRadius:6,border:"1px solid #E6394633",
+              display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:18}}>🔍</span>
+              <div>
+                <div style={{fontSize:12,fontWeight:600,color:"#999"}}>No results for \"{search}\" on {DAY_LABEL[day]}</div>
+                <div style={{fontSize:10,color:"#666",marginTop:2}}>
+                  {(()=>{const other=EVENTS.filter(e=>e.day!==day&&(e.name.toLowerCase().includes(search.toLowerCase())||e.venue.toLowerCase().includes(search.toLowerCase())));
+                    if(other.length>0){const days=[...new Set(other.map(e=>e.day))];
+                      return <span>Found on: {days.map(d=><button key={d} onClick={()=>setDay(d)}
+                        style={{background:"#222",color:"#aaa",border:"1px solid #444",borderRadius:4,padding:"2px 8px",
+                        marginLeft:4,cursor:"pointer",fontSize:10,fontFamily:"inherit",fontWeight:600}}>{DAY_LABEL[d]}</button>)}</span>;}
+                    return "Try a different spelling";
+                  })()}
+                </div>
+              </div>
+            </div>
+          )
         )}
 
+        {/* Scroll hint */}
+        {scrollHint&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+          padding:"6px 14px",marginBottom:6,background:"#06D6A015",border:"1px solid #06D6A033",
+          borderRadius:6,animation:"fadeHint 2s ease forwards"}}>
+          <style>{`@keyframes fadeHint{0%{opacity:1}70%{opacity:1}100%{opacity:0}}`}</style>
+          <span style={{fontSize:16}}>↔</span>
+          <span style={{fontSize:11,color:"#06D6A0",fontWeight:600}}>Scroll horizontally to see the full timeline</span>
+        </div>}
         {/* Gantt */}
-        <div style={{overflowX:"auto",overflowY:"auto",position:"relative",
+        <div ref={ganttRef} style={{overflowX:"auto",overflowY:"auto",position:"relative",
           maxHeight:mob?"calc(100vh - 180px)":"calc(100vh - 220px)",
           borderRadius:6,border:"1px solid #1a1a22"}}>
           <div style={{minWidth:(1000+200*zoom)*tZoom}}>
@@ -2686,7 +2781,7 @@ function App(){
                       const width=Math.max(1.5,((eH-sH)/(tEnd-tStart))*100);
                       return(
                         <div key={evt.id}
-                          onClick={(e)=>{if(mob){const r=e.currentTarget.getBoundingClientRect();if(hov===evt.id){toggleSched(evt.id);}else{setHov(evt.id);setHovRect(r);setExpanded(true);startExpand(evt);}}else{toggleSched(evt.id);}}}
+                          onClick={(e)=>{warmAudio();if(mob){const r=e.currentTarget.getBoundingClientRect();if(hov===evt.id){toggleSched(evt.id);}else{setHov(evt.id);setHovRect(r);setExpanded(true);startExpand(evt);}}else{toggleSched(evt.id);}}}
                           onMouseEnter={(e)=>{if(mob)return;const r=e.currentTarget.getBoundingClientRect();setHov(evt.id);setHovRect(r);setExpanded(false);startExpand(evt);}}
                           onMouseLeave={()=>{if(mob)return;stopExpand();
                             setTimeout(()=>{if(panelRef.current&&panelRef.current.matches(':hover'))return;setHov(null);setExpanded(false);killAudio();},300);}}
@@ -2803,6 +2898,17 @@ function App(){
                         borderRadius:6,padding:"4px 10px",color:color,fontSize:10,fontWeight:600,
                         cursor:"pointer",fontFamily:"inherit"}}>◼ Stop</button>
                     </>
+                  ):audioState==="blocked"?(
+                    <>
+                      <button onClick={async()=>{warmAudio();if(audioRef.current){try{await audioRef.current.play();setAudioState("playing");}catch(e){setAudioState("error");}}else{playPreview(evt.name);}}}
+                        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+                        background:`linear-gradient(135deg,${color},${color}88)`,
+                        border:"none",borderRadius:8,padding:"14px 24px",cursor:"pointer",
+                        fontFamily:"inherit",color:"#fff",fontSize:14,fontWeight:700,
+                        flex:1,animation:"pulse 1.5s ease infinite"}}>
+                        ▶ Tap to Play Preview
+                      </button>
+                    </>
                   ):audioState==="loading"?(
                     <>
                       <div style={{width:18,height:18,border:`2px solid ${color}44`,borderTop:`2px solid ${color}`,
@@ -2810,11 +2916,24 @@ function App(){
                       <div style={{fontSize:11,color:"#888",animation:"pulse 1.2s ease infinite"}}>Finding preview...</div>
                     </>
                   ):audioState==="error"?(
-                    <><span style={{fontSize:16}}>🔇</span>
-                    <div style={{fontSize:11,color:"#666"}}>No preview available</div></>
+                    <>
+                      <span style={{fontSize:16}}>🔇</span>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:11,color:"#666"}}>No audio preview found</div>
+                        <div style={{fontSize:9,color:"#444",marginTop:2}}>Try YouTube or Spotify below</div>
+                      </div>
+                      <button onClick={()=>{audioCache.current[evt.name.toLowerCase().replace(/[^a-z0-9 ]/g,"").trim()]=undefined;playPreview(evt.name);}} style={{background:"#ffffff11",border:"1px solid #333",
+                        borderRadius:6,padding:"4px 10px",color:"#888",fontSize:10,fontWeight:600,
+                        cursor:"pointer",fontFamily:"inherit"}}>Retry</button>
+                    </>
                   ):(
-                    <><span style={{fontSize:16,opacity:.5}}>🎵</span>
-                    <div style={{fontSize:11,color:"#555"}}>Preview ended</div></>
+                    <>
+                      <span style={{fontSize:16,opacity:.5}}>🎵</span>
+                      <div style={{flex:1,fontSize:11,color:"#555"}}>Preview ended</div>
+                      <button onClick={()=>playPreview(evt.name)} style={{background:"#ffffff11",border:"1px solid #333",
+                        borderRadius:6,padding:"4px 10px",color:"#888",fontSize:10,fontWeight:600,
+                        cursor:"pointer",fontFamily:"inherit"}}>Play again</button>
+                    </>
                   )}
                 </div>
                 {/* Action buttons */}
