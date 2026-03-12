@@ -1,3 +1,8 @@
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Stars](https://img.shields.io/github/stars/adil1248/sxsw-2026-music-schedule?style=social)](https://github.com/adil1248/sxsw-2026-music-schedule/stargazers)
+[![Forks](https://img.shields.io/github/forks/adil1248/sxsw-2026-music-schedule?style=social)](https://github.com/adil1248/sxsw-2026-music-schedule/network/members)
+
 # 🎸 SXSW 2026 Music Schedule — Interactive Gantt App
 
 A fan-made interactive schedule viewer for **SXSW 2026** (March 12–18, Austin TX). Browse all ~800+ acts across all venues in a color-coded Gantt chart, filter by genre, build your personal schedule, and hear 30-second song previews — all in a single HTML file you can run locally with no install required.
@@ -56,3 +61,19 @@ Schedule data sourced from [schedule.sxsw.com](https://schedule.sxsw.com). Cover
 ---
 
 *Not affiliated with SXSW. Fan-made tool for attendees.*
+
+
+## 🤝 Contributing
+
+Contributions are welcome! Whether you want to fix a bug, update schedule data, or add a new feature:
+
+- 📖 Read the [Contributing Guide](CONTRIBUTING.md)
+- 🐛 [Report a bug](../../issues/new?template=bug_report.md)
+- ✨ [Request a feature](../../issues/new?template=feature_request.md)
+- 🍴 Fork the repo, make your changes, and open a Pull Request
+
+## ⭐ Show Your Support
+
+If this helped you plan your SXSW week, give it a star — it helps others find it!
+
+[![Star this repo](https://img.shields.io/github/stars/adil1248/sxsw-2026-music-schedule?style=social)](https://github.com/adil1248/sxsw-2026-music-schedule)
