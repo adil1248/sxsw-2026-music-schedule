@@ -1602,6 +1602,27 @@ function parseEnd(t){
   }catch(e){return -1;}
 }
 
+
+// Venue district groupings (walking proximity)
+const DISTRICTS=[
+  {id:"redriver",name:"Red River District",emoji:"🔴",color:"#E63946",desc:"Legendary live music strip · 2-min walk between venues",
+   venues:["Stubb's","Mohawk Indoor","Mohawk Outdoor","Valhalla","Elysium","Swan Dive","Swan Dive Patio","The 13th Floor","Chess Club","Flamingo Cantina","Kingdom","Marlow","Brushy St Commons","The Creek and the Cave","The Creek and the Cave / The Creek and the Cave Backyard","Victory Grill"]},
+  {id:"dirty6",name:"Dirty Sixth",emoji:"🟡",color:"#FFB703",desc:"Famous bar strip · Clubs & Latin nightlife",
+   venues:["BME @ Palm Door","BME @ Palm Door Patio","Mala Fama Rooftop","Mala Fama Nivel","Mala Vida","Neon Grotto","Neon Grotto Rooftop","Venue 6","Speakeasy","Low Down Lounge","The Pershing"]},
+  {id:"east6",name:"East Sixth",emoji:"🟢",color:"#06D6A0",desc:"East of I-35 · Indie & DIY · 10-min walk from Dirty 6th",
+   venues:["Hotel Vegas","Hotel Vegas Patio","Hotel Vegas Volstead","Shangri-La","Lefty's Brick Bar","Inn Cahoots / Inn Cahoots Studio","Inn Cahoots Austin Garden"]},
+  {id:"e7th",name:"E 7th & Warehouse",emoji:"🔵",color:"#118AB2",desc:"Just north of 6th · Cocktail bars & eclectic",
+   venues:["Seven Grand","Las Perlas","Riviere","Taco n Maiz","Antone's","Coconut Club","Coconut Club / Coconut Club Rooftop","Seven Spirits","Lamberts"]},
+  {id:"congress",name:"Congress & Downtown",emoji:"🟣",color:"#8338EC",desc:"Central SXSW hub · Major headliner venues",
+   venues:["ACL Live","Rivian Roadhouse","Hilton Ballroom","Flatstock @ Marriott","Wanderlust Wine","Auditorium Shores"]},
+  {id:"waterloo",name:"Waterloo & N Downtown",emoji:"🟠",color:"#F77F00",desc:"North of 11th · Big outdoor stages & conference",
+   venues:["Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Downright Global Stage","Downright Radio Stage","Central Presbyterian"]},
+  {id:"south",name:"South Austin",emoji:"⚪",color:"#9B5DE5",desc:"Across Lady Bird Lake · Honky-tonks & breweries",
+   venues:["Continental Club","Saxon Pub","Zilker Brewing","Augustine"]},
+];
+const VENUE_DISTRICT={};
+DISTRICTS.forEach(d=>d.venues.forEach(v=>{VENUE_DISTRICT[v]=d;}));
+
 const EVENTS=RAW.map((r,i)=>({
   id:i,name:r[0],day:r[1],time:r[2],venue:r[3],presenter:r[4],
   gp:r[5],gs:r[6],img:r[7]||"",url:r[8]||"",genre:gc(r[5],r[6]),
@@ -2459,11 +2480,21 @@ function App(){
       if(!vm[e.venue]) vm[e.venue]=[];
       vm[e.venue].push(e);
     });
-    return Object.entries(vm).sort((a,b)=>{
+    const entries=Object.entries(vm);
+    // Sort: district order first, then earliest start within district
+    const distOrder={};
+    DISTRICTS.forEach((d,i)=>distOrder[d.id]=i);
+    entries.sort((a,b)=>{
+      const da=VENUE_DISTRICT[a[0]];
+      const db=VENUE_DISTRICT[b[0]];
+      const oa=da?distOrder[da.id]:99;
+      const ob=db?distOrder[db.id]:99;
+      if(oa!==ob) return oa-ob;
       const aMin=Math.min(...a[1].filter(e=>e.startH>=0).map(e=>e.startH<6?e.startH+24:e.startH).concat([99]));
       const bMin=Math.min(...b[1].filter(e=>e.startH>=0).map(e=>e.startH<6?e.startH+24:e.startH).concat([99]));
       return aMin-bMin;
     });
+    return entries;
   },[dayEvts]);
 
   const genreCounts=useMemo(()=>{
@@ -2721,32 +2752,63 @@ function App(){
               </div>
             </div>
 
-            {/* Venue rows */}
-            {venues.map(([venue,evts],vi)=>{
+            {/* Venue rows grouped by district */}
+            {(()=>{
+              let lastDist=null;
+              const rows=[];
+              venues.forEach(([venue,evts],vi)=>{
               // Hide venue if genre filter active and no events match
-              if(!evts.some(e=>gf.has(e.genre))) return null;
+              if(!evts.some(e=>gf.has(e.genre))) return;
+              // District header
+              const dist=VENUE_DISTRICT[venue];
+              const distId=dist?dist.id:"other";
+              if(distId!==lastDist){
+                lastDist=distId;
+                const d=dist||{name:"Other Venues",emoji:"📍",color:"#555",desc:""};
+                rows.push(
+                  <div key={"dist-"+distId} style={{display:"flex",alignItems:"stretch",
+                    background:`linear-gradient(90deg,${d.color}15,${d.color}08,transparent 60%)`,
+                    borderTop:vi>0?`2px solid ${d.color}44`:"none",borderBottom:`1px solid ${d.color}22`,
+                    position:"relative"}}>
+                    <div style={{width:vcW,minWidth:vcW,padding:mob?"6px 6px":"8px 12px",
+                      display:"flex",alignItems:"center",gap:mob?4:8,
+                      position:"sticky",left:0,zIndex:5,
+                      background:`linear-gradient(90deg,${d.color}18,#0a0a12)`,
+                      borderRight:"2px solid #1e1e2a",boxShadow:"4px 0 12px rgba(0,0,0,0.4)"}}>
+                      <span style={{fontSize:mob?12:14}}>{d.emoji}</span>
+                      <div>
+                        <div style={{fontSize:mob?9:11,fontWeight:800,color:d.color,letterSpacing:".03em",
+                          fontFamily:"'IBM Plex Sans',sans-serif"}}>{d.name}</div>
+                        {!mob&&d.desc&&<div style={{fontSize:8,color:"#666",marginTop:1,
+                          fontFamily:"'IBM Plex Sans',sans-serif"}}>{d.desc}</div>}
+                      </div>
+                    </div>
+                    <div style={{flex:1,minHeight:mob?24:28}}/>
+                  </div>
+                );
+              }
               const sortedEvts=evts.filter(e=>e.startH>=0).sort((a,b)=>{
                 const ah=a.startH<6?a.startH+24:a.startH;
                 const bh=b.startH<6?b.startH+24:b.startH;
                 return ah-bh;
               });
-              const rows=[];
+              const eRows=[];
               sortedEvts.forEach(evt=>{
                 const eStart=evt.startH<6?evt.startH+24:evt.startH;
                 const eEnd=evt.endH<6?evt.endH+24:(evt.endH<0?eStart+0.5:evt.endH);
                 let placed=false;
-                for(let r=0;r<rows.length;r++){
-                  const last=rows[r][rows[r].length-1];
+                for(let r=0;r<eRows.length;r++){
+                  const last=eRows[r][eRows[r].length-1];
                   const lEnd=last.endH<6?last.endH+24:(last.endH<0?(last.startH<6?last.startH+24:last.startH)+0.5:last.endH);
-                  if(eStart>=lEnd-0.05){rows[r].push(evt);placed=true;break;}
+                  if(eStart>=lEnd-0.05){eRows[r].push(evt);placed=true;break;}
                 }
-                if(!placed) rows.push([evt]);
+                if(!placed) eRows.push([evt]);
               });
-              const numRows=Math.max(rows.length,1);
+              const numRows=Math.max(eRows.length,1);
               const baseH=zoom>2?24:20;
               const rowH=Math.max(baseH,Math.min(30,80/numRows));
 
-              return(
+              rows.push(
                 <div key={venue} style={{display:"flex",borderBottom:"1px solid #141420",minHeight:numRows*rowH+6,
                   background:vi%2===0?"#0a0a12":"#0c0c15"}}>
                   {/* Sticky venue label */}
@@ -2756,7 +2818,12 @@ function App(){
                     background:vi%2===0?"#0a0a12":"#0c0c15",
                     boxShadow:"4px 0 12px rgba(0,0,0,0.4)"}}>
                     <div style={{fontSize:mob?8:11*zoom,fontWeight:700,color:"#ccc",lineHeight:1.2,
-                      overflow:"hidden",textOverflow:"ellipsis",whiteSpace:mob?"nowrap":"normal"}}>{venue}</div>
+                      overflow:"hidden",textOverflow:"ellipsis",whiteSpace:mob?"nowrap":"normal",
+                      display:"flex",alignItems:"center",gap:mob?3:5}}>
+                      {dist&&<span style={{width:mob?4:6,height:mob?4:6,borderRadius:"50%",
+                        background:dist.color,flexShrink:0,boxShadow:`0 0 4px ${dist.color}66`}}/>}
+                      <span>{venue}</span>
+                    </div>
                     {!mob&&<div style={{fontSize:9*zoom,color:"#7a7a88",marginTop:2,lineHeight:1.2,
                       whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:vcW-20}}>
                       {[...new Set(evts.map(e=>e.presenter).filter(Boolean))].slice(0,2).join(" · ")}
@@ -2779,7 +2846,7 @@ function App(){
                       }
                       return null;
                     })()}
-                    {rows.map((row,ri)=>row.map(evt=>{
+                    {eRows.map((row,ri)=>row.map(evt=>{
                       const color=G[evt.genre]||"#555";
                       const filt=!gf.has(evt.genre);
                       const searchHit=filtered&&filtered.some(f=>f.id===evt.id);
@@ -2818,7 +2885,7 @@ function App(){
                   </div>
                 </div>
               );
-            })}
+            });return rows;})()}
           </div>
         </div>
 
