@@ -1,0 +1,3227 @@
+import { useState, useMemo, useRef, useCallback } from "react";
+
+const RAW=[
+["DJ AG","Thu","5:00pm -- 7:00pm","Downright Global Stage","All The Vibes","DJ","None","https://images.sxsw.com/BwFjidFE7WgxylPDh9SBQUbW86M=/450x450/images.sxsw.com/195/248fe1be-abae-b63f-0829-0ba216ac5745/artist-75770","https://schedule.sxsw.com/2026/events/MS63387"],
+["Susannah Joffe","Thu","6:30pm -- 7:00pm","ACL Live","Rolling Stone Future of Music","Pop","Dream Pop","https://images.sxsw.com/34QwH3e9byxsn7Tjo_7KYbchlMY=/450x450/images.sxsw.com/195/09de66d5-7ec9-2b20-835e-35a9492b4400/artist-75866","https://schedule.sxsw.com/2026/events/MS63486"],
+["Ancient Greece","Thu","7:00pm -- 7:40pm","Low Down Lounge","","Punk","Post-Punk","https://images.sxsw.com/cHPEDW67_LfMVYWSHMSs15FLFgE=/450x450/images.sxsw.com/195/a4c677ef-dfa7-e5e6-8cad-168d56336d7f/artist-75993","https://schedule.sxsw.com/2026/events/MS64521"],
+["Caleb De Casper","Thu","7:00pm -- 7:40pm","Valhalla","Chicken Ranch Records","Pop","Dance","https://images.sxsw.com/OoofBRzYUgZZtVuVA6MiWxIirBI=/450x450/images.sxsw.com/195/d51294af-13ce-a40a-3f7b-fdd5d3d174a3/artist-74548","https://schedule.sxsw.com/2026/events/MS63304"],
+["Charly","Thu","7:00pm -- 7:30pm","Mala Fama Nivel","PURRRSZN","R & B","Hip-Hop / Rap","https://images.sxsw.com/2T7_8ATUsjaKCvFG43caDBjmAbU=/450x450/images.sxsw.com/195/03c23705-214d-2781-d454-2e3320b59a6c/artist-76678","https://schedule.sxsw.com/2026/events/MS65138"],
+["GAS CREW","Thu","7:00pm -- 8:00pm","Kingdom","Gas Station FM","DJ","House / Techno","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65225"],
+["Glamorama","Thu","7:00pm -- 2:00am","Chess Club","We Were Never Being Boring","DJ","Indie Rock","https://images.sxsw.com/YiuuU6mE6o2vCqu89wQdfmF1_h4=/0x0:450x450/450x450/images.sxsw.com/196/93a0edad-5096-47ff-97b4-db5e6cc0f4f1/all-10","https://schedule.sxsw.com/2026/events/MS63738"],
+["Grace Sorensen","Thu","7:00pm -- 7:30pm","Zilker Brewing","Made in Austin","R & B","Pop","https://images.sxsw.com/F16OPGFA5Zz7U5AzNvDYwo21b7Y=/450x450/images.sxsw.com/195/ba90410f-c9b4-0873-525a-218339eb5975/artist-74315","https://schedule.sxsw.com/2026/events/MS63814"],
+["Grandmas House","Thu","7:00pm -- 7:40pm","Stubb's","SXSW Music Opening Party","Rock","Punk","https://images.sxsw.com/KTK1pEvEUIbevc4m1hudgpI6Wx0=/450x450/images.sxsw.com/195/a8ae6723-f19a-a5ba-1356-edb765ce4a0d/artist-74102","https://schedule.sxsw.com/2026/events/MS65139"],
+["grima","Thu","7:00pm -- 7:30pm","Shangri-La","The Spanish Wave","Rock","Shoegaze","https://images.sxsw.com/v72LhvJYm1FUBhkJ6ecMf8yviAg=/450x450/images.sxsw.com/195/19967cc3-c331-94a9-878d-a894e46f6131/artist-76364","https://schedule.sxsw.com/2026/events/MS64237"],
+["Gummy Fang","Thu","7:00pm -- 7:40pm","Lefty's Brick Bar","EQ Austin","Rock","Indie Rock","https://images.sxsw.com/SiRvliFpc9q6iGMy1ZCjQiV01O0=/450x450/images.sxsw.com/195/d2b9eca8-6143-b0d0-559c-86970779125f/artist-75817","https://schedule.sxsw.com/2026/events/MS64127"],
+["gustave ochoa","Thu","7:00pm -- 7:45pm","Central Presbyterian","","","","https://images.sxsw.com/k5lBAydQdr7TWL4kgBsl2ODzD-E=/450x450/images.sxsw.com/195/bba774cf-aed1-23cf-12a7-ae242e474dbf/artist-75565","https://schedule.sxsw.com/2026/events/MS64362"],
+["Sibby Liv","Thu","7:00pm -- 7:30pm","Downright Global Stage","All The Vibes","Hip-Hop / Rap","Afrobeats","https://images.sxsw.com/Z9JKosi7MsEg_XnACV30H23LUoA=/450x450/images.sxsw.com/195/9e29c7ca-3f72-ea55-2387-6fe7958f9cfc/artist-76391","https://schedule.sxsw.com/2026/events/MS64584"],
+["Worship Music DJs","Thu","7:00pm -- 7:25pm","Brushy St Commons","Hip Hop Forever","DJ","Hip-Hop / Rap","https://images.sxsw.com/iUUrPzM_PAEjCUukbtCNbOCtSSw=/450x450/images.sxsw.com/195/cd50dab2-2513-614f-5ad9-1f4e25fd49ab/artist-76170","https://schedule.sxsw.com/2026/events/MS63904"],
+["Bershy","Thu","7:15pm -- 8:00pm","Swan Dive","Mint Talent Group","Rock","Indie Rock","https://images.sxsw.com/RZCvPaxS1erUvMf0RCueq7hGVZU=/450x450/images.sxsw.com/195/2b0b3f86-6fb6-b809-0106-4364aa862c69/artist-75729","https://schedule.sxsw.com/2026/events/MS64552"],
+["JahleelFaReal","Thu","7:30pm -- 7:40pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","","https://images.sxsw.com/WHo0uhMPxSjMXb85NUb0jJHFRkk=/0x0:450x450/450x450/images.sxsw.com/196/e36be310-4cc9-4204-bbd4-57b51573cf55/all-4","https://schedule.sxsw.com/2026/events/MS64980"],
+["Jamie Dred","Thu","7:30pm -- 10:45pm","Downright Global Stage","All The Vibes","Caribbean","African","https://images.sxsw.com/3wmipIkxTuBUB7KMgjWJd6Lt6Cg=/450x450/images.sxsw.com/195/72199f50-3596-0620-86d1-388fbdf4c06e/artist-76268","https://schedule.sxsw.com/2026/events/MS64069"],
+["Jessie Chambers","Thu","7:30pm -- 8:00pm","Las Perlas","Groover Obsessions","Pop","Singer-Songwriter","https://images.sxsw.com/8nbWV6YAGly4wp5B6G2lPxDDoIU=/450x450/images.sxsw.com/195/41bb34a7-666f-5622-0d05-5871f50af317/artist-75736","https://schedule.sxsw.com/2026/events/MS63502"],
+["Kiki Ambrose","Thu","7:30pm -- 7:40pm","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","R & B","https://images.sxsw.com/A-yYaZU7tCKBSSmhUigMAXVZzWQ=/0x0:450x450/450x450/images.sxsw.com/196/14dd6709-ba10-4ded-81c9-a47140e0be76/all-13","https://schedule.sxsw.com/2026/events/MS64909"],
+["Saint Harison","Thu","7:30pm -- 8:10pm","ACL Live","Rolling Stone Future of Music","R & B","Singer-Songwriter","https://images.sxsw.com/D4-Z-Jvzz0Onmd0cjFvF1oWtfU8=/0x0:449x449/450x450/images.sxsw.com/196/52d46494-8957-44cb-8685-c7bb012fc05a/all-8","https://schedule.sxsw.com/2026/events/MS64008"],
+["Sam LLanes","Thu","7:30pm -- 7:40pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/fFsY-annIO_B-8QG_9kVZCIsGkc=/450x450/images.sxsw.com/195/8e3cbf2b-4776-9426-fa1f-020200b1373b/artist-76111","https://schedule.sxsw.com/2026/events/MS63800"],
+["Tipa Tipo","Thu","7:30pm -- 8:00pm","Mohawk Indoor","Casa Gogol","Rock","Alternative","https://images.sxsw.com/R0cpcYhl-N46wj8GhWsw3AqGu4A=/450x450/images.sxsw.com/195/0b52551b-5b1e-e306-9aec-1864508d47ee/artist-76387","https://schedule.sxsw.com/2026/events/MS65029"],
+["Vin Zeal","Thu","7:30pm -- 7:45pm","Mala Fama Nivel","PURRRSZN","R & B","Pop Punk","https://images.sxsw.com/Cl9winBVGmlc3zvjA27Hgaj5XlE=/450x450/images.sxsw.com/195/43db329e-859f-b4aa-3e2c-76655ef6ccaf/artist-76093","https://schedule.sxsw.com/2026/events/MS63994"],
+["VITAL Powers","Thu","7:35pm -- 7:50pm","Downright Global Stage","All The Vibes","Hip-Hop / Rap","Afrobeats","https://images.sxsw.com/tEWvDRXr_zvZEEuxOdUOiiE1FLw=/450x450/images.sxsw.com/195/8a110aea-95aa-a052-36ff-dc00728d6535/artist-76478","https://schedule.sxsw.com/2026/events/MS64684"],
+["Caleb Lemons","Thu","7:45pm -- 7:55pm","Swan Dive Patio","ATX Social Club","R & B","Pop","https://images.sxsw.com/pjTqmunFuQiPL_gu4713RcRr7xw=/450x450/images.sxsw.com/195/34ce668a-8aec-e00a-d0eb-126eecfc993f/artist-76050","https://schedule.sxsw.com/2026/events/MS63838"],
+["Cici Da P","Thu","7:45pm -- 8:00pm","Mala Fama Nivel","PURRRSZN","R & B","Hip-Hop / Rap","https://images.sxsw.com/s5eJBi0QOcVmtO8rcNhxppFtBMg=/450x450/images.sxsw.com/195/c0c03875-8cfd-715a-5bf1-89df27ec8bbc/artist-76578","https://schedule.sxsw.com/2026/events/MS64930"],
+["Next of Kin","Thu","7:45pm -- 8:15pm","Zilker Brewing","Made in Austin","Country","Americana","https://images.sxsw.com/00R-adbyTxbvwo53DfKQANRtwak=/450x450/images.sxsw.com/195/a8841032-270b-c81d-d27e-cacb1ee9a74b/artist-74072","https://schedule.sxsw.com/2026/events/MS63175"],
+["Petrina DeLacey","Thu","7:45pm -- 7:55pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","","https://images.sxsw.com/SxbeernzJpzlcoSn6y2b8rOE8CU=/450x450/images.sxsw.com/195/b2980bd7-c62b-f863-1138-050e78331b57/artist-76150","https://schedule.sxsw.com/2026/events/MS63846"],
+["I See Orange","Thu","7:50pm -- 8:20pm","Shangri-La","The Spanish Wave","Rock","Grunge","https://images.sxsw.com/q45ahHB6GksiqTsMrK6JZKlOxes=/450x450/images.sxsw.com/195/69228f8d-c6dd-3602-6fb6-20d7a54be8ac/artist-74945","https://schedule.sxsw.com/2026/events/MS63349"],
+["MORGAN","Thu","7:55pm -- 8:20pm","Downright Global Stage","All The Vibes","R & B","Pop","https://images.sxsw.com/6hsCPB7YrYEFYivEC0vcmrhU8fQ=/450x450/images.sxsw.com/195/17da2ca8-4e41-9826-fe61-dd3ac52a5b73/artist-74989","https://schedule.sxsw.com/2026/events/MS64792"],
+["Almost Heaven","Thu","8:00pm -- 8:40pm","Lefty's Brick Bar","EQ Austin","Pop","Electronic","https://images.sxsw.com/yJ7fAxZzJDzg8PSdvOiO0HIl1gY=/450x450/images.sxsw.com/195/b6aaedaa-301e-b24a-de16-a54598fdac22/artist-76361","https://schedule.sxsw.com/2026/events/MS64233"],
+["Astralorp","Thu","8:00pm -- 8:40pm","Chess Club","We Were Never Being Boring","Dance","Instrumental","https://images.sxsw.com/GHCr4YJ7_rCQ3FXy6TcVkpAp50I=/0x0:450x450/450x450/images.sxsw.com/196/6cb54e93-53f4-444b-94b3-d592cc795b74/all-3","https://schedule.sxsw.com/2026/events/MS63283"],
+["Astrokeyy","Thu","8:00pm -- 8:10pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/zw_WuP0cMOzW3cFgL7DlzXERXnM=/450x450/images.sxsw.com/195/9ce2bba5-79a1-3cba-00ba-9100db632f6f/artist-76136","https://schedule.sxsw.com/2026/events/MS63993"],
+["better joy","Thu","8:00pm -- 8:30pm","Marlow","","Pop","Indie Pop","https://images.sxsw.com/Q8MQX3AkPWrU9h0YpBg0prVaEOk=/450x450/images.sxsw.com/195/abea1d8b-1713-05d0-88a8-8c60fc05f476/artist-73002","https://schedule.sxsw.com/2026/events/MS65248"],
+["Boris and the Joy","Thu","8:00pm -- 8:30pm","Mohawk Outdoor","Casa Gogol","Pop","Rock","https://images.sxsw.com/ftZGi3fxndxW9JeIBYsgRi_Iktw=/0x0:450x450/450x450/images.sxsw.com/196/e64ff5e2-b40f-448b-aaed-6ba7ae8b579a/all-15","https://schedule.sxsw.com/2026/events/MS63679"],
+["Buddha","Thu","8:00pm -- 8:10pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","","https://images.sxsw.com/yaPa3wvf5ZgvqGad_uOe9hRewhk=/450x450/images.sxsw.com/195/bce41c5a-7299-5f03-a74d-deee7a8d3bbc/artist-76408","https://schedule.sxsw.com/2026/events/MS64418"],
+["The Chopstars","Thu","8:00pm -- 8:15pm","Riviere","","Hip-Hop / Rap","R & B","https://images.sxsw.com/U5RcQD-40Aj7qMevzxRE4LuNe5I=/450x450/images.sxsw.com/195/c8d6a1bb-751c-7434-4c5f-0681e0f1092c/artist-75939","https://schedule.sxsw.com/2026/events/MS63549"],
+["DannyRitmo","Thu","8:00pm -- 8:40pm","Mala Vida","Latin Takeover by ReggaetonTV","Latin","Reggaeton","https://images.sxsw.com/E2Ny1troTqtVarSMapTn7vT1xAk=/450x450/images.sxsw.com/195/17abe3a1-ec25-c4a3-7e28-17177cf84aea/artist-76474","https://schedule.sxsw.com/2026/events/MS65284"],
+["DJ Kimblee","Thu","8:00pm -- 12:00am","Venue 6","BSF Official Showcase","Hip-Hop / Rap","","https://images.sxsw.com/EiblO9FjrAUY7pf6rU3N0g6Pmas=/450x450/images.sxsw.com/195/24770f4f-fc1f-16c6-9982-c80e979eed32/artist-76492","https://schedule.sxsw.com/2026/events/MS64906"],
+["FEET","Thu","8:00pm -- 8:40pm","Stubb's","SXSW Music Opening Party","Rock","Indie Rock","https://images.sxsw.com/kwRgKAPK9TjZcVzD1fXiP-Z3Umo=/450x450/images.sxsw.com/195/51e6346e-c067-a3d5-2d2a-a96a87a494c8/artist-73643","https://schedule.sxsw.com/2026/events/MS65132"],
+["Fine Food Market","Thu","8:00pm -- 8:40pm","Wanderlust Wine","","Folk","Americana","https://images.sxsw.com/h4TTLY3SWxaI41hZlPp02E68y4k=/450x450/images.sxsw.com/195/b3ceaa10-4f9d-4a71-09bf-f1a54b19f35e/artist-73017","https://schedule.sxsw.com/2026/events/MS64901"],
+["Haters","Thu","8:00pm -- 8:40pm","Low Down Lounge","","Punk","Indie Rock","https://images.sxsw.com/9kveJpuOoDrrgGYnsPpBIZ_QwAY=/450x450/images.sxsw.com/195/aed03237-29d1-ff05-f6e6-00870333788e/artist-72570","https://schedule.sxsw.com/2026/events/MS64135"],
+["Horsepower","Thu","8:00pm -- 8:40pm","The 13th Floor","High Road Touring","Rock","Indie Rock","https://images.sxsw.com/RoER5PTdFtdApVf7V8UvnAIqJKU=/450x450/images.sxsw.com/195/087fcd33-a054-73f8-cdf2-146f07794541/artist-75848","https://schedule.sxsw.com/2026/events/MS64403"],
+["Juni Cortez","Thu","8:00pm -- 9:00pm","Kingdom","Gas Station FM","DJ","House / Techno","https://images.sxsw.com/A-yYaZU7tCKBSSmhUigMAXVZzWQ=/0x0:450x450/450x450/images.sxsw.com/196/14dd6709-ba10-4ded-81c9-a47140e0be76/all-13","https://schedule.sxsw.com/2026/events/MS64685"],
+["Los Variantes del Ritmo","Thu","8:00pm -- 8:40pm","Mala Fama Rooftop","","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65222"],
+["Patrice Pike Band","Thu","8:00pm -- 8:40pm","Saxon Pub","","Americana","Alternative","https://images.sxsw.com/X07i-61RVfjeBc-6XuwenhFi92k=/0x0:450x450/450x450/images.sxsw.com/196/901f6b14-f70a-4ac0-bbc1-b6fb79366df2/all-2","https://schedule.sxsw.com/2026/events/MS63778"],
+["Pierce Washington","Thu","8:00pm -- 8:10pm","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","Jazz","https://images.sxsw.com/PYASnTEymBxPmWU_ci2V_9hyrmM=/450x450/images.sxsw.com/195/4caa930c-a6b3-9a85-2c74-51e0cf0cf260/artist-74205","https://schedule.sxsw.com/2026/events/MS63188"],
+["Poiison","Thu","8:00pm -- 8:15pm","Venue 6","BSF Official Showcase","Hip-Hop / Rap","","https://images.sxsw.com/g0WpkkCzDWO_hszS0QOpknVZxUU=/450x450/images.sxsw.com/195/3ea275c6-150f-3fb0-2032-04be87ffc92f/artist-76440","https://schedule.sxsw.com/2026/events/MS65002"],
+["Saige Davis","Thu","8:00pm -- 8:40pm","Continental Club","","Americana","Country","https://images.sxsw.com/OmqPTvq8U4TeCzeQ_r_I8EfosOM=/450x450/images.sxsw.com/195/a1322a2e-3d48-00ee-39e6-4464413e6b87/artist-75868","https://schedule.sxsw.com/2026/events/MS63608"],
+["Simone Tang","Thu","8:00pm -- 8:40pm","Central Presbyterian","","Singer-Songwriter","Americana","https://images.sxsw.com/GJgPqd3VngKaVtrJdhwAdvAxhjM=/450x450/images.sxsw.com/195/dda583ac-d663-c42c-6a9b-e0614bc80375/artist-75318","https://schedule.sxsw.com/2026/events/MS64165"],
+["Troy Campbell","Thu","8:00pm -- 8:40pm","Valhalla","Chicken Ranch Records","Singer-Songwriter","Alt Country","https://images.sxsw.com/SgeDtd3xA5Oe3piolwXh_ltIb30=/450x450/images.sxsw.com/195/d231041a-6f56-1516-7517-986e897b2ecf/artist-75598","https://schedule.sxsw.com/2026/events/MS63385"],
+["Zastava","Thu","8:00pm -- 8:30pm","Elysium","","Rock","Post-Punk","https://images.sxsw.com/E9gjqAIFQykIT9Qsm2DlHJLxwBk=/450x450/images.sxsw.com/195/4f50d8fa-0e6e-1829-dcdd-fa8aeeef8973/artist-73392","https://schedule.sxsw.com/2026/events/MS64383"],
+["Zayytee","Thu","8:10pm -- 8:20pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","","https://images.sxsw.com/9XqBrDz5fUTmO37-9ZHlCNjGIBE=/450x450/images.sxsw.com/195/96466f42-0b6d-00de-a9d3-07a747f24948/artist-76731","https://schedule.sxsw.com/2026/events/MS65236"],
+["Creature Canyon","Thu","8:15pm -- 9:00pm","Swan Dive","Mint Talent Group","Rock","Indie Rock","https://images.sxsw.com/g2Z22lMyU8mv_sxxs9KW9p6457Q=/450x450/images.sxsw.com/195/d28a6d16-b9e2-7cfe-b8f5-919517955cc7/artist-73424","https://schedule.sxsw.com/2026/events/MS63195"],
+["D Chrome Foster","Thu","8:15pm -- 8:25pm","Riviere","","","","https://images.sxsw.com/cc_dvrmWc_t2uN-Vgci_SQ-1ZoU=/0x0:450x450/450x450/images.sxsw.com/196/b2aadb7c-e6ad-4632-b94c-7177ef77e213/all-14","https://schedule.sxsw.com/2026/events/MS64334"],
+["Gavin the Hotrod","Thu","8:15pm -- 8:25pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/oRcGA69DdYPnxPhBtHbi_Isoivk=/450x450/images.sxsw.com/195/bca1e293-03e5-a81e-b99f-a2afa706754e/artist-76124","https://schedule.sxsw.com/2026/events/MS63793"],
+["Wavy Saleen","Thu","8:15pm -- 8:25pm","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","R & B","https://images.sxsw.com/cc_dvrmWc_t2uN-Vgci_SQ-1ZoU=/0x0:450x450/450x450/images.sxsw.com/196/b2aadb7c-e6ad-4632-b94c-7177ef77e213/all-14","https://schedule.sxsw.com/2026/events/MS64798"],
+["Nathaniel Stewart","Thu","8:20pm -- 8:50pm","Las Perlas","Groover Obsessions","Singer-Songwriter","Indie Pop","https://images.sxsw.com/XqmrWxIwueFET6tRi1KWNnwHQNw=/450x450/images.sxsw.com/195/6471e60f-307a-b29d-d76c-31d506d654b1/artist-74120","https://schedule.sxsw.com/2026/events/MS63242"],
+["PONS","Thu","8:20pm -- 8:50pm","Mohawk Indoor","Casa Gogol","Avant / Experimental","Post-Punk","https://images.sxsw.com/d_roZQ6A82RZDp37Ho42SS489MU=/450x450/images.sxsw.com/195/28369173-75fc-7713-651a-d35982c11c4c/artist-74181","https://schedule.sxsw.com/2026/events/MS64782"],
+["Jeff Akoh","Thu","8:25pm -- 8:40pm","Downright Global Stage","All The Vibes","Singer-Songwriter","Afrobeats","https://images.sxsw.com/m1kjUKTqC7OgX66BCSi2VjqTHq4=/450x450/images.sxsw.com/195/1210aae7-7b51-ed7b-a055-037fe8c1b6f6/artist-76337","https://schedule.sxsw.com/2026/events/MS64793"],
+["Shelby Ruger","Thu","8:25pm -- 8:40pm","Mala Fama Nivel","PURRRSZN","R & B","Hip-Hop / Rap","https://images.sxsw.com/6SNeyyY5fiRnRC88f7_repZFtHQ=/0x0:450x450/450x450/images.sxsw.com/196/93fc6441-c35c-40bf-9bcd-7f93400f713a/all-1","https://schedule.sxsw.com/2026/events/MS65137"],
+["FAMA","Thu","8:30pm -- 9:00pm","Seven Grand","","Latin","Pop","https://images.sxsw.com/7yWk618mfEycRk0x57T-PoLti2A=/450x450/images.sxsw.com/195/eb1e1d4b-39d4-280c-4e8b-eeb69b50fdde/artist-75969","https://schedule.sxsw.com/2026/events/MS63602"],
+["Lew Apollo","Thu","8:30pm -- 9:00pm","Zilker Brewing","Made in Austin","R & B","Indie Pop","https://images.sxsw.com/YiuuU6mE6o2vCqu89wQdfmF1_h4=/0x0:450x450/450x450/images.sxsw.com/196/93a0edad-5096-47ff-97b4-db5e6cc0f4f1/all-10","https://schedule.sxsw.com/2026/events/MS63818"],
+["Lola Kinsey","Thu","8:30pm -- 8:40pm","Riviere","","Pop","Country","https://images.sxsw.com/x9r_DGrYa-ULgtGEAR4QzsMvfpQ=/450x450/images.sxsw.com/195/6a1c36a7-25a5-b9cf-a79f-8a676b78e45a/artist-72606","https://schedule.sxsw.com/2026/events/MS64626"],
+["Sofia and the Antoinettes","Thu","8:30pm -- 9:15pm","ACL Live","Rolling Stone Future of Music","Pop","Alternative","https://images.sxsw.com/eNjsaDMRbuavuFSmH46ormFeT5M=/0x0:450x450/450x450/images.sxsw.com/196/3501addb-ba3a-4e58-946b-03e9182dcd9b/all-0","https://schedule.sxsw.com/2026/events/MS64000"],
+["Shame Gang","Thu","8:35pm -- 8:50pm","Venue 6","BSF Official Showcase","Hip-Hop / Rap","","https://images.sxsw.com/s30iUV85MdaPDENNVAMKyTblq0A=/450x450/images.sxsw.com/195/dc9f2ea6-bc11-4f95-0863-5faaa61b6189/artist-76709","https://schedule.sxsw.com/2026/events/MS65189"],
+["The Animeros","Thu","8:40pm -- 9:10pm","Shangri-La","The Spanish Wave","Latin","Cumbia","https://images.sxsw.com/FmI5GaZf1qumXioHKouevJCMm_Q=/450x450/images.sxsw.com/195/e890b9ce-8a96-9807-d251-a9d4bc480078/artist-75338","https://schedule.sxsw.com/2026/events/MS63648"],
+["Bára Zmeková","Thu","8:40pm -- 9:20pm","Augustine","Czech House","Singer-Songwriter","Indie Pop","https://images.sxsw.com/ugczV6PS-6mkpBrSm1wb50jzNjQ=/450x450/images.sxsw.com/195/81270f07-d38a-bcc9-d1f8-06ebca4d0dbc/artist-75134","https://schedule.sxsw.com/2026/events/MS63804"],
+["Dee Gatti","Thu","8:40pm -- 9:00pm","Mala Fama Nivel","PURRRSZN","R & B","Hip-Hop / Rap","https://images.sxsw.com/X07i-61RVfjeBc-6XuwenhFi92k=/0x0:450x450/450x450/images.sxsw.com/196/901f6b14-f70a-4ac0-bbc1-b6fb79366df2/all-2","https://schedule.sxsw.com/2026/events/MS65058"],
+["Knats","Thu","8:40pm -- 9:10pm","BME @ Palm Door Patio","British Music Embassy","Jazz","Fusion","https://images.sxsw.com/QhKlvw0ma8pCJavOKUSoRIsmhRU=/450x450/images.sxsw.com/195/d237f94d-3951-821f-f63e-8bb5676af585/artist-74460","https://schedule.sxsw.com/2026/events/MS64586"],
+["N@te!","Thu","8:40pm -- 8:50pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","None","https://images.sxsw.com/5vus-iCbaOZoh0fgBs9lO7WOOpg=/450x450/images.sxsw.com/195/47501e29-1f99-2a81-fd79-66408a0f88f3/artist-76078","https://schedule.sxsw.com/2026/events/MS63836"],
+["5.slow","Thu","8:45pm -- 9:00pm","Mala Vida","Latin Takeover by ReggaetonTV","Latin","Reggaeton","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65282"],
+["Anton The Artist","Thu","8:45pm -- 8:55pm","Riviere","","Hip-Hop / Rap","Pop","https://images.sxsw.com/c2TOcZB8_y8eSw5aaBl_fnyaJvw=/0x0:450x450/450x450/images.sxsw.com/196/8c22d4d7-e69d-4550-baa2-aef990fcc8ac/all-12","https://schedule.sxsw.com/2026/events/MS64812"],
+["JayaHadADream","Thu","8:45pm -- 9:15pm","Downright Global Stage","All The Vibes","Hip-Hop / Rap","UK Garage","https://images.sxsw.com/rz8rbEhs6rO4OglPHUFLqxqpvKk=/450x450/images.sxsw.com/195/2460df34-6f85-dbbe-eb63-70fd6764ccc4/artist-75902","https://schedule.sxsw.com/2026/events/MS63915"],
+["Mission","Thu","8:45pm -- 9:00pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/0x7pcjJC0t7vz9S5GNlba-Dn32A=/450x450/images.sxsw.com/195/31644633-6431-e4bb-a3e9-da11c1e74059/artist-76116","https://schedule.sxsw.com/2026/events/MS63796"],
+["Puzzled Panther","Thu","8:45pm -- 9:15pm","Mohawk Outdoor","Casa Gogol","Punk","Post-Punk","https://images.sxsw.com/6SNeyyY5fiRnRC88f7_repZFtHQ=/0x0:450x450/450x450/images.sxsw.com/196/93fc6441-c35c-40bf-9bcd-7f93400f713a/all-1","https://schedule.sxsw.com/2026/events/MS64001"],
+["xBValentine","Thu","8:45pm -- 9:00pm","Swan Dive Patio","ATX Social Club","R & B","Hip-Hop / Rap","https://images.sxsw.com/tDBC6wnP2Deucs1_sB9tm46JxPE=/450x450/images.sxsw.com/195/b188467b-3661-2339-0071-322227760b71/artist-76006","https://schedule.sxsw.com/2026/events/MS63663"],
+["Cari Hutson","Thu","8:50pm -- 9:30pm","Saxon Pub","","Rock","Blues","https://images.sxsw.com/DMyLwuDMvdhyyXN8Mxev0ogWBA4=/450x450/images.sxsw.com/195/d5b2ec37-f928-d947-6655-971a84b3ff76/artist-76159","https://schedule.sxsw.com/2026/events/MS63879"],
+["The Kellows","Thu","8:50pm -- 9:20pm","Elysium","","Rock","Indie Rock","https://images.sxsw.com/fH4-_TZWM5FHCW0yDVSXvMdu09E=/450x450/images.sxsw.com/195/37ca6b02-fc49-9a6f-1bc4-3ca58f3c77b4/artist-73987","https://schedule.sxsw.com/2026/events/MS64297"],
+["Sarah Crean","Thu","8:50pm -- 9:20pm","Marlow","","Pop","Dream Pop","https://images.sxsw.com/4Lz6gg068QEag6qfkKs4ZZW2Z7E=/450x450/images.sxsw.com/195/64ad9295-05c9-98a0-3e7c-f3436b7a6fd3/artist-74481","https://schedule.sxsw.com/2026/events/MS64486"],
+["Zavi","Thu","8:50pm -- 9:05pm","Venue 6","BSF Official Showcase","Hip-Hop / Rap","","https://images.sxsw.com/5yS9ERJkm46VB6M-1WkLxDEwDUg=/0x0:450x450/450x450/images.sxsw.com/196/5b33fe21-4e4e-4485-a0dc-f121b0ff79cf/all-6","https://schedule.sxsw.com/2026/events/MS64678"],
+["Bikini Beach","Thu","9:00pm -- 9:40pm","Low Down Lounge","","Rock","Garage","https://images.sxsw.com/q5L7pXsJe5Ihfs5BSLQhxqnUqq0=/450x450/images.sxsw.com/195/a8b423b1-1f5b-84d0-968b-f48f7b22517e/artist-74987","https://schedule.sxsw.com/2026/events/MS64516"],
+["Boogietraxx","Thu","9:00pm -- 10:00pm","Kingdom","Gas Station FM","DJ","Disco","https://images.sxsw.com/uXPXT9Lf74jt-6Y8QtK5qYtGDJ4=/450x450/images.sxsw.com/195/24c70075-b358-8fe5-c727-fa6dfd97fe7e/artist-76098","https://schedule.sxsw.com/2026/events/MS64811"],
+["Boooka","Thu","9:00pm -- 9:10pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","R & B","https://images.sxsw.com/2sdG8-vvsZ7YZoGcoc-IcSrUAOI=/450x450/images.sxsw.com/195/4586075a-762f-3ecb-12d3-c5664489ce03/artist-76208","https://schedule.sxsw.com/2026/events/MS64122"],
+["Calder Allen","Thu","9:00pm -- 9:40pm","Continental Club","","Country","Americana","https://images.sxsw.com/hSJ82qcZaGq3IbkN8a2jkgsUcTg=/450x450/images.sxsw.com/195/a41cfb19-8639-feff-8077-ba53329b79b6/artist-74484","https://schedule.sxsw.com/2026/events/MS63214"],
+["The Cumbia Movement","Thu","9:00pm -- 9:40pm","Mala Fama Rooftop","","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65154"],
+["Dallas Tetnus","Thu","9:00pm -- 9:40pm","Valhalla","Chicken Ranch Records","Rock","Punk","https://images.sxsw.com/gYM8g6tyUXPszXQCLvmmuBZUCFY=/450x450/images.sxsw.com/195/96fa13d0-bfb8-c2a1-4df0-8d6e42647de3/artist-75443","https://schedule.sxsw.com/2026/events/MS63427"],
+["Danxgerous","Thu","9:00pm -- 9:40pm","Chess Club","We Were Never Being Boring","Rock","Pop","https://images.sxsw.com/0QmrCS7cYz_coMtaQ6OqnuSmzuE=/0x0:449x449/450x450/images.sxsw.com/196/f5de4157-8986-48b0-8fc3-3cfbc7ac0393/all-5","https://schedule.sxsw.com/2026/events/MS63285"],
+["Elijah Delgado","Thu","9:00pm -- 9:40pm","Central Presbyterian","","Rock","Indie Pop","https://images.sxsw.com/VYVOdura-8_QdvnfjIw4x_BxHSY=/450x450/images.sxsw.com/195/667207f1-8c62-33d6-cf44-b4e4e9f733a0/artist-73698","https://schedule.sxsw.com/2026/events/MS64368"],
+["Gran Moreno","Thu","9:00pm -- 9:40pm","Lefty's Brick Bar","EQ Austin","Rock","Blues","https://images.sxsw.com/5yS9ERJkm46VB6M-1WkLxDEwDUg=/0x0:450x450/450x450/images.sxsw.com/196/5b33fe21-4e4e-4485-a0dc-f121b0ff79cf/all-6","https://schedule.sxsw.com/2026/events/MS64150"],
+["La Texana","Thu","9:00pm -- 9:40pm","Stubb's","SXSW Music Opening Party","Rock","Alternative","https://images.sxsw.com/htGXIVrks-_QBsY5QEtC1UQhjr4=/450x450/images.sxsw.com/195/8bdceb63-a068-d193-2280-0dac04bb525d/artist-73779","https://schedule.sxsw.com/2026/events/MS65134"],
+["Lexaay","Thu","9:00pm -- 9:15pm","Mala Fama Nivel","PURRRSZN","R & B","Pop","https://images.sxsw.com/e5u0ycpFhE3DUZVLVR1eApV8MPk=/450x450/images.sxsw.com/195/7ee3d027-3d3a-9918-9f0e-afe5bd0f5a3c/artist-75480","https://schedule.sxsw.com/2026/events/MS63995"],
+["Lila Tristram","Thu","9:00pm -- 9:40pm","Wanderlust Wine","","Rock","Folk","https://images.sxsw.com/t7I21_EEncxQiU_1sEKHhnIVssc=/450x450/images.sxsw.com/195/2655410c-003f-f4ff-6daa-8341c5ac2948/artist-75700","https://schedule.sxsw.com/2026/events/MS63471"],
+["OKAN","Thu","9:00pm -- 9:40pm","The 13th Floor","High Road Touring","Latin","Afrobeats","https://images.sxsw.com/14E1DOxg7hn2niBHlw9Z4FZSoB8=/450x450/images.sxsw.com/195/135a1be0-0bb9-bfa0-54e1-3d94d883105c/artist-75764","https://schedule.sxsw.com/2026/events/MS64404"],
+["Rockstar Keezy","Thu","9:00pm -- 9:10pm","Riviere","","","","https://images.sxsw.com/6SNeyyY5fiRnRC88f7_repZFtHQ=/0x0:450x450/450x450/images.sxsw.com/196/93fc6441-c35c-40bf-9bcd-7f93400f713a/all-1","https://schedule.sxsw.com/2026/events/MS64961"],
+["Parris Chariz","Thu","9:05pm -- 9:20pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/sIDU7sA-r8lRIFODsGZ1cHa_2OM=/450x450/images.sxsw.com/195/b58d0a9c-60f4-73ae-1c20-e77de3a6f782/artist-76113","https://schedule.sxsw.com/2026/events/MS63798"],
+["NOAMZ","Thu","9:10pm -- 9:40pm","Las Perlas","Groover Obsessions","Soul","Alternative","https://images.sxsw.com/lRQqJC2a9gG9c8kLL0dARBKNHY0=/450x450/images.sxsw.com/195/e36ea94b-30c5-d5dd-299c-9b0a7d44c44a/artist-75894","https://schedule.sxsw.com/2026/events/MS63501"],
+["Chuck Prophet and His Cumbia Shoes","Thu","9:15pm -- 10:00pm","Swan Dive","Mint Talent Group","Americana","Cumbia","https://images.sxsw.com/VRcXxOMVcIkW4oWb15IF6TA7sYc=/450x450/images.sxsw.com/195/16a71125-054c-2673-a4bb-33ff5a87adea/artist-75918","https://schedule.sxsw.com/2026/events/MS63900"],
+["Grace Bergere","Thu","9:15pm -- 9:45pm","Mohawk Indoor","Casa Gogol","Rock","Alternative","https://images.sxsw.com/Hv8fpS6xuEWcaujPPDnGQ_oeEO4=/450x450/images.sxsw.com/195/b7e1b475-7183-3493-eb2b-b3530b7f00f5/artist-76425","https://schedule.sxsw.com/2026/events/MS64480"],
+["Saanbluu","Thu","9:15pm -- 9:20pm","Riviere","","","","https://images.sxsw.com/5yS9ERJkm46VB6M-1WkLxDEwDUg=/0x0:450x450/450x450/images.sxsw.com/196/5b33fe21-4e4e-4485-a0dc-f121b0ff79cf/all-6","https://schedule.sxsw.com/2026/events/MS64614"],
+["Tomar and the FCs","Thu","9:15pm -- 9:45pm","Zilker Brewing","Made in Austin","Soul","None","https://images.sxsw.com/7pLHxvdU7RAeYBEXVczrXVmplz4=/450x450/images.sxsw.com/195/4b3d2a9c-e5d7-1ea7-fe33-6ec33ee42852/artist-76060","https://schedule.sxsw.com/2026/events/MS63740"],
+["Alex Bellakeo","Thu","9:20pm -- 9:30pm","Mala Vida","Latin Takeover by ReggaetonTV","Latin","Reggaeton","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65285"],
+["Big Zeeks","Thu","9:20pm -- 9:40pm","Downright Global Stage","All The Vibes","Reggae","Dub / Dancehall","https://images.sxsw.com/cNGFCi6a0jbbh4sYOSfAdaqdtLg=/450x450/images.sxsw.com/195/f4f3e5c2-6bd8-537a-16bd-5c0952ebb53f/artist-76105","https://schedule.sxsw.com/2026/events/MS64081"],
+["Gwenno","Thu","9:20pm -- 9:50pm","BME @ Palm Door","[PIAS]","Indie Pop","https://open.spotify.com/artist/44mRrrRjaV8iu1VLIKuwty?si=FawlgcebTky_na58LixsQQ","https://images.sxsw.com/EpBNQG07XZm0qEnLWeYuo1qu32Q=/450x450/images.sxsw.com/195/ca28d5fb-78cd-b068-294f-9eb96aa48748/artist-75346","https://schedule.sxsw.com/2026/events/MS63310"],
+["Yoso","Thu","9:20pm -- 9:30pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","R & B","https://images.sxsw.com/IuJdubcW7EoxdpxRBDUtEGXwrc8=/450x450/images.sxsw.com/195/cf820e2d-6641-76a0-855f-c9b3d02cf6d9/artist-76035","https://schedule.sxsw.com/2026/events/MS63696"],
+["Canon","Thu","9:25pm -- 9:40pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/YGBJHpxbZdlya7joP-lZPn4Uw54=/450x450/images.sxsw.com/195/c1484075-06d5-bfc4-23b5-751f67371925/artist-76114","https://schedule.sxsw.com/2026/events/MS63797"],
+["Valice","Thu","9:25pm -- 9:35pm","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","R & B","https://images.sxsw.com/AV6C-Ei3_wIGacbTvicCrp8NrvI=/450x450/images.sxsw.com/195/1eacc044-886a-f2f8-c99e-789c32652218/artist-75645","https://schedule.sxsw.com/2026/events/MS64796"],
+["Panam","Thu","9:30pm -- 10:00pm","Shangri-La","The Spanish Wave","Rock","Indie Rock","https://images.sxsw.com/ZkuhCrCPN4b7iOvK_8mT2JiSo6o=/450x450/images.sxsw.com/195/8ff36072-fe38-a36e-99d8-9c7a746cb621/artist-75401","https://schedule.sxsw.com/2026/events/MS63655"],
+["Alkyone","Thu","9:35pm -- 10:05pm","Augustine","Czech House","Folk","Indie Pop","https://images.sxsw.com/GNsfaL1aXPpnbjKOuRUjKiFyedE=/450x450/images.sxsw.com/195/b01d2a1e-f1a5-1df2-ea09-f4e2cdd4aad3/artist-73447","https://schedule.sxsw.com/2026/events/MS64243"],
+["PRINCE YODA YASQUIAT","Thu","9:35pm -- 9:50pm","Riviere","","","","https://images.sxsw.com/X07i-61RVfjeBc-6XuwenhFi92k=/0x0:450x450/450x450/images.sxsw.com/196/901f6b14-f70a-4ac0-bbc1-b6fb79366df2/all-2","https://schedule.sxsw.com/2026/events/MS64962"],
+["DJ LA MOON","Thu","9:40pm -- 10:20pm","Mala Vida","Latin Takeover by ReggaetonTV","Latin","Reggaeton","https://images.sxsw.com/qKm4SntajXslyV7BdMQKvUlWbYE=/450x450/images.sxsw.com/195/1462765d-6257-b9a1-4cf0-0994b79e5cff/artist-76728","https://schedule.sxsw.com/2026/events/MS65291"],
+["Electric Enemy","Thu","9:40pm -- 10:10pm","Elysium","","Rock","Indie Rock","https://images.sxsw.com/KL1tiUpRZFP1wx0pg0cqnKU7bBk=/450x450/images.sxsw.com/195/120d4c30-6eac-675f-2d23-1d332c3d8e29/artist-75028","https://schedule.sxsw.com/2026/events/MS64257"],
+["Korda Korder","Thu","9:40pm -- 10:10pm","Marlow","","Rock","Indie Pop","https://images.sxsw.com/6sbt4Qilx-3m-CX0iGDH5d3owRs=/450x450/images.sxsw.com/195/e394ee2d-6c69-996d-81d7-be6b5056bd73/artist-75760","https://schedule.sxsw.com/2026/events/MS64873"],
+["The Reverent Few","Thu","9:40pm -- 10:20pm","Saxon Pub","","Americana","Rock","https://images.sxsw.com/tAawHugiDr_buzs6REyXlaK-tgU=/450x450/images.sxsw.com/195/ea96f2da-4a1c-36a9-84cc-73aac26cd139/artist-76229","https://schedule.sxsw.com/2026/events/MS64025"],
+["Shaunsolo","Thu","9:40pm -- 9:50pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/o_JX-Ut3t_-VU-8xpH1ufLsKcjg=/450x450/images.sxsw.com/195/00115341-4b2e-ab38-8b9b-fdbea979c831/artist-76096","https://schedule.sxsw.com/2026/events/MS63834"],
+["Steve Ray Ladson","Thu","9:40pm -- 10:00pm","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","R & B","https://images.sxsw.com/GpgfaQ8g1nQZ7JGNTQ0dTTI-DsY=/450x450/images.sxsw.com/195/78203a94-d528-372c-45da-f9bb519682b0/artist-76493","https://schedule.sxsw.com/2026/events/MS64842"],
+["Anaya Kobe","Thu","9:45pm -- 10:00pm","Mala Fama Nivel","PURRRSZN","R & B","Hip-Hop / Rap","https://images.sxsw.com/hcpfx6PuTbRi5dKn-3uBf0izlKk=/450x450/images.sxsw.com/195/6ed77ef6-1235-11f8-7219-5444f709dfd3/artist-75985","https://schedule.sxsw.com/2026/events/MS63843"],
+["Gogol Bordello","Thu","9:45pm -- 11:45pm","Mohawk Outdoor","Casa Gogol","Rock","Alternative","https://images.sxsw.com/vStvCsrqz1JHrA4Z9fi49boGPgw=/450x450/images.sxsw.com/195/8f57366d-aaa7-e280-957b-73b72ec90e83/artist-75979","https://schedule.sxsw.com/2026/events/MS63610"],
+["Kofi Stone","Thu","9:45pm -- 10:05pm","Downright Global Stage","All The Vibes","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/xpTZaZ0mvqy5RhYmQK4nI-rP22c=/450x450/images.sxsw.com/195/0f199c13-40e0-e1ae-c137-34a242113f22/artist-75722","https://schedule.sxsw.com/2026/events/MS63929"],
+["Marty","Thu","9:45pm -- 10:00pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/-JwI4F2qhsW8YHiK96n_GEOjJ2s=/450x450/images.sxsw.com/195/d9335869-7a26-8e3a-e029-aaf63d06e678/artist-76021","https://schedule.sxsw.com/2026/events/MS63808"],
+["Lola Young","Thu","9:55pm -- 11:30pm","ACL Live","Rolling Stone Future of Music","Pop","Pop","https://images.sxsw.com/c2TOcZB8_y8eSw5aaBl_fnyaJvw=/0x0:450x450/450x450/images.sxsw.com/196/8c22d4d7-e69d-4550-baa2-aef990fcc8ac/all-12","https://schedule.sxsw.com/2026/events/MS63596"],
+["MISTA KLEEN","Thu","9:55pm -- 10:10pm","Riviere","","","","https://images.sxsw.com/GHCr4YJ7_rCQ3FXy6TcVkpAp50I=/0x0:450x450/450x450/images.sxsw.com/196/6cb54e93-53f4-444b-94b3-d592cc795b74/all-3","https://schedule.sxsw.com/2026/events/MS64963"],
+["Alien Chicks","Thu","10:00pm -- 10:40pm","Low Down Lounge","","Punk","Hip-Hop / Rap","https://images.sxsw.com/gu8iXmbd2WRqF0xhlqPIG7Iv8ZE=/450x450/images.sxsw.com/195/e76e50a7-67e4-75c1-ff49-6a588fdb65e7/artist-72896","https://schedule.sxsw.com/2026/events/MS64062"],
+["The All-American Rejects","Thu","10:00pm -- 11:00pm","Stubb's","SXSW Music Opening Party","Rock","Alternative","https://images.sxsw.com/qfDPNf8f4CpgBEpDId_mcF8GKPE=/450x450/images.sxsw.com/195/08c8b0c3-43d3-396d-4f26-1895433f7101/artist-75087","https://schedule.sxsw.com/2026/events/MS63251"],
+["Big Bill","Thu","10:00pm -- 10:50pm","Lefty's Brick Bar","EQ Austin","Rock","Punk","https://images.sxsw.com/EV1Mnhbj2DRXeIXKgNBQjn3VoUo=/450x450/images.sxsw.com/195/4cdae855-1deb-75de-ba2a-61d18ee0f60c/artist-76171","https://schedule.sxsw.com/2026/events/MS63998"],
+["congratulations","Thu","10:00pm -- 10:30pm","BME @ Palm Door Patio","British Music Embassy","Rock","Alternative","https://images.sxsw.com/TkivQBDJ-gYvZDGb4Z3_OO0Z_40=/450x450/images.sxsw.com/195/6340e6d5-774e-de12-73ea-e0b6807d0f77/artist-73421","https://schedule.sxsw.com/2026/events/MS63267"],
+["Dj Beastie","Thu","10:00pm -- 1:00am","Mala Fama Nivel","PURRRSZN","R & B","Hip-Hop / Rap","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65260"],
+["DJ Napalm","Thu","10:00pm -- 1:00am","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","","https://images.sxsw.com/tu2z4gxNs8CaVwEFXWGdpZLLuRk=/450x450/images.sxsw.com/195/cc73d12a-8bef-2580-1238-b0976c5c722f/artist-76395","https://schedule.sxsw.com/2026/events/MS64371"],
+["Grandmaster","Thu","10:00pm -- 10:45pm","Zilker Brewing","Made in Austin","Rock","Indie Rock","https://images.sxsw.com/XN6sxqUVOkzYF3-fV97qM-nCtGE=/450x450/images.sxsw.com/195/858b0587-edc6-b0bf-0b80-06909c2a2935/artist-76173","https://schedule.sxsw.com/2026/events/MS63909"],
+["HNRY FLWR","Thu","10:00pm -- 10:30pm","Las Perlas","Groover Obsessions","Americana","Indie Rock","https://images.sxsw.com/A-yYaZU7tCKBSSmhUigMAXVZzWQ=/0x0:450x450/450x450/images.sxsw.com/196/14dd6709-ba10-4ded-81c9-a47140e0be76/all-13","https://schedule.sxsw.com/2026/events/MS63245"],
+["Holly Macve","Thu","10:00pm -- 10:40pm","Central Presbyterian","","Alt Country","Dream Pop","https://images.sxsw.com/fUQp4IxxsAMFiliyzqDwb1gLkkM=/450x450/images.sxsw.com/195/245b41a2-a3a9-e344-9c3b-11c81bc2b516/artist-76095","https://schedule.sxsw.com/2026/events/MS63772"],
+["Los Juanos","Thu","10:00pm -- 10:40pm","Mala Fama Rooftop","","","","https://images.sxsw.com/qJ51uHyTreMwoiKTsEcqpBpMXEM=/450x450/images.sxsw.com/195/740115c4-59ba-a7bc-9b86-5be58cf54645/artist-73203","https://schedule.sxsw.com/2026/events/MS65229"],
+["Mr. Lewis & The Funeral 5","Thu","10:00pm -- 10:40pm","Valhalla","Chicken Ranch Records","Rock","Rock","https://images.sxsw.com/6SNeyyY5fiRnRC88f7_repZFtHQ=/0x0:450x450/450x450/images.sxsw.com/196/93fc6441-c35c-40bf-9bcd-7f93400f713a/all-1","https://schedule.sxsw.com/2026/events/MS63505"],
+["NAJ!","Thu","10:00pm -- 10:15pm","Mala Fama Nivel","PURRRSZN","R & B","Hip-Hop / Rap","https://images.sxsw.com/5yS9ERJkm46VB6M-1WkLxDEwDUg=/0x0:450x450/450x450/images.sxsw.com/196/5b33fe21-4e4e-4485-a0dc-f121b0ff79cf/all-6","https://schedule.sxsw.com/2026/events/MS65254"],
+["néomí","Thu","10:00pm -- 10:40pm","Wanderlust Wine","","Folk","Alternative","https://images.sxsw.com/dPymv5OThuoD6rQxq1DShuf0M2U=/450x450/images.sxsw.com/195/3c011879-b60f-1685-92b5-5a9168f05aa3/artist-75322","https://schedule.sxsw.com/2026/events/MS63311"],
+["Oscar Twins","Thu","10:00pm -- 10:40pm","Chess Club","We Were Never Being Boring","Rock","Alternative","https://images.sxsw.com/6SNeyyY5fiRnRC88f7_repZFtHQ=/0x0:450x450/450x450/images.sxsw.com/196/93fc6441-c35c-40bf-9bcd-7f93400f713a/all-1","https://schedule.sxsw.com/2026/events/MS63281"],
+["The Red Eye Gamblers","Thu","10:00pm -- 10:40pm","Continental Club","","Rock","Americana","https://images.sxsw.com/tzrjWXQ6DHTL7w8s6uUdi8OS7rE=/450x450/images.sxsw.com/195/d31546e4-77bb-d0ee-e544-f002e32ca913/artist-74853","https://schedule.sxsw.com/2026/events/MS64474"],
+["Shiv","Thu","10:00pm -- 11:00pm","Kingdom","Gas Station FM","DJ","House / Techno","https://images.sxsw.com/KOlr58tgBB6LV51sVrPFv1ufKmQ=/450x450/images.sxsw.com/195/81aa4520-3283-8141-a63e-e8de5b5f09d7/artist-76371","https://schedule.sxsw.com/2026/events/MS64276"],
+["The Sophs","Thu","10:00pm -- 10:40pm","The 13th Floor","High Road Touring","Rock","Indie Rock","https://images.sxsw.com/vv4IPBzNf5tkzLJwS41H1Yed4Tk=/450x450/images.sxsw.com/195/61610f26-9ccd-1f01-f809-502c88536001/artist-73889","https://schedule.sxsw.com/2026/events/MS64405"],
+["Yung Bryse","Thu","10:00pm -- 10:10pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/TX-tsdpG9aVsxCnPuuPpIgexAe8=/450x450/images.sxsw.com/195/6fc52cb7-8c3d-58ba-24c5-20c6641b3fc0/artist-76077","https://schedule.sxsw.com/2026/events/MS63837"],
+["Blimes and the Bando","Thu","10:05pm -- 10:25pm","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","R & B","https://images.sxsw.com/HHiYGcKxbMxO3Z1t1DE9WGvlAkQ=/450x450/images.sxsw.com/195/d7861901-59ec-6405-9ea5-ce69613c6909/artist-76708","https://schedule.sxsw.com/2026/events/MS65190"],
+["Don Ready","Thu","10:05pm -- 10:20pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/HYx8L_KVSMqNFbYIdMajvEzexKQ=/450x450/images.sxsw.com/195/f1a0c037-e810-71ff-21d4-de81f23cf9e7/artist-76112","https://schedule.sxsw.com/2026/events/MS63799"],
+["Novelist","Thu","10:10pm -- 10:40pm","Downright Global Stage","All The Vibes","Hip-Hop / Rap","Grime","https://images.sxsw.com/6SNeyyY5fiRnRC88f7_repZFtHQ=/0x0:450x450/450x450/images.sxsw.com/196/93fc6441-c35c-40bf-9bcd-7f93400f713a/all-1","https://schedule.sxsw.com/2026/events/MS63409"],
+["Ali Almighty","Thu","10:15pm -- 10:25pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/6Yu6Ir-1HmxOZSeWyJA84WBwD80=/450x450/images.sxsw.com/195/c79db35a-63ba-c20f-2b25-1c189dc7bf41/artist-76007","https://schedule.sxsw.com/2026/events/MS63662"],
+["D2BLEE","Thu","10:15pm -- 10:30pm","Riviere","","Latin","Hip-Hop / Rap","https://images.sxsw.com/hWiBAnEr33449lcjrmz2jHoTENo=/450x450/images.sxsw.com/195/242813fd-9997-c7c2-2fe2-7e6bb055f65c/artist-76225","https://schedule.sxsw.com/2026/events/MS64031"],
+["Victor Jones","Thu","10:15pm -- 11:00pm","Swan Dive","Mint Talent Group","Rock","Dance","https://images.sxsw.com/fO-8mPmeFw5b1s9VmPfzxezkYhc=/450x450/images.sxsw.com/195/8bb79605-d867-7f3d-24cc-b4b8bf195885/artist-74060","https://schedule.sxsw.com/2026/events/MS63194"],
+["Aiko","Thu","10:20pm -- 11:00pm","Augustine","Czech House","Pop","Alternative","https://images.sxsw.com/zDILoXYOGzqY1WmEbQMEI9k7ngE=/450x450/images.sxsw.com/195/df209609-d49f-125e-7413-6eeadde9c238/artist-75206","https://schedule.sxsw.com/2026/events/MS63802"],
+["Tipa Tipo","Thu","10:20pm -- 11:00pm","Shangri-La","The Spanish Wave","Latin","Cumbia","https://images.sxsw.com/R0cpcYhl-N46wj8GhWsw3AqGu4A=/450x450/images.sxsw.com/195/0b52551b-5b1e-e306-9aec-1864508d47ee/artist-76387","https://schedule.sxsw.com/2026/events/MS64324"],
+["Brionne","Thu","10:25pm -- 10:40pm","Mala Fama Nivel","PURRRSZN","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/rr5UxpbgPeF0kSIYrCliJ4RZRYM=/450x450/images.sxsw.com/195/250edea7-090e-98eb-b6d8-90530ca1d57e/artist-75990","https://schedule.sxsw.com/2026/events/MS63842"],
+["Esty","Thu","10:25pm -- 10:40pm","Mala Vida","Latin Takeover by ReggaetonTV","Latin","Reggaeton","https://images.sxsw.com/iA22uDIMPjZYZLadVesfwXBuqAQ=/450x450/images.sxsw.com/195/6ccbacae-2307-bbb8-ff6a-a9348c7a1d54/artist-76598","https://schedule.sxsw.com/2026/events/MS65292"],
+["Big Soto","Thu","10:30pm -- 11:30pm","Seven Grand","Rimas","Latin","Trap","https://images.sxsw.com/z4YIPCNswjkM6KsWj2SVwZn7Lj4=/450x450/images.sxsw.com/195/58c76aef-2b23-f3cd-4774-80024df5d29c/artist-75971","https://schedule.sxsw.com/2026/events/MS63600"],
+["Derek Minor","Thu","10:30pm -- 10:50pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/hYlya5XoXhD8MZ3fXN6c_PAOgKs=/450x450/images.sxsw.com/195/2cd954b9-d7da-e1b7-68db-40cad0c987b7/artist-75703","https://schedule.sxsw.com/2026/events/MS63807"],
+["His Lordship","Thu","10:30pm -- 11:00pm","Elysium","","Rock","Punk","https://images.sxsw.com/nlrVfac-ETbOF6XMt-1nlKWT-rA=/450x450/images.sxsw.com/195/c7dfd472-f476-f743-f3db-5bf40d7f1bfc/artist-75542","https://schedule.sxsw.com/2026/events/MS64446"],
+["willoh","Thu","10:30pm -- 11:00pm","Marlow","","R & B","Ambient","https://images.sxsw.com/1UuB_-kmdQ1eVZaq8GkvBqF3PEY=/450x450/images.sxsw.com/195/60cd29a8-992b-ec16-3f1f-dc61039f3081/artist-75754","https://schedule.sxsw.com/2026/events/MS64253"],
+["Cha’Keeta B","Thu","10:35pm -- 10:50pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","","https://images.sxsw.com/2GZ5Efs21Oqlofis0lH4mxtbR54=/450x450/images.sxsw.com/195/6bc5be80-66a8-9922-8eb7-1f27abbdeaf7/artist-76497","https://schedule.sxsw.com/2026/events/MS64693"],
+["H","Thu","10:35pm -- 10:50pm","Riviere","","Hip-Hop / Rap","Pop","https://images.sxsw.com/i08a9L_27mUc3orcbrnNPGiiVNI=/0x0:450x450/450x450/images.sxsw.com/196/4f295d50-eceb-43cc-ab77-09e1ba100eaa/all-11","https://schedule.sxsw.com/2026/events/MS64059"],
+["Alahsîn","Thu","10:40pm -- 10:55pm","Mala Fama Nivel","PURRRSZN","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/JfqhGMqpBV81fFAhosENVugMEJs=/450x450/images.sxsw.com/195/fc340707-3fe5-b82b-a9f5-690382a9df73/artist-75996","https://schedule.sxsw.com/2026/events/MS63840"],
+["The Haunted Youth","Thu","10:40pm -- 11:10pm","BME @ Palm Door","[PIAS]","Rock","Dream Pop","https://images.sxsw.com/EB-W4-sOn4FvfsOv1pkVnp384IU=/450x450/images.sxsw.com/195/7c35a4dc-1196-60dd-6acf-8689c3cd27c7/artist-76131","https://schedule.sxsw.com/2026/events/MS63828"],
+["Kairo Keyz","Thu","10:45pm -- 11:15pm","Downright Global Stage","All The Vibes","Hip-Hop / Rap","Afrobeats","https://images.sxsw.com/It6d-4ZL8O3gTnNJ5Lxx71kNsRM=/450x450/images.sxsw.com/195/57a255fe-3975-16e7-3fe1-a64955bd722c/artist-76228","https://schedule.sxsw.com/2026/events/MS64028"],
+["Glassio","Thu","10:50pm -- 11:20pm","Las Perlas","Groover Obsessions","Electronic","Dream Pop","https://images.sxsw.com/d0p30edp_3GSe1xqxzdJxZQ61hI=/450x450/images.sxsw.com/195/317f7068-08e2-ea89-793e-421098e960a0/artist-74187","https://schedule.sxsw.com/2026/events/MS63244"],
+["Los De La Bahia","Thu","10:50pm -- 11:30pm","Mala Vida","Latin Takeover by ReggaetonTV","Latin","Reggaeton","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65288"],
+["indie tribe","Thu","10:55pm -- 11:25pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","","https://images.sxsw.com/FI_xOEqkQ8U1gTyqu_8PeHm0ZDE=/450x450/images.sxsw.com/195/5c748840-dd50-2b85-29a4-df459d3dfc1e/artist-76379","https://schedule.sxsw.com/2026/events/MS64295"],
+["Angela Autumn","Thu","11:00pm -- 11:40pm","The 13th Floor","High Road Touring","Alt Country","Indie Rock","https://images.sxsw.com/_vcDb5zsdQ-sZICJfhZrrEzjXLE=/450x450/images.sxsw.com/195/336e4d34-5a10-aadd-9ab7-36a1eeb2817d/artist-72993","https://schedule.sxsw.com/2026/events/MS64329"],
+["Cure for Paranoia","Thu","11:00pm -- 11:20pm","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","Alternative","https://images.sxsw.com/QhyuJpR0Qn1x5hj1WgoPqdjHOm0=/450x450/images.sxsw.com/195/7d658466-936d-e86b-e327-8f087cfbcf0c/artist-74117","https://schedule.sxsw.com/2026/events/MS63581"],
+["Ella Ion","Thu","11:00pm -- 11:40pm","Wanderlust Wine","","Folk","Indie Rock","https://images.sxsw.com/XgGVJcmKUKG4fqZ0XL9xdimV-6U=/450x450/images.sxsw.com/195/70a1f85c-9b0c-9093-f636-8824287d6981/artist-74119","https://schedule.sxsw.com/2026/events/MS64902"],
+["Eric McEntee","Thu","11:00pm -- 11:40pm","Central Presbyterian","","","","https://images.sxsw.com/jpYa9Vnd2YDwFLD9bu70tRsoR_I=/450x450/images.sxsw.com/195/405ebcfa-9419-12e6-d9b5-2eae4a2f8207/artist-76476","https://schedule.sxsw.com/2026/events/MS64855"],
+["Jamison Wray","Thu","11:00pm -- 11:15pm","Riviere","","","","https://images.sxsw.com/6SNeyyY5fiRnRC88f7_repZFtHQ=/0x0:450x450/450x450/images.sxsw.com/196/93fc6441-c35c-40bf-9bcd-7f93400f713a/all-1","https://schedule.sxsw.com/2026/events/MS64945"],
+["Lofi Legs","Thu","11:00pm -- 11:40pm","Chess Club","We Were Never Being Boring","Rock","Alternative","https://images.sxsw.com/WHo0uhMPxSjMXb85NUb0jJHFRkk=/0x0:450x450/450x450/images.sxsw.com/196/e36be310-4cc9-4204-bbd4-57b51573cf55/all-4","https://schedule.sxsw.com/2026/events/MS63284"],
+["Neapolitan","Thu","11:00pm -- 11:40pm","Low Down Lounge","","","","https://images.sxsw.com/VS0XMuR9oSfp5L11ui9l0DeqR-Q=/450x450/images.sxsw.com/195/6d5a1add-9e64-22ce-b12a-bdf055c2761e/artist-74982","https://schedule.sxsw.com/2026/events/MS65211"],
+["NIGHT DRIVE","Thu","11:00pm -- 11:40pm","Valhalla","Chicken Ranch Records","Electronic","New Wave","https://images.sxsw.com/HP53WwsGBBXclRy5oGUo567bKa8=/450x450/images.sxsw.com/195/98852b87-cfd3-5a4c-e8ef-1073587d120f/artist-75425","https://schedule.sxsw.com/2026/events/MS63428"],
+["Olivia Ellen Lloyd","Thu","11:00pm -- 11:40pm","Continental Club","","Americana","Alt Country","https://images.sxsw.com/7I0ouLkXK1LJO3tKLYJ4PTLlUDc=/450x450/images.sxsw.com/195/7942c020-0768-0f8d-9642-324c671bc741/artist-74041","https://schedule.sxsw.com/2026/events/MS63966"],
+["Sencible de Tierra Caliente","Thu","11:00pm -- 11:40pm","Mala Fama Rooftop","","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65127"],
+["XOY","Thu","11:00pm -- 12:00am","Kingdom","Gas Station FM","DJ","House / Techno","https://images.sxsw.com/3IBr_HaHVyUw_WGE4YREB6s8brA=/450x450/images.sxsw.com/195/f4e6260d-0e48-47e7-3284-e9d39a5b47e8/artist-76369","https://schedule.sxsw.com/2026/events/MS64277"],
+["Booqoo","Thu","11:15pm -- 11:30pm","Mala Fama Nivel","PURRRSZN","R & B","Hip-Hop / Rap","https://images.sxsw.com/BxW1wR0JKkqPfrAlH4rVfymunlk=/450x450/images.sxsw.com/195/72cc19c3-b1fe-ee23-2ead-f69ab00c115f/artist-76633","https://schedule.sxsw.com/2026/events/MS65042"],
+["Cardinal Bloom","Thu","11:15pm -- 12:00am","Swan Dive","Mint Talent Group","Rock","Indie Rock","https://images.sxsw.com/r4QAmV1ZFWHyJjii_zXasLlBsOk=/450x450/images.sxsw.com/195/fbdf1038-affb-0a81-a9c0-8dcdeffff2bc/artist-73099","https://schedule.sxsw.com/2026/events/MS63196"],
+["Lynn","Thu","11:15pm -- 11:30pm","Mala Fama Nivel","PURRRSZN","Hip-Hop / Rap","R & B","https://images.sxsw.com/rj5J6mbMa39bglu0LDcmR1Kp4EY=/450x450/images.sxsw.com/195/e1f59211-68b8-c200-1c62-b9ca631acc38/artist-74337","https://schedule.sxsw.com/2026/events/MS63732"],
+["Walshy Fire","Thu","11:15pm -- 12:00am","Downright Global Stage","All The Vibes","Hip-Hop / Rap","Afrobeats","https://images.sxsw.com/GHCr4YJ7_rCQ3FXy6TcVkpAp50I=/0x0:450x450/450x450/images.sxsw.com/196/6cb54e93-53f4-444b-94b3-d592cc795b74/all-3","https://schedule.sxsw.com/2026/events/MS65011"],
+["Bricknasty","Thu","11:20pm -- 11:50pm","BME @ Palm Door Patio","British Music Embassy","Jazz","Hip-Hop / Rap","https://images.sxsw.com/c2TOcZB8_y8eSw5aaBl_fnyaJvw=/0x0:450x450/450x450/images.sxsw.com/196/8c22d4d7-e69d-4550-baa2-aef990fcc8ac/all-12","https://schedule.sxsw.com/2026/events/MS64588"],
+["Fuego Base","Thu","11:20pm -- 11:35pm","Venue 6","BSF Official Showcase","Hip-Hop / Rap","","https://images.sxsw.com/A-yYaZU7tCKBSSmhUigMAXVZzWQ=/0x0:450x450/450x450/images.sxsw.com/196/14dd6709-ba10-4ded-81c9-a47140e0be76/all-13","https://schedule.sxsw.com/2026/events/MS64797"],
+["GMSE KING SAVAGE","Thu","11:20pm -- 11:35pm","Riviere","","","","https://images.sxsw.com/X07i-61RVfjeBc-6XuwenhFi92k=/0x0:450x450/450x450/images.sxsw.com/196/901f6b14-f70a-4ac0-bbc1-b6fb79366df2/all-2","https://schedule.sxsw.com/2026/events/MS63810"],
+["Julie Nolen","Thu","11:20pm -- 11:50pm","Saxon Pub","","Americana","Alt Country","https://images.sxsw.com/IL6JJq3JtgwUxOzx4Hnqqm4shpw=/450x450/images.sxsw.com/195/22a38042-dbde-ecff-9e98-cec467f2b032/artist-73516","https://schedule.sxsw.com/2026/events/MS63151"],
+["PIAO","Thu","11:20pm -- 11:50pm","Marlow","","Pop","Hyperpop","https://images.sxsw.com/yl4bRELKJlSLH8F2EIvGb1UOwkc=/450x450/images.sxsw.com/195/70b21a88-ca4a-10d4-c404-ad7f717e6466/artist-76232","https://schedule.sxsw.com/2026/events/MS64179"],
+["Samy Sharif","Thu","11:20pm -- 11:50pm","Elysium","","Rock","Indie Rock","https://images.sxsw.com/e83iqcKl42aGnChkbwgVKVSvJOs=/450x450/images.sxsw.com/195/2db86829-0995-5d92-41f8-eab5141b6c3d/artist-75123","https://schedule.sxsw.com/2026/events/MS64247"],
+["Sultanes del Yonke","Thu","11:20pm -- 12:00am","Shangri-La","The Spanish Wave","Latin","Cumbia","https://images.sxsw.com/2NSHzRdKB8R8zU-XUAdYsM9xrdU=/450x450/images.sxsw.com/195/f452619d-8e45-d052-be6b-1a742b2bc81b/artist-75333","https://schedule.sxsw.com/2026/events/MS63352"],
+["Holy Gabbana","Thu","11:30pm -- 11:50pm","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/E_AFP5V0hpULnXm8-tCQ_p6hTjM=/450x450/images.sxsw.com/195/7cd83142-7234-1d1a-4cb1-2bd5e8eb0a39/artist-76126","https://schedule.sxsw.com/2026/events/MS63812"],
+["Mama Duke","Thu","11:30pm -- 12:00am","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","Pop","https://images.sxsw.com/3-yCMy0Lo685jhP5rorkF4yocGI=/450x450/images.sxsw.com/195/ba611555-6190-6d64-ea66-3e31431c9486/artist-75944","https://schedule.sxsw.com/2026/events/MS63568"],
+["Zac Savage","Thu","11:30pm -- 11:50pm","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","","https://images.sxsw.com/k1nllpeJjLXWj4yvGa8-QpRB1z4=/450x450/images.sxsw.com/195/87725ae1-79ee-d010-0f84-1d17a4ea11e3/artist-76549","https://schedule.sxsw.com/2026/events/MS64839"],
+["Rick Hyde","Thu","11:35pm -- 11:50pm","Venue 6","BSF Official Showcase","Hip-Hop / Rap","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65237"],
+["DD Island","Thu","11:40pm -- 12:10am","Las Perlas","Groover Obsessions","Rock","Alt Country","https://images.sxsw.com/MsIiVbP-1A1uFEAL95GahWf_eTg=/450x450/images.sxsw.com/195/a53cd11e-6bf9-356a-3a2a-7266adfdf3b7/artist-74419","https://schedule.sxsw.com/2026/events/MS63503"],
+["DeShaunJay","Thu","11:40pm -- 11:55pm","Riviere","","Hip-Hop / Rap","R & B","https://images.sxsw.com/fGEl0j6JEp9U5Do3gW5r2sXUtN8=/450x450/images.sxsw.com/195/f104dd2a-a4cc-557a-c613-f22029e8241b/artist-76174","https://schedule.sxsw.com/2026/events/MS63903"],
+["Bale","Thu","11:45pm -- 12:00am","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/0QmrCS7cYz_coMtaQ6OqnuSmzuE=/0x0:449x449/450x450/images.sxsw.com/196/f5de4157-8986-48b0-8fc3-3cfbc7ac0393/all-5","https://schedule.sxsw.com/2026/events/MS64117"],
+["Olisso","Thu","11:45pm -- 2:00am","Seven Grand","Rimas","Latin","Reggaeton","https://images.sxsw.com/qshJIPt5BpSg1tdtVPK3BazfPsc=/450x450/images.sxsw.com/195/535b69f3-cc8b-3d39-655a-af4949c27193/artist-76563","https://schedule.sxsw.com/2026/events/MS64869"],
+["skøien","Thu","11:50pm -- 2:00am","Seven Grand","Rimas","Latin","Reggaeton","https://images.sxsw.com/XCZ7jzdd9j0qGi4EiBm4VbXbmjU=/450x450/images.sxsw.com/195/df08a4e2-2ecc-1ff3-3870-b4d7c3faabd5/artist-76580","https://schedule.sxsw.com/2026/events/MS64928"],
+["BP Oil Spill","Thu","11:55pm -- 12:10am","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","","https://images.sxsw.com/WHo0uhMPxSjMXb85NUb0jJHFRkk=/0x0:450x450/450x450/images.sxsw.com/196/e36be310-4cc9-4204-bbd4-57b51573cf55/all-4","https://schedule.sxsw.com/2026/events/MS65252"],
+["Adult Leisure","Fri","12:00am -- 12:40am","Marlow","","Pop","Indie Pop","https://images.sxsw.com/TaRL9rUd2oZVmQzRblrJ1lsitFs=/450x450/images.sxsw.com/195/b5dca4e4-0f77-7e8e-4060-2d323358855d/artist-72806","https://schedule.sxsw.com/2026/events/MS64493"],
+["Agatha is Dead!","Fri","12:00am -- 12:40am","Low Down Lounge","","Rock","Alternative","https://images.sxsw.com/A-yYaZU7tCKBSSmhUigMAXVZzWQ=/0x0:450x450/450x450/images.sxsw.com/196/14dd6709-ba10-4ded-81c9-a47140e0be76/all-13","https://schedule.sxsw.com/2026/events/MS63389"],
+["The Animeros","Fri","12:00am -- 12:45am","The 13th Floor","High Road Touring","Latin","Cumbia","https://images.sxsw.com/FmI5GaZf1qumXioHKouevJCMm_Q=/450x450/images.sxsw.com/195/e890b9ce-8a96-9807-d251-a9d4bc480078/artist-75338","https://schedule.sxsw.com/2026/events/MS64628"],
+["DJ Trendsetter Sense + Trendsetter Cypher","Fri","12:00am -- 2:00am","Brushy St Commons","Hip Hop Forever","Hip-Hop / Rap","None","https://images.sxsw.com/R1H84fOopGcg86B9GQ27C4QRaC4=/450x450/images.sxsw.com/195/c8eefcde-3361-c5ce-a95f-4f51c5083632/artist-76115","https://schedule.sxsw.com/2026/events/MS63795"],
+["Eric Sebastian","Fri","12:00am -- 12:40am","Mala Fama Rooftop","","","","https://images.sxsw.com/QIhetQ71YaNY-cupDQRX6O0y5Tw=/450x450/images.sxsw.com/195/023539c8-73ee-df58-272f-29a5b05aeb7d/artist-75550","https://schedule.sxsw.com/2026/events/MS65184"],
+["Firecracker","Fri","12:00am -- 12:40am","Chess Club","We Were Never Being Boring","Rock","Punk","https://images.sxsw.com/X07i-61RVfjeBc-6XuwenhFi92k=/0x0:450x450/450x450/images.sxsw.com/196/901f6b14-f70a-4ac0-bbc1-b6fb79366df2/all-2","https://schedule.sxsw.com/2026/events/MS63282"],
+["Honey Made","Fri","12:00am -- 12:30am","Saxon Pub","","R & B","Soul","https://images.sxsw.com/8x0A0LhyA977bjGqZfXg62lDRvc=/450x450/images.sxsw.com/195/99d830d4-4abb-b5f7-546e-9bb6dd0cd2f1/artist-74109","https://schedule.sxsw.com/2026/events/MS63466"],
+["J. Dash","Fri","12:00am -- 12:05am","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","Pop","https://images.sxsw.com/VzPlTKSHLXxMCN3w0i6t6aTs3o4=/450x450/images.sxsw.com/195/4d7832f1-c95d-65e5-e6cc-94c716def3ba/artist-76253","https://schedule.sxsw.com/2026/events/MS64057"],
+["Jack Freeman","Fri","12:00am -- 12:15am","Riviere","","","","https://images.sxsw.com/ymxYbwEIvk-K-2aglTkvVBlbF_4=/450x450/images.sxsw.com/195/4328ca3f-f699-2428-b51d-349fe2378f23/artist-76415","https://schedule.sxsw.com/2026/events/MS64434"],
+["Orya","Fri","12:00am -- 1:00am","Kingdom","Gas Station FM","DJ","House / Techno","https://images.sxsw.com/PgVlj7uMDYpX2YWplF8Ji4TE0hY=/450x450/images.sxsw.com/195/52447f3a-475f-0096-6a3b-87bbd237a0dd/artist-76519","https://schedule.sxsw.com/2026/events/MS64769"],
+["Reilly Downes","Fri","12:00am -- 12:40am","Continental Club","","Americana","Rock","https://images.sxsw.com/ZzdQFaBqEDh2F1YR2QDSiT2epy8=/450x450/images.sxsw.com/195/3a2a4af7-7604-213d-016d-fb6604bc470c/artist-72588","https://schedule.sxsw.com/2026/events/MS63149"],
+["Sassy 009","Fri","12:00am -- 12:40am","BME @ Palm Door","[PIAS]","Electronic","Indie Pop","https://images.sxsw.com/D4-Z-Jvzz0Onmd0cjFvF1oWtfU8=/0x0:449x449/450x450/images.sxsw.com/196/52d46494-8957-44cb-8685-c7bb012fc05a/all-8","https://schedule.sxsw.com/2026/events/MS63384"],
+["Solorz","Fri","12:00am -- 2:00am","Seven Grand","Rimas","Latin","Reggaeton","https://images.sxsw.com/b47c1I71ztGpDwcCTK3lqWQRCrU=/450x450/images.sxsw.com/195/a827f751-29c1-eec3-a956-1a8f05ee56c3/artist-76618","https://schedule.sxsw.com/2026/events/MS65009"],
+["Yes Sir, No Sir.","Fri","12:00am -- 12:40am","Valhalla","Chicken Ranch Records","Rock","Punk","https://images.sxsw.com/hlPo3bDMa8yaqz3ufKIrSN1zWZ4=/450x450/images.sxsw.com/195/ff276ed5-647b-7911-45e3-5b8da9cb8fcc/artist-76530","https://schedule.sxsw.com/2026/events/MS64783"],
+["Lucky","Fri","12:10am -- 12:40am","Elysium","","Rock","Indie Rock","https://images.sxsw.com/0QmrCS7cYz_coMtaQ6OqnuSmzuE=/0x0:449x449/450x450/images.sxsw.com/196/f5de4157-8986-48b0-8fc3-3cfbc7ac0393/all-5","https://schedule.sxsw.com/2026/events/MS63413"],
+["Benny The Butcher","Fri","12:15am -- 12:45am","Venue 6","BSF Official Showcase","Hip-Hop / Rap","","https://images.sxsw.com/eNjsaDMRbuavuFSmH46ormFeT5M=/0x0:450x450/450x450/images.sxsw.com/196/3501addb-ba3a-4e58-946b-03e9182dcd9b/all-0","https://schedule.sxsw.com/2026/events/MS64432"],
+["Wilby","Fri","12:15am -- 1:00am","Swan Dive","Mint Talent Group","Rock","Indie Rock","https://images.sxsw.com/xs_lPaZmiCLRPIj5jIxKg48G6GU=/450x450/images.sxsw.com/195/fdf7d7ec-400e-0630-0b62-d8585b1635a0/artist-73236","https://schedule.sxsw.com/2026/events/MS63984"],
+["Sunnitharapper","Fri","12:20am -- 12:35am","Riviere","","","","https://images.sxsw.com/KyPgt_C7YTEBnY9muvdI-OXre78=/450x450/images.sxsw.com/195/1d9f3e4d-9e57-20d2-1b87-308d2ec187de/artist-76443","https://schedule.sxsw.com/2026/events/MS64509"],
+["Y0$#! (YOSHI) The Cat In The Hat","Fri","12:20am -- 12:30am","Flamingo Cantina","The Smoke Out ATX","Hip-Hop / Rap","","https://images.sxsw.com/bRzByGdkiSvWP-yuSN9vC-D3B2U=/450x450/images.sxsw.com/195/0d7818b5-a702-6a85-42a4-0931561a51c4/artist-76603","https://schedule.sxsw.com/2026/events/MS65050"],
+["Diamond The Body","Fri","12:40am -- 12:55am","Riviere","","","","https://images.sxsw.com/c2TOcZB8_y8eSw5aaBl_fnyaJvw=/0x0:450x450/450x450/images.sxsw.com/196/8c22d4d7-e69d-4550-baa2-aef990fcc8ac/all-12","https://schedule.sxsw.com/2026/events/MS64572"],
+["Baby Sam","Fri","1:00am -- 1:15am","Riviere","","Hip-Hop / Rap","Soul","https://images.sxsw.com/WHo0uhMPxSjMXb85NUb0jJHFRkk=/0x0:450x450/450x450/images.sxsw.com/196/e36be310-4cc9-4204-bbd4-57b51573cf55/all-4","https://schedule.sxsw.com/2026/events/MS64964"],
+["The Braymores","Fri","1:00am -- 1:30am","Elysium","","Rock","Indie Rock","https://images.sxsw.com/ht3AtPn0ifewiTuB662-2KewhOU=/450x450/images.sxsw.com/195/9ea49a05-3850-7142-3371-fae842764a67/artist-73685","https://schedule.sxsw.com/2026/events/MS64175"],
+["DragonnQueen","Fri","1:00am -- 2:00am","Kingdom","Gas Station FM","DJ","House / Techno","https://images.sxsw.com/Q1lLnhwTE0xffy8-pN3vFo92S04=/450x450/images.sxsw.com/195/6005d430-3079-8e3e-0869-6709b87e1bb1/artist-76104","https://schedule.sxsw.com/2026/events/MS64737"],
+["Escoltas Del Valle","Fri","1:00am -- 1:40am","Mala Fama Rooftop","","","","https://images.sxsw.com/1kJa3dRY2QZGZggA0MgXEpVu9zw=/450x450/images.sxsw.com/195/8d174571-8f9a-b93a-7c38-8a99201cc663/artist-76727","https://schedule.sxsw.com/2026/events/MS65233"],
+["Peelander-Z","Fri","1:00am -- 1:40am","Valhalla","Chicken Ranch Records","Punk","Pop Punk","https://images.sxsw.com/YiuuU6mE6o2vCqu89wQdfmF1_h4=/0x0:450x450/450x450/images.sxsw.com/196/93a0edad-5096-47ff-97b4-db5e6cc0f4f1/all-10","https://schedule.sxsw.com/2026/events/MS63386"],
+["Secret Family","Fri","1:00am -- 1:50am","Chess Club","We Were Never Being Boring","Rock","Alternative","https://images.sxsw.com/i08a9L_27mUc3orcbrnNPGiiVNI=/0x0:450x450/450x450/images.sxsw.com/196/4f295d50-eceb-43cc-ab77-09e1ba100eaa/all-11","https://schedule.sxsw.com/2026/events/MS63739"],
+["The Tremolo Beer Gut","Fri","1:00am -- 1:45am","The 13th Floor","","Rock","Surf","https://images.sxsw.com/LVE7n36fL9uNGSSFPopbF9qSV9A=/450x450/images.sxsw.com/195/a2f3128f-5211-f877-931e-8abcb3693a12/artist-75265","https://schedule.sxsw.com/2026/events/MS65091"],
+["OG Ron C","Fri","1:35am -- 2:00am","Riviere","","Hip-Hop / Rap","R & B","https://images.sxsw.com/cc_dvrmWc_t2uN-Vgci_SQ-1ZoU=/0x0:450x450/450x450/images.sxsw.com/196/b2aadb7c-e6ad-4632-b94c-7177ef77e213/all-14","https://schedule.sxsw.com/2026/events/MS63550"],
+["JUSTAGURL","Fri","2:00am -- 3:00am","Kingdom","Gas Station FM","DJ","House / Techno","https://images.sxsw.com/gystC1P-_xkeXiIevPFUkP4dvTQ=/450x450/images.sxsw.com/195/3fd5c1df-aa39-dbd4-53b9-fbdbf19a9418/artist-76680","https://schedule.sxsw.com/2026/events/MS65227"],
+["JOTP B2B Jordan M Boudreau","Fri","3:00am -- 4:00am","Kingdom","Gas Station FM","DJ","House / Techno","https://images.sxsw.com/ZBzEuknIspE4FJK07FiTqxkCv5Y=/450x450/images.sxsw.com/195/b1346a5c-3c0e-9e4b-5850-236b6eea7898/artist-76725","https://schedule.sxsw.com/2026/events/MS65226"],
+["Jos Tha DJ","Thu","Time TBA","Swan Dive Patio","ATX Social Club","Hip-Hop / Rap","R & B","https://images.sxsw.com/Ib71RFNjK0aObBLV-R_lfUmsiR0=/450x450/images.sxsw.com/195/c5c31259-4379-4b7c-4f8b-32f5765aa8ee/artist-72763","https://schedule.sxsw.com/2026/events/MS64799"],
+["Mosmo","Thu","Time TBA","Seven Grand","","Latin","Norteño","https://images.sxsw.com/ftZGi3fxndxW9JeIBYsgRi_Iktw=/0x0:450x450/450x450/images.sxsw.com/196/e64ff5e2-b40f-448b-aaed-6ba7ae8b579a/all-15","https://schedule.sxsw.com/2026/events/MS63599"],
+["Radium Dolls","Fri","12:00pm -- 12:40pm","Downright Radio Stage","KCRW","Rock","Punk","https://images.sxsw.com/n1Z_OcOc3YHxsAIgtX_frTupE4c=/450x450/images.sxsw.com/195/a1673e3f-68c2-2f48-18f1-6dfdd43d4313/artist-73335","https://schedule.sxsw.com/2026/events/MS64050"],
+["The Family Battenberg","Fri","12:20pm -- 12:50pm","Valhalla","Planetary Group","Rock","Alternative","https://images.sxsw.com/FtOo9gPEsayxGtTba_Pb_inWwNY=/450x450/images.sxsw.com/195/506d1adc-a8e1-60f1-449e-624b7a3ac137/artist-73584","https://schedule.sxsw.com/2026/events/MS64629"],
+["Dizzy Fae","Fri","12:30pm -- 12:55pm","Mohawk Outdoor","Billboard House","Pop","Hip-Hop / Rap","https://images.sxsw.com/BDM4zP1kRoF2WteXerp6HVbJdLI=/450x450/images.sxsw.com/195/b81bb3d6-fff4-084f-d53f-62a676d9fecc/artist-76357","https://schedule.sxsw.com/2026/events/MS65262"],
+["Joe Harvey-Whyte","Fri","12:45pm -- 12:55pm","Hilton Ballroom","SXSW Keynote Prelude Performance","Avant / Experimental","Americana","https://images.sxsw.com/r9he47Kg9O1XJA_c1PEGgHoXydY=/450x450/images.sxsw.com/195/43ded434-4d5a-f0e2-3c8a-dbb6b5f22840/artist-75928","https://schedule.sxsw.com/2026/events/MS65087"],
+["runo plum","Fri","1:00pm -- 1:40pm","Downright Radio Stage","KCRW","Singer-Songwriter","Indie Rock","https://images.sxsw.com/NOK5GFddNAHEWYBiDwVDuXmabOI=/450x450/images.sxsw.com/195/1c646380-a4ad-a64c-a9a0-0d13e360252b/artist-74164","https://schedule.sxsw.com/2026/events/MS63193"],
+["Sex Mask","Fri","1:05pm -- 1:35pm","Valhalla","Planetary Group","Punk","Indie Rock","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64640"],
+["Alicia Creti","Fri","1:30pm -- 1:55pm","Mohawk Outdoor","Billboard House","Pop","Hip-Hop / Rap","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64699"],
+["Famous Friend","Fri","1:50pm -- 2:20pm","Valhalla","SXSW Planetary GroupDAY PARTY:","Rock","Indie Rock","https://images.sxsw.com/7q25qWP0cW2cNuntVthLjewRoOY=/450x450/images.sxsw.com/195/cacc403e-7bcc-8665-75af-d87f3a3f6ab3/artist-73413","https://schedule.sxsw.com/2026/events/MS64630"],
+["Adult DVD","Fri","2:00pm -- 2:40pm","Downright Radio Stage","KCRW","Dance","Rock","https://images.sxsw.com/QXFOYvWGn59xLTpHhxsYK5SnAtY=/450x450/images.sxsw.com/195/3e6389ce-6bb5-e34d-99d3-494b9e9e6322/artist-74562","https://schedule.sxsw.com/2026/events/MS64051"],
+["Next of Kin","Fri","2:00pm -- 2:40pm","Rivian Roadhouse","","Country","Americana","https://images.sxsw.com/00R-adbyTxbvwo53DfKQANRtwak=/450x450/images.sxsw.com/195/a8841032-270b-c81d-d27e-cacb1ee9a74b/artist-74072","https://schedule.sxsw.com/2026/events/MS64724"],
+["Gus Baldwin","Fri","2:30pm -- 3:00pm","Flatstock @ Marriott","","Rock","Power Pop","https://images.sxsw.com/i08a9L_27mUc3orcbrnNPGiiVNI=/0x0:450x450/450x450/images.sxsw.com/196/4f295d50-eceb-43cc-ab77-09e1ba100eaa/all-11","https://schedule.sxsw.com/2026/events/MS64139"],
+["Kairo Keyz","Fri","2:30pm -- 3:00pm","Mohawk Outdoor","Billboard House","Pop","Hip-Hop / Rap","https://images.sxsw.com/It6d-4ZL8O3gTnNJ5Lxx71kNsRM=/450x450/images.sxsw.com/195/57a255fe-3975-16e7-3fe1-a64955bd722c/artist-76228","https://schedule.sxsw.com/2026/events/MS65157"],
+["Lucky","Fri","2:35pm -- 3:05pm","Valhalla","Planetary Group","Rock","Indie Rock","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64631"],
+["Bubba Lucky (Solo)","Fri","3:00pm -- 3:30pm","Flatstock @ Marriott","","Rock","Country","https://images.sxsw.com/GHCr4YJ7_rCQ3FXy6TcVkpAp50I=/0x0:450x450/450x450/images.sxsw.com/196/6cb54e93-53f4-444b-94b3-d592cc795b74/all-3","https://schedule.sxsw.com/2026/events/MS64131"],
+["Grace Sorensen","Fri","3:00pm -- 3:40pm","Rivian Roadhouse","","R & B","Pop","https://images.sxsw.com/F16OPGFA5Zz7U5AzNvDYwo21b7Y=/450x450/images.sxsw.com/195/ba90410f-c9b4-0873-525a-218339eb5975/artist-74315","https://schedule.sxsw.com/2026/events/MS64725"],
+["The Tullamarines","Fri","3:00pm -- 3:40pm","Downright Radio Stage","KCRW","Pop","Indie Pop","https://images.sxsw.com/-U2pF0UWpIkPl7S8GbYbpMet5QM=/450x450/images.sxsw.com/195/3ec79d19-b6ea-8537-1e07-07d77c05581e/artist-73833","https://schedule.sxsw.com/2026/events/MS63924"],
+["Atsuko Chiba","Fri","3:20pm -- 3:50pm","Valhalla","Planetary Group","Rock","Post-Rock","https://images.sxsw.com/ZRmsf8x_X71ZexhIorIOD6tmspM=/450x450/images.sxsw.com/195/2cf75818-7c20-4bad-e9b9-efcd4a246108/artist-74248","https://schedule.sxsw.com/2026/events/MS64632"],
+["Javiera Electra","Fri","4:00pm -- 5:00pm","Flatstock @ Marriott","","Avant / Experimental","Folk","https://images.sxsw.com/tBxE5GiqROsy05pbYeCsdpjnOME=/450x450/images.sxsw.com/195/f8f22313-4207-ef54-dc53-40d20b454017/artist-75497","https://schedule.sxsw.com/2026/events/MS64241"],
+["Lew Apollo","Fri","4:00pm -- 4:40pm","Rivian Roadhouse","","R & B","Indie Pop","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64726"],
+["Steven Bamidele","Fri","4:00pm -- 4:40pm","Downright Radio Stage","KCRW","Jazz","Indie Pop","https://images.sxsw.com/S9K-r4ZctBFXAZDWCgu7fXWZnwQ=/450x450/images.sxsw.com/195/c3b4f1a2-d166-d101-3c1c-b8c8af629eb5/artist-74064","https://schedule.sxsw.com/2026/events/MS64052"],
+["runo plum","Fri","4:05pm -- 4:35pm","Valhalla","Planetary Group","Singer-Songwriter","Indie Rock","https://images.sxsw.com/NOK5GFddNAHEWYBiDwVDuXmabOI=/450x450/images.sxsw.com/195/1c646380-a4ad-a64c-a9a0-0d13e360252b/artist-74164","https://schedule.sxsw.com/2026/events/MS64633"],
+["Adult DVD","Fri","4:50pm -- 5:20pm","Valhalla","Planetary Group","Dance","Rock","https://images.sxsw.com/QXFOYvWGn59xLTpHhxsYK5SnAtY=/450x450/images.sxsw.com/195/3e6389ce-6bb5-e34d-99d3-494b9e9e6322/artist-74562","https://schedule.sxsw.com/2026/events/MS65231"],
+["The Tullamarines","Fri","5:35pm -- 6:05pm","Valhalla","Planetary Group","Pop","Indie Pop","https://images.sxsw.com/-U2pF0UWpIkPl7S8GbYbpMet5QM=/450x450/images.sxsw.com/195/3ec79d19-b6ea-8537-1e07-07d77c05581e/artist-73833","https://schedule.sxsw.com/2026/events/MS65232"],
+["Mariae Cassandra","Fri","6:20pm -- 6:50pm","Valhalla","Planetary Group","Pop","Indie Pop","https://images.sxsw.com/P7aK6-6lT4ZO6L6vu9PZWkegYDo=/450x450/images.sxsw.com/195/b2f804aa-8993-93f7-1538-a53c35aa1c6c/artist-73836","https://schedule.sxsw.com/2026/events/MS64634"],
+["DJ Anupi","Fri","7:00pm -- 7:30pm","Flamingo Cantina","South Asian House Soundvilla","DJ","Fusion","https://images.sxsw.com/sa8cB9ctewa6rEmaEhA9yD-j31M=/450x450/images.sxsw.com/195/619d6d10-eaba-c92e-6650-5edbe0edd1ab/artist-75900","https://schedule.sxsw.com/2026/events/MS63504"],
+["DJ Grip","Fri","7:00pm -- 10:00pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","House / Techno","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63525"],
+["DJ Tony Neal","Fri","7:00pm -- 8:00pm","Mala Fama Nivel","","","","https://images.sxsw.com/nCelLWPlEOa-zuYLafjy5yAeotY=/450x450/images.sxsw.com/195/e087d855-1d51-0b10-ad9e-0871d2a215c0/artist-76685","https://schedule.sxsw.com/2026/events/MS65141"],
+["Fish Hunt","Fri","7:00pm -- 7:40pm","Low Down Lounge","","Rock","Alternative","https://images.sxsw.com/RnGkY7qnm5GiwVx8EKXyliA9fiU=/450x450/images.sxsw.com/195/132b4f66-8529-0dfa-9cfd-120a65c976d4/artist-76031","https://schedule.sxsw.com/2026/events/MS64251"],
+["Jonny Tex","Fri","7:00pm -- 7:30pm","Hotel Vegas Volstead","Spaace Camp","Rock","Alternative","https://images.sxsw.com/1gWdBE0Vx-fCMe5pavsVKW5D82U=/450x450/images.sxsw.com/195/34c29f21-eefd-190b-c4a5-b19160ed1c0e/artist-74541","https://schedule.sxsw.com/2026/events/MS64535"],
+["OOZ","Fri","7:00pm -- 7:40pm","Hotel Vegas","Spaace Camp","Rock","Hardcore","https://images.sxsw.com/jNJTb_n-cIkwl6fuA3YtXti-wTY=/450x450/images.sxsw.com/195/ad260c0f-4940-7ae1-08f3-56e2bf810804/artist-75978","https://schedule.sxsw.com/2026/events/MS65026"],
+["REJAY","Fri","7:00pm -- 7:30pm","Downright Global Stage","TOKYO CALLING × INSPIRED BY TOKYO","Singer-Songwriter","Alternative","https://images.sxsw.com/291vURMGsxOShsqUpshuYrWfLuI=/450x450/images.sxsw.com/195/1f7a3e76-bd82-fad8-140e-d6f9c8162c8c/artist-76202","https://schedule.sxsw.com/2026/events/MS64018"],
+["someshiit","Fri","7:00pm -- 7:40pm","Venue 6","Taiwan Beats","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/_PyR2qJXdvxpArpU3c2dx1GCiuA=/450x450/images.sxsw.com/195/4b8b990f-58b1-b2ec-c955-4b8b6658fb39/artist-74395","https://schedule.sxsw.com/2026/events/MS63217"],
+["The Violet Mindfield","Fri","7:15pm -- 7:45pm","Hotel Vegas Patio","Spaace Camp","Rock","Alternative","https://images.sxsw.com/jBznbYk4jgfX-J20x6zHajiWO84=/450x450/images.sxsw.com/195/4f4b645a-d25e-97a3-b09d-e378fec87417/artist-76707","https://schedule.sxsw.com/2026/events/MS65188"],
+["bloodsports","Fri","7:30pm -- 8:00pm","Shangri-La","Pandora Music","Avant/Experimental","Alternative","https://images.sxsw.com/pvQ0ahwuEleXo82cOvfVn_xM4Ug=/450x450/images.sxsw.com/195/116397af-0e06-230d-0c63-398c3db8e3a4/artist-75101","https://schedule.sxsw.com/2026/events/MS64102"],
+["Georgia Webster","Fri","7:30pm -- 7:50pm","Central Presbyterian","CMA Songwriters Series","Pop","Country","https://images.sxsw.com/8cc9Nt98fZKce0-rdU95TYbkQUg=/450x450/images.sxsw.com/195/68c3469a-3585-2027-a39f-40b50550f589/artist-75027","https://schedule.sxsw.com/2026/events/MS63271"],
+["Isak Thomas and The Stoop Boys","Fri","7:30pm -- 8:00pm","Zilker Brewing","UTOPiA Sessions","Soul","Funk","https://images.sxsw.com/KJo2fzvFFB38d7r2QNeAaHRhUak=/450x450/images.sxsw.com/195/5387714b-ed1a-84c1-5f79-9cfe4594ab8b/artist-74224","https://schedule.sxsw.com/2026/events/MS64557"],
+["Leo Kalyan","Fri","7:30pm -- 8:00pm","Flamingo Cantina","South Asian House Soundvilla","R & B","World","https://images.sxsw.com/aIzaEk7wAEujw9w7ZmAvnbdDf4c=/450x450/images.sxsw.com/195/838fa497-d818-f12a-096d-84210a44c9a8/artist-75874","https://schedule.sxsw.com/2026/events/MS63571"],
+["Yung Al","Fri","7:30pm -- 7:40pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","R & B","https://images.sxsw.com/TCib4he7YiCenD4-mCv7OMef2PQ=/450x450/images.sxsw.com/195/2081812a-408d-95d6-d2a7-42ffaecfdb73/artist-76327","https://schedule.sxsw.com/2026/events/MS64990"],
+["bollyflow","Fri","7:45pm -- 8:45pm","Flamingo Cantina","South Asian House Soundvilla","Dance","Dance","https://images.sxsw.com/8YWEsmV8Y8dYMe3U4F5VKS0jQ7s=/450x450/images.sxsw.com/195/c06ae203-edb4-f60b-00d8-802958a9303a/artist-75968","https://schedule.sxsw.com/2026/events/MS63597"],
+["Confucius & Fresh","Fri","7:45pm -- 7:55pm","Lefty's Brick Bar","KUTX - The Breaks","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65126"],
+["je'Texas","Fri","7:45pm -- 8:15pm","Hotel Vegas Patio","Spaace Camp","Rock","Alternative","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65183"],
+["Linea Personal","Fri","7:45pm -- 8:15pm","ACL Live","Rolling Stone Future of Music","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64645"],
+["Mac-K the K Baby","Fri","7:45pm -- 7:55pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","","https://images.sxsw.com/J6xu6UEJ4RDTXLBkkuZEgmaJUf4=/450x450/images.sxsw.com/195/656df79e-0d68-6fd7-adc0-5dbbe5bd0b90/artist-76564","https://schedule.sxsw.com/2026/events/MS64926"],
+["Sun Atlas","Fri","7:45pm -- 8:15pm","Hotel Vegas Patio","Spaace Camp","Rock","Alternative","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64639"],
+["GOKUMON","Fri","7:50pm -- 8:20pm","Downright Global Stage","TOKYO CALLING × INSPIRED BY TOKYO","Metal","Heavy Metal","https://images.sxsw.com/L0XTRNeZ8Nb5gJUHusm6NHn1Z7w=/450x450/images.sxsw.com/195/1a0fc1c5-97ba-2f64-c540-022e0f127b79/artist-76207","https://schedule.sxsw.com/2026/events/MS63975"],
+["Lovpune","Fri","7:50pm -- 8:20pm","Las Perlas","Ones to watch","Electronic","Pop","https://images.sxsw.com/dhac0YWqFPtKuWbM1KQysuCUqts=/450x450/images.sxsw.com/195/f76a6023-6499-6f99-8ada-76ab006c60ae/artist-74220","https://schedule.sxsw.com/2026/events/MS63429"],
+["Secret Family","Fri","7:50pm -- 8:20pm","Hotel Vegas Volstead","Spaace Camp","Rock","Alternative","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64526"],
+["Faaris","Fri","7:55pm -- 8:05pm","Lefty's Brick Bar","KUTX - The Breaks","","","https://images.sxsw.com/tdl83KNpjFYDnUMXJsPtKmz5kgs=/450x450/images.sxsw.com/195/39dbde73-696e-b062-ccd4-3bcdefecbd0e/artist-74233","https://schedule.sxsw.com/2026/events/MS64617"],
+["Aiko","Fri","8:00pm -- 8:40pm","Speakeasy","European Union & German Music Export","Pop","Alternative","https://images.sxsw.com/zDILoXYOGzqY1WmEbQMEI9k7ngE=/450x450/images.sxsw.com/195/df209609-d49f-125e-7413-6eeadde9c238/artist-75206","https://schedule.sxsw.com/2026/events/MS64272"],
+["ALANN","Fri","8:00pm -- 8:10pm","Taco n Maiz","God Body Official Stage","Hip-Hop / Rap","R & B","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64593"],
+["Andrew Hypes","Fri","8:00pm -- 8:40pm","Wanderlust Wine","REALM","R & B","Soul","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65181"],
+["Big Fat Head","Fri","8:00pm -- 8:40pm","Low Down Lounge","","Rock","Post-Punk","https://images.sxsw.com/0fat9vYGJtHlY8_IAwkqsBCush8=/450x450/images.sxsw.com/195/c06ae66d-ee70-6f40-2500-4dca2f8ef8f8/artist-75004","https://schedule.sxsw.com/2026/events/MS63708"],
+["Blood In The Water","Fri","8:00pm -- 9:00pm","Stubb's","","","","https://images.sxsw.com/A-yYaZU7tCKBSSmhUigMAXVZzWQ=/0x0:450x450/450x450/images.sxsw.com/196/14dd6709-ba10-4ded-81c9-a47140e0be76/all-13","https://schedule.sxsw.com/2026/events/MS65005"],
+["Buddy Red","Fri","8:00pm -- 8:40pm","Saxon Pub","","Rock","Blues","https://images.sxsw.com/S3Cf2rglRHZ7hYi-jTFxtDI0s14=/450x450/images.sxsw.com/195/b7f1efb7-95ed-463b-7333-323cdedc4a9c/artist-74028","https://schedule.sxsw.com/2026/events/MS63173"],
+["Chase McDaniel","Fri","8:00pm -- 10:00pm","Central Presbyterian","CMA Songwriters Series","Country","None","https://images.sxsw.com/mM-riWkmYoNLkTxHXW6dGc8xyS0=/450x450/images.sxsw.com/195/1c72b394-c611-d629-d8ea-d4882c7240e6/artist-76216","https://schedule.sxsw.com/2026/events/MS64003"],
+["Core DJ's Worldwide","Fri","8:00pm -- 10:00pm","Mala Fama Nivel","","","","https://images.sxsw.com/4grYi0xIqkfXDfk6lVDR0-CL_rg=/450x450/images.sxsw.com/195/d3aba963-ccd1-959b-6d16-98cf5104824e/artist-76686","https://schedule.sxsw.com/2026/events/MS65140"],
+["Creature Canyon","Fri","8:00pm -- 8:40pm","Continental Club","Armadillo World Headquarters","Rock","Indie Rock","https://images.sxsw.com/g2Z22lMyU8mv_sxxs9KW9p6457Q=/450x450/images.sxsw.com/195/d28a6d16-b9e2-7cfe-b8f5-919517955cc7/artist-73424","https://schedule.sxsw.com/2026/events/MS64984"],
+["DJ Dirty Dave","Fri","8:00pm -- 10:00pm","Mala Vida","","DJ","Reggaeton","https://images.sxsw.com/R7m3exmHETgDI0q62DvtPfmlCpY=/450x450/images.sxsw.com/195/00283b22-36f7-a228-610f-c6297efe695b/artist-76249","https://schedule.sxsw.com/2026/events/MS64043"],
+["FEET","Fri","8:00pm -- 8:30pm","BME @ Palm Door Patio","BBC Introducing","Rock","Indie Rock","https://images.sxsw.com/kwRgKAPK9TjZcVzD1fXiP-Z3Umo=/450x450/images.sxsw.com/195/51e6346e-c067-a3d5-2d2a-a96a87a494c8/artist-73643","https://schedule.sxsw.com/2026/events/MS64266"],
+["Glass Mansions","Fri","8:00pm -- 8:40pm","The 13th Floor","Art Decade Creatives - Austin Heavy Hitters","Rock","Pop","https://images.sxsw.com/WAWRx5N2pPHtB5tUJycQGgqUMag=/450x450/images.sxsw.com/195/c44a8474-0985-c696-dedc-231c400adaf7/artist-75989","https://schedule.sxsw.com/2026/events/MS63726"],
+["Ingrid Andress","Fri","8:00pm -- 10:00pm","Central Presbyterian","CMA Songwriters Series","Country","","https://images.sxsw.com/FV5UghVZk-faXTz4pOrdHxThXkI=/450x450/images.sxsw.com/195/8c6cb552-5bd5-f8f7-44da-6907e4f28aab/artist-76367","https://schedule.sxsw.com/2026/events/MS64284"],
+["JUSTAGURL","Fri","8:00pm -- 9:00pm","Kingdom","Silva Bumpa","DJ","Dance","https://images.sxsw.com/gystC1P-_xkeXiIevPFUkP4dvTQ=/450x450/images.sxsw.com/195/3fd5c1df-aa39-dbd4-53b9-fbdbf19a9418/artist-76680","https://schedule.sxsw.com/2026/events/MS65133"],
+["Lane Smith","Fri","8:00pm -- 8:40pm","Elysium","BMG Label & Publishing","Pop","Alternative","https://images.sxsw.com/7LBu7_YRHChp5pbYMd0Nh_Um8sA=/450x450/images.sxsw.com/195/c837703c-8cc8-45e5-9218-6fdd77b61c79/artist-76398","https://schedule.sxsw.com/2026/events/MS64363"],
+["Mariae Cassandra","Fri","8:00pm -- 8:30pm","Seven Grand","One Fiinix Live","Pop","Indie Pop","https://images.sxsw.com/P7aK6-6lT4ZO6L6vu9PZWkegYDo=/450x450/images.sxsw.com/195/b2f804aa-8993-93f7-1538-a53c35aa1c6c/artist-73836","https://schedule.sxsw.com/2026/events/MS63508"],
+["Our Shame","Fri","8:00pm -- 8:40pm","Venue 6","Taiwan Beats","Electronic","Synthpop","https://images.sxsw.com/OyFuLdakml8vZIj_p_xKdUNtlgg=/450x450/images.sxsw.com/195/b60ee8b9-0b12-b21b-4692-5fd7206a4701/artist-74404","https://schedule.sxsw.com/2026/events/MS63368"],
+["PONS","Fri","8:00pm -- 8:40pm","Hotel Vegas","Spaace Camp","Avant / Experimental","Post-Punk","https://images.sxsw.com/d_roZQ6A82RZDp37Ho42SS489MU=/450x450/images.sxsw.com/195/28369173-75fc-7713-651a-d35982c11c4c/artist-74181","https://schedule.sxsw.com/2026/events/MS65028"],
+["PSH (Peneři Strýčka Homeboye)","Fri","8:00pm -- 8:50pm","Augustine","Czech House","Rock","Alternative","https://images.sxsw.com/vv2g28-bd2P_m3w013bE7wLKLGE=/450x450/images.sxsw.com/195/fa14f990-2eba-c9f7-2850-a49181966425/artist-76365","https://schedule.sxsw.com/2026/events/MS64240"],
+["Randy Perez","Fri","8:00pm -- 9:30pm","Neon Grotto Rooftop","Corson Agency","DJ","House / Techno","https://images.sxsw.com/JfZNoByE7_yo48x_jN879TFvFMM=/450x450/images.sxsw.com/195/62033b0c-3d90-c3a9-1c6d-3ab029a32901/artist-76100","https://schedule.sxsw.com/2026/events/MS63827"],
+["Sarah Crean","Fri","8:00pm -- 8:40pm","Swan Dive Patio","Music From Ireland","Pop","Dream Pop","https://images.sxsw.com/4Lz6gg068QEag6qfkKs4ZZW2Z7E=/450x450/images.sxsw.com/195/64ad9295-05c9-98a0-3e7c-f3436b7a6fd3/artist-74481","https://schedule.sxsw.com/2026/events/MS63554"],
+["Tiera Kennedy","Fri","8:00pm -- 10:00pm","Central Presbyterian","CMA Songwriters Series","Country","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64828"],
+["Wilby","Fri","8:00pm -- 8:30pm","Valhalla","Planetary Group","Rock","Indie Rock","https://images.sxsw.com/xs_lPaZmiCLRPIj5jIxKg48G6GU=/450x450/images.sxsw.com/195/fdf7d7ec-400e-0630-0b62-d8585b1635a0/artist-73236","https://schedule.sxsw.com/2026/events/MS63276"],
+["Wyatt Flores","Fri","8:00pm -- 10:00pm","Central Presbyterian","CMA Songwriters Series","Country","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64479"],
+["Zastava","Fri","8:00pm -- 8:40pm","Chess Club","","Rock","Post-Punk","https://images.sxsw.com/E9gjqAIFQykIT9Qsm2DlHJLxwBk=/450x450/images.sxsw.com/195/4f50d8fa-0e6e-1829-dcdd-fa8aeeef8973/artist-73392","https://schedule.sxsw.com/2026/events/MS63147"],
+["Lexi Gold","Fri","8:05pm -- 8:15pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","","https://images.sxsw.com/fGlo9MV_Q2dGpn93MsiiYXw_P2s=/450x450/images.sxsw.com/195/282a52b3-bbee-ae4a-851c-acf4eb95acd6/artist-76716","https://schedule.sxsw.com/2026/events/MS65207"],
+["Foolish Ty","Fri","8:10pm -- 8:20pm","Lefty's Brick Bar","KUTX - The Breaks","Hip-Hop / Rap","R & B","https://images.sxsw.com/ukAjBsYnPhdKSc9jfPerSr5Q8oQ=/450x450/images.sxsw.com/195/87caffd1-b1bd-18b7-bde4-196d3b9f19e9/artist-76075","https://schedule.sxsw.com/2026/events/MS63728"],
+["Donye Kimal","Fri","8:15pm -- 8:25pm","Taco n Maiz","God Body Official Stage","Hip-Hop / Rap","R & B","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64542"],
+["Fine Food Market","Fri","8:15pm -- 8:55pm","Swan Dive","POP Montreal","Folk","Americana","https://images.sxsw.com/h4TTLY3SWxaI41hZlPp02E68y4k=/450x450/images.sxsw.com/195/b3ceaa10-4f9d-4a71-09bf-f1a54b19f35e/artist-73017","https://schedule.sxsw.com/2026/events/MS63980"],
+["Rich Delinquent","Fri","8:15pm -- 8:45pm","Neon Grotto","Corson Agency","DJ","House / Techno","https://images.sxsw.com/CYPnkufWPYMMnCAKUhbln7GQTww=/450x450/images.sxsw.com/195/6ccb9c34-9501-6236-6120-0b1f4272bc4e/artist-75343","https://schedule.sxsw.com/2026/events/MS63888"],
+["BARTLY","Fri","8:20pm -- 8:50pm","Zilker Brewing","UTOPiA Sessions","Soul","Americana","https://images.sxsw.com/urbdeMiDnsgIbIrWm-vg6B6QThU=/450x450/images.sxsw.com/195/48767c5d-5be4-e1f9-e81c-3d6d3fdb48f7/artist-75226","https://schedule.sxsw.com/2026/events/MS63874"],
+["Pink Breath of Heaven","Fri","8:20pm -- 9:10pm","Shangri-La","Pandora Music","Rock","Shoegaze","https://images.sxsw.com/E5WAdwS7vDSI9RJDADp7ttbdG30=/450x450/images.sxsw.com/195/af013391-aa84-c835-4dd3-61f7fa7a9b83/artist-74258","https://schedule.sxsw.com/2026/events/MS64104"],
+["Akshara","Fri","8:25pm -- 8:50pm","Flamingo Cantina","South Asian House Soundvilla","R & B","Alternative","https://images.sxsw.com/apHiF_RLsrnSXdvlvtcGyBgUq-w=/450x450/images.sxsw.com/195/5452ec5f-b8db-509c-aa22-fefc68f84ba0/artist-75768","https://schedule.sxsw.com/2026/events/MS63570"],
+["LouieV T","Fri","8:25pm -- 8:35pm","Lefty's Brick Bar","KUTX - The Breaks","Hip-Hop / Rap","R & B","https://images.sxsw.com/AvuUvxVpEMR420mtu58fo0KC26c=/450x450/images.sxsw.com/195/7bb59b8a-f513-7e59-2199-190e7486d804/artist-76101","https://schedule.sxsw.com/2026/events/MS63769"],
+["Chanté","Fri","8:30pm -- 8:40pm","Taco n Maiz","God Body Official Stage","Hip-Hop / Rap","R & B","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65146"],
+["STRANGE LOT","Fri","8:30pm -- 9:00pm","Hotel Vegas Patio","Spaace Camp","Rock","Psychedelic","https://images.sxsw.com/qS0W36AVv47ttl744C46Gca5S1E=/450x450/images.sxsw.com/195/9e40f572-9c96-3328-23cb-5ffc62ef75fa/artist-76054","https://schedule.sxsw.com/2026/events/MS63741"],
+["Clave Especial","Fri","8:35pm -- 9:15pm","ACL Live","Rolling Stone Future of Music","","","https://images.sxsw.com/qgreAtj0rX0tM7oZDqD0qhrQbrM=/450x450/images.sxsw.com/195/b920fddc-3e8a-dc69-f8b0-0fbcd28d6ab5/artist-76485","https://schedule.sxsw.com/2026/events/MS64635"],
+["Kofi Stone","Fri","8:35pm -- 8:50pm","BME @ Palm Door Patio","BBC Introducing","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/xpTZaZ0mvqy5RhYmQK4nI-rP22c=/450x450/images.sxsw.com/195/0f199c13-40e0-e1ae-c137-34a242113f22/artist-75722","https://schedule.sxsw.com/2026/events/MS63379"],
+["Los Kemet","Fri","8:35pm -- 8:45pm","Lefty's Brick Bar","KUTX - The Breaks","Hip-Hop / Rap","Blues","https://images.sxsw.com/5Y6OCdW6nNcgnFYfuMAg1pX-oIM=/450x450/images.sxsw.com/195/3379aa28-424a-bc09-44b0-d2a8fe78b5d0/artist-74553","https://schedule.sxsw.com/2026/events/MS63526"],
+["Amie Blu","Fri","8:40pm -- 9:10pm","BME @ Palm Door","BBC Introducing","Singer-Songwriter","Indie Pop","https://images.sxsw.com/y7v4vRlw7uOBg1QZty7PAPioA7U=/450x450/images.sxsw.com/195/9acff9c3-a301-b1c8-0a95-c440cd88054c/artist-75846","https://schedule.sxsw.com/2026/events/MS63408"],
+["BANSHIMOKU","Fri","8:40pm -- 9:10pm","Downright Global Stage","TOKYO CALLING × INSPIRED BY TOKYO","Rock","Alternative","https://images.sxsw.com/kYQS4z_K8syrfm8fN2iv6_SYmwI=/450x450/images.sxsw.com/195/1fc547bc-a45d-2854-b1b9-6231bfaea470/artist-76290","https://schedule.sxsw.com/2026/events/MS64111"],
+["LilJayFromDaO","Fri","8:40pm -- 8:50pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/v6cSLvxmtPQdTPYEvQvxY-l7QKU=/450x450/images.sxsw.com/195/f0d433df-a4df-9cc4-e58f-3237533bea27/artist-75856","https://schedule.sxsw.com/2026/events/MS63492"],
+["Meg Elsier","Fri","8:40pm -- 9:20pm","Las Perlas","The Luna Collective x Bright Antenna Records","Rock","Indie Rock","https://images.sxsw.com/W_lZcfmgaDNZ9HWvHbqFOig81dk=/450x450/images.sxsw.com/195/f4c87c99-06b1-6b14-86a4-b3b42b10c00a/artist-","https://schedule.sxsw.com/2026/events/MS63619"],
+["Projectbabyjv","Fri","8:40pm -- 8:50pm","Lefty's Brick Bar","KUTX - The Breaks","","","https://images.sxsw.com/Mh1a9kuf-aZdQ_zRyw5W4IWTZgg=/450x450/images.sxsw.com/195/6ca67c8e-8312-742f-3abd-3a51c76c8743/artist-76674","https://schedule.sxsw.com/2026/events/MS65116"],
+["Perri Jones","Fri","8:45pm -- 9:05pm","Wanderlust Wine","REALM","R & B","Soul","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65148"],
+["Swapmeet","Fri","8:45pm -- 9:15pm","Valhalla","Planetary Group","Rock","Grunge","https://images.sxsw.com/aRqg8hK0RJuVMW4GgFEqRb34u-c=/450x450/images.sxsw.com/195/000be849-18d2-33d6-b428-ab2a5d2bcab1/artist-74347","https://schedule.sxsw.com/2026/events/MS63871"],
+["Z-Wells","Fri","8:45pm -- 8:55pm","Taco n Maiz","God Body Official Stage","Hip-Hop / Rap","R & B","https://images.sxsw.com/1ScxczPPds74hDtK66naN8vZWMs=/450x450/images.sxsw.com/195/34ed32ca-2c56-31ce-3c8d-b6ecdf76c361/artist-76442","https://schedule.sxsw.com/2026/events/MS64541"],
+["Blakchyl","Fri","8:50pm -- 9:00pm","Lefty's Brick Bar","KUTX - The Breaks","Hip-Hop / Rap","R & B","https://images.sxsw.com/nmXehzVsiqp4U-2jVIN-m08tuxw=/450x450/images.sxsw.com/195/1f424129-a27b-b5e6-6963-f25583142012/artist-76319","https://schedule.sxsw.com/2026/events/MS64190"],
+["Chiara Savasta","Fri","8:50pm -- 9:20pm","Seven Grand","One Fiinix Live","Pop","Indie Pop","https://images.sxsw.com/5anzehbsyVu-eQNbb6JUmKEZL9o=/450x450/images.sxsw.com/195/88646307-3571-8cba-d3ac-1baf4daafe5f/artist-73106","https://schedule.sxsw.com/2026/events/MS63414"],
+["2ar","Fri","9:00pm -- 10:30pm","Neon Grotto","Corson Agency","DJ","House / Techno","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63951"],
+["Alina Pash","Fri","9:00pm -- 9:40pm","Speakeasy","European Union & German Music Export","Hip-Hop / Rap","Folk","https://images.sxsw.com/IbKqL1EIy7X8bm2D7zPGC1dX4ho=/450x450/images.sxsw.com/195/268dd879-8754-1a95-27e2-7147a27a4c2f/artist-75941","https://schedule.sxsw.com/2026/events/MS64273"],
+["Basht.","Fri","9:00pm -- 9:40pm","Swan Dive Patio","Music From Ireland","Rock","Alternative","https://images.sxsw.com/zeyPu8SOf_lKu65X1PcZeeUwKRg=/450x450/images.sxsw.com/195/c5d04b7b-db62-2e00-1087-c6900aa2b9cb/artist-72725","https://schedule.sxsw.com/2026/events/MS63324"],
+["Blanky","Fri","9:00pm -- 9:40pm","Low Down Lounge","","","","https://images.sxsw.com/Pnugcntx51BqHzGxkb3nc8qmDs4=/450x450/images.sxsw.com/195/7545b0f4-b7e9-3a0f-87ea-288b3f96053c/artist-74008","https://schedule.sxsw.com/2026/events/MS64310"],
+["Devon Gabriella","Fri","9:00pm -- 9:40pm","Elysium","BMG Label & Publishing","Pop","Acoustic","https://images.sxsw.com/Ok9VhlNEnEN3RLZtnrgaIbaVg6Y=/450x450/images.sxsw.com/195/97b293fe-90f3-e663-dd40-c814851489c4/artist-76274","https://schedule.sxsw.com/2026/events/MS64086"],
+["Hermanos Gutiérrez","Fri","9:00pm -- 9:40pm","Stubb's","","","","https://images.sxsw.com/rpB-cFYfdYf7U3Xuc-L2gZcmzlg=/450x450/images.sxsw.com/195/6b15ca87-94f4-f739-908b-b3299bbfe90d/artist-76741","https://schedule.sxsw.com/2026/events/MS65257"],
+["Honey I'm Home","Fri","9:00pm -- 9:40pm","Chess Club","","Rock","Shoegaze","https://images.sxsw.com/iFsHSKlaX11PJLjxZ9Vwu2ByYKI=/450x450/images.sxsw.com/195/81b80628-c713-f671-311e-5ad67ff36e74/artist-75116","https://schedule.sxsw.com/2026/events/MS64215"],
+["Hot Garbage","Fri","9:00pm -- 9:40pm","Hotel Vegas","Spaace Camp","Rock","Psychedelic","https://images.sxsw.com/35YYJgtk9W5ahsXuLLJoUTz26qs=/450x450/images.sxsw.com/195/548bc903-4654-7a0e-56f9-aa7ae4a6cacd/artist-74247","https://schedule.sxsw.com/2026/events/MS64530"],
+["Modern Cinema Master","Fri","9:00pm -- 9:40pm","Venue 6","Taiwan Beats","Rock","Alternative","https://images.sxsw.com/LcMo2ffEsYiJhYOt0UUUf4tMYMM=/450x450/images.sxsw.com/195/6358728d-a39c-04b3-2f7a-cab0e5496bbf/artist-74406","https://schedule.sxsw.com/2026/events/MS63370"],
+["NAADI","Fri","9:00pm -- 9:20pm","Flamingo Cantina","South Asian House Soundvilla","Pop","World","https://images.sxsw.com/GPKeF7Y3MTnSCjsXAhXVQgmS_qo=/450x450/images.sxsw.com/195/3ef70637-b1eb-f9ef-4d2d-dcb8865bbbb8/artist-76372","https://schedule.sxsw.com/2026/events/MS64275"],
+["Olivia Ellen Lloyd","Fri","9:00pm -- 9:40pm","Saxon Pub","","Americana","Alt Country","https://images.sxsw.com/7I0ouLkXK1LJO3tKLYJ4PTLlUDc=/450x450/images.sxsw.com/195/7942c020-0768-0f8d-9642-324c671bc741/artist-74041","https://schedule.sxsw.com/2026/events/MS63180"],
+["Redzed","Fri","9:00pm -- 10:00pm","Augustine","Czech House","Hip-Hop / Rap","Metal","https://images.sxsw.com/4ZNrsZFu4hBbKEsR53r-GYdPDxw=/450x450/images.sxsw.com/195/2a1769ff-2edf-2d4b-dd6c-c1df09896402/artist-75404","https://schedule.sxsw.com/2026/events/MS63963"],
+["SMITTY","Fri","9:00pm -- 10:00pm","Kingdom","Silva Bumpa","DJ","Dance","https://images.sxsw.com/hI3qdtYZU8Q4aqxddaqWWACR9-0=/450x450/images.sxsw.com/195/818c704e-fe3a-0d60-8a17-a507c5917dcd/artist-76635","https://schedule.sxsw.com/2026/events/MS65045"],
+["Subpar Snatch","Fri","9:00pm -- 9:40pm","The 13th Floor","Art Decade Creatives - Austin Heavy Hitters","Punk","Garage","https://images.sxsw.com/KIncFXLA4NzO_KX-9lMo88bKPU0=/450x450/images.sxsw.com/195/a61497ad-c5bc-61b7-5d5c-b32b4391886b/artist-73295","https://schedule.sxsw.com/2026/events/MS63653"],
+["THEBROSFRESH","Fri","9:00pm -- 9:40pm","Continental Club","Armadillo World Headquarters","Rock","Americana","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64988"],
+["Whip The Rapper","Fri","9:00pm -- 9:10pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65258"],
+["Anastasia Hera","Fri","9:05pm -- 9:20pm","Lefty's Brick Bar","KUTX - The Breaks","","","https://images.sxsw.com/lnIOZjfeCTHYK2t99AblmB8y7is=/450x450/images.sxsw.com/195/8615ac8e-d4a9-ddb0-742b-d804ff51a732/artist-76409","https://schedule.sxsw.com/2026/events/MS64417"],
+["Tiara Thomas","Fri","9:05pm -- 9:20pm","Taco n Maiz","God Body Official Stage","Hip-Hop / Rap","R & B","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65247"],
+["amri","Fri","9:10pm -- 9:40pm","Zilker Brewing","UTOPiA Sessions","Jazz","Fusion","https://images.sxsw.com/Z2qSAtE4cKsXYEm_YI0S1-zB6Zg=/450x450/images.sxsw.com/195/6076fb1c-95ce-bfd0-c088-4c237c37227f/artist-74429","https://schedule.sxsw.com/2026/events/MS63317"],
+["Donovan","Fri","9:10pm -- 9:30pm","Wanderlust Wine","REALM","R & B","Soul","https://images.sxsw.com/j_xo0TkUmEicFAdVRHNF7DyrvJA=/450x450/images.sxsw.com/195/7ab25414-e386-707a-9cbb-5224877786d9/artist-76699","https://schedule.sxsw.com/2026/events/MS65180"],
+["Gavin Copeland","Fri","9:15pm -- 9:30pm","Riviere","skills Over Politics Showcase","Soul","Hip-Hop / Rap","https://images.sxsw.com/53TIBXSTZE2wxb0eL9N1GGHQQe4=/450x450/images.sxsw.com/195/c28d4b31-16de-0101-874e-51494908cd26/artist-76196","https://schedule.sxsw.com/2026/events/MS63990"],
+["Hanorah","Fri","9:15pm -- 9:55pm","Swan Dive","POP Montreal","R & B","Folk","https://images.sxsw.com/lEsksOWq4gouM87S3Kh-rrar9z8=/450x450/images.sxsw.com/195/0ea0fd9a-500e-1f8b-4b03-64cbbf0d03e1/artist-75779","https://schedule.sxsw.com/2026/events/MS63981"],
+["Cashier","Fri","9:30pm -- 10:00pm","Valhalla","Planetary Group","Rock","Alternative","https://images.sxsw.com/0UHrqH8Bd_naLg-H1MOIBEJxZJA=/450x450/images.sxsw.com/195/62193194-24a9-80ae-73af-e6af2253e554/artist-75488","https://schedule.sxsw.com/2026/events/MS63873"],
+["Cure for Paranoia","Fri","9:30pm -- 10:00pm","Shangri-La","Pandora Music","Hip-Hop / Rap","Alternative","https://images.sxsw.com/QhyuJpR0Qn1x5hj1WgoPqdjHOm0=/450x450/images.sxsw.com/195/7d658466-936d-e86b-e327-8f087cfbcf0c/artist-74117","https://schedule.sxsw.com/2026/events/MS64481"],
+["Dramos","Fri","9:30pm -- 11:00pm","Neon Grotto Rooftop","Corson Agency","DJ","House / Techno","https://images.sxsw.com/t3dX4cy2GCOemRxJ01rsYSvZ-Y0=/450x450/images.sxsw.com/195/83071c06-5605-ed77-6e5c-c356b6eddf01/artist-76081","https://schedule.sxsw.com/2026/events/MS63759"],
+["Enfants","Fri","9:30pm -- 10:00pm","Downright Global Stage","TOKYO CALLING × INSPIRED BY TOKYO","Rock","Indie Rock","https://images.sxsw.com/Cbt1I6cKYITWN1QgwCJMzeY5CfM=/450x450/images.sxsw.com/195/758a8ad0-c076-0715-2b7b-0b8381020af2/artist-75718","https://schedule.sxsw.com/2026/events/MS63347"],
+["Slow Spread Love","Fri","9:30pm -- 9:40pm","Taco n Maiz","God Body Official Stage","Hip-Hop / Rap","R & B","https://images.sxsw.com/LLyFE8jquRdYpA-_oh59FlcbLIg=/450x450/images.sxsw.com/195/4dd80f04-c0fa-8a00-cadd-33ba9401fb1d/artist-76477","https://schedule.sxsw.com/2026/events/MS64638"],
+["Sunshine Spazz","Fri","9:30pm -- 10:00pm","Hotel Vegas Volstead","Spaace Camp","Rock","Garage","https://images.sxsw.com/5V_nE9iZzgZrb_aqStk1FPHranQ=/450x450/images.sxsw.com/195/b53ddefd-b934-20da-47e3-ab729a7b3753/artist-73808","https://schedule.sxsw.com/2026/events/MS63169"],
+["Chino Pacas","Fri","9:35pm -- 10:20pm","ACL Live","Rolling Stone Future of Music","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64848"],
+["Clova","Fri","9:35pm -- 9:50pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/WhmE1qKOz6niyS3vuoE2-mLc1vQ=/450x450/images.sxsw.com/195/17880a5c-eade-0df5-14f8-688d4ef67d56/artist-75995","https://schedule.sxsw.com/2026/events/MS63637"],
+["Gavin Copeland","Fri","9:35pm -- 9:55pm","Wanderlust Wine","REALM","Soul","Hip-Hop / Rap","https://images.sxsw.com/53TIBXSTZE2wxb0eL9N1GGHQQe4=/450x450/images.sxsw.com/195/c28d4b31-16de-0101-874e-51494908cd26/artist-76196","https://schedule.sxsw.com/2026/events/MS65033"],
+["REHMA","Fri","9:35pm -- 10:05pm","Flamingo Cantina","South Asian House Soundvilla","Pop","R & B","https://images.sxsw.com/_PFATYMP158SOpfmw9bvRZmo86A=/450x450/images.sxsw.com/195/98d7f35b-5aed-3002-303d-f5d2cfcf1b25/artist-74133","https://schedule.sxsw.com/2026/events/MS63186"],
+["Sertified","Fri","9:35pm -- 9:50pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/8PI6kYlQsYqb42-qLMGOGBB8EIs=/450x450/images.sxsw.com/195/a7a59934-a90d-9d5f-dc98-bfa72c8e428b/artist-76119","https://schedule.sxsw.com/2026/events/MS63794"],
+["Avery Cochrane","Fri","9:40pm -- 10:20pm","Las Perlas","The Luna Collective x Bright Antenna Records","","","https://images.sxsw.com/71zxOCBeQ3YQ1gzZItFLRnFTznc=/450x450/images.sxsw.com/195/2b2f4bb7-98f1-2b8d-0893-21de83f46804/artist-75861","https://schedule.sxsw.com/2026/events/MS64599"],
+["better joy","Fri","9:40pm -- 10:10pm","Seven Grand","One Fiinix Live","Pop","Indie Pop","https://images.sxsw.com/Q8MQX3AkPWrU9h0YpBg0prVaEOk=/450x450/images.sxsw.com/195/abea1d8b-1713-05d0-88a8-8c60fc05f476/artist-73002","https://schedule.sxsw.com/2026/events/MS63788"],
+["Kydd Jones","Fri","9:40pm -- 9:55pm","Lefty's Brick Bar","KUTX - The Breaks","","","https://images.sxsw.com/9ZXzgeDop3TUpsYSceFjAEBSIk0=/450x450/images.sxsw.com/195/0cffc314-4066-e004-c394-90af4f61fc29/artist-76434","https://schedule.sxsw.com/2026/events/MS64512"],
+["Kris CaMeRon","Fri","9:45pm -- 9:55pm","Taco n Maiz","God Body Official Stage","Hip-Hop / Rap","R & B","https://images.sxsw.com/4nmgmbpyGSXe3E9kpcg2fAHItVU=/450x450/images.sxsw.com/195/89106215-57f5-b197-f536-d99d8e8c44db/artist-76683","https://schedule.sxsw.com/2026/events/MS65147"],
+["AJ McQueen","Fri","10:00pm -- 10:30pm","Taco n Maiz","God Body Official Stage","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/161ZAyKBcSNqG21xJYR2Y1-_j2Y=/450x450/images.sxsw.com/195/8516c262-a3d0-c4a7-47c4-61f3bf80f52a/artist-74521","https://schedule.sxsw.com/2026/events/MS64574"],
+["Bikini Beach","Fri","10:00pm -- 10:40pm","Hotel Vegas","Spaace Camp","Rock","Garage","https://images.sxsw.com/q5L7pXsJe5Ihfs5BSLQhxqnUqq0=/450x450/images.sxsw.com/195/a8b423b1-1f5b-84d0-968b-f48f7b22517e/artist-74987","https://schedule.sxsw.com/2026/events/MS64531"],
+["CorMae","Fri","10:00pm -- 10:40pm","The 13th Floor","Art Decade Creatives - Austin Heavy Hitters","Punk","Garage","https://images.sxsw.com/o_OWFcTZRLBg_l-Qr3TyXvKGiAA=/450x450/images.sxsw.com/195/f9b7ac34-bc96-6fd7-da41-ee9246e7d009/artist-73176","https://schedule.sxsw.com/2026/events/MS63709"],
+["The Dharma Chain","Fri","10:00pm -- 10:40pm","Speakeasy","European Union & German Music Export","Rock","Psychedelic","https://images.sxsw.com/Wt-k9l3qEUw5eqSYO1-w6fAslto=/450x450/images.sxsw.com/195/0a2e22af-ec5f-3149-9e5d-6e98331a0b09/artist-75272","https://schedule.sxsw.com/2026/events/MS63346"],
+["DJ EXILE","Fri","10:00pm -- 12:00am","Mala Vida","","DJ","Reggaeton","https://images.sxsw.com/SInLXUyIxWN2A3ZMurHPcjPf5UQ=/450x450/images.sxsw.com/195/686b7d3c-6949-0b07-cb9a-fb9b20c659e9/artist-76303","https://schedule.sxsw.com/2026/events/MS64147"],
+["Flesh Juicer","Fri","10:00pm -- 10:40pm","Venue 6","Taiwan Beats","Metal","Heavy Metal","https://images.sxsw.com/BrVMfFjn4U_d4Zn4JhBog3ViXZc=/450x450/images.sxsw.com/195/0fcda83b-749c-8bc6-8d56-04742034e0d2/artist-74394","https://schedule.sxsw.com/2026/events/MS63366"],
+["Good Flying Birds","Fri","10:00pm -- 10:40pm","Chess Club","","Rock","Indie Pop","https://images.sxsw.com/SnNQK_3HNF-MzcWA2bw_xy6cXDs=/450x450/images.sxsw.com/195/ff8911f0-c7ba-7d45-6e0e-172cec97b7fa/artist-75880","https://schedule.sxsw.com/2026/events/MS63683"],
+["Jack Johnson","Fri","10:00pm -- 11:30pm","Stubb's","","","","https://images.sxsw.com/l-V7DILY9Cip07NYUBt75IVuJ-w=/450x450/images.sxsw.com/195/d5da50db-1ae3-f0c8-b572-17a9d315dc3e/artist-76066","https://schedule.sxsw.com/2026/events/MS63715"],
+["Neo Fonseca","Fri","10:00pm -- 11:15pm","Kingdom","Silva Bumpa","DJ","Dance","https://images.sxsw.com/uPfcv87PwyGMV44TfruE9mu-K0g=/450x450/images.sxsw.com/195/2d2a0874-6a6f-5d15-e62c-acf5b0598dc0/artist-76645","https://schedule.sxsw.com/2026/events/MS65067"],
+["Next of Kin","Fri","10:00pm -- 10:40pm","Continental Club","Armadillo World Headquarters","Country","Americana","https://images.sxsw.com/00R-adbyTxbvwo53DfKQANRtwak=/450x450/images.sxsw.com/195/a8841032-270b-c81d-d27e-cacb1ee9a74b/artist-74072","https://schedule.sxsw.com/2026/events/MS63965"],
+["Nicky Diamonds","Fri","10:00pm -- 10:40pm","Saxon Pub","","","","https://images.sxsw.com/j7_xFrnSOVPU6wiCH3a0TFZiQps=/450x450/images.sxsw.com/195/7fc09c5c-b351-848a-08a9-bf9b5e97dc88/artist-75758","https://schedule.sxsw.com/2026/events/MS63373"],
+["Nug","Fri","10:00pm -- 10:40pm","Low Down Lounge","","Rock","Indie Rock","https://images.sxsw.com/ukIiZog3AZbpGWXfK7xiuk2lfFo=/450x450/images.sxsw.com/195/706b461f-050c-8dfe-7a48-f99a74510987/artist-72509","https://schedule.sxsw.com/2026/events/MS64713"],
+["PIAO","Fri","10:00pm -- 10:40pm","Elysium","BMG Label & Publishing","Pop","Hyperpop","https://images.sxsw.com/yl4bRELKJlSLH8F2EIvGb1UOwkc=/450x450/images.sxsw.com/195/70b21a88-ca4a-10d4-c404-ad7f717e6466/artist-76232","https://schedule.sxsw.com/2026/events/MS64060"],
+["Sofia and the Antoinettes","Fri","10:00pm -- 10:30pm","BME @ Palm Door","BBC Introducing","Pop","Alternative","https://images.sxsw.com/i08a9L_27mUc3orcbrnNPGiiVNI=/0x0:450x450/450x450/images.sxsw.com/196/4f295d50-eceb-43cc-ab77-09e1ba100eaa/all-11","https://schedule.sxsw.com/2026/events/MS64267"],
+["Sugabooo","Fri","10:00pm -- 10:40pm","Swan Dive Patio","Music From Ireland","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/6Xnp6OpWWhOsjqo0T9Rj_nt0UUo=/450x450/images.sxsw.com/195/637b3836-37da-627f-e7f3-900f3d9e4e61/artist-75190","https://schedule.sxsw.com/2026/events/MS64400"],
+["Tropa Magica","Fri","10:00pm -- 10:40pm","Hotel Vegas Patio","Spaace Camp","Rock","Alternative","https://images.sxsw.com/YBqSDXNhYo7YtAwQxZt9mXR2QRM=/450x450/images.sxsw.com/195/546042bd-d775-0d04-4ca7-92c440f8734f/artist-76504","https://schedule.sxsw.com/2026/events/MS64718"],
+["Victor Jones","Fri","10:00pm -- 10:30pm","Zilker Brewing","UTOPiA Sessions","Rock","Dance","https://images.sxsw.com/fO-8mPmeFw5b1s9VmPfzxezkYhc=/450x450/images.sxsw.com/195/8bb79605-d867-7f3d-24cc-b4b8bf195885/artist-74060","https://schedule.sxsw.com/2026/events/MS65130"],
+["SAMWOY","Fri","10:15pm -- 10:55pm","Swan Dive","POP Montreal","Punk","Alternative","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS63982"],
+["FINLANDS","Fri","10:20pm -- 10:50pm","Downright Global Stage","TOKYO CALLING × INSPIRED BY TOKYO","Rock","J-Pop","https://images.sxsw.com/qifbNdOsrERvJpboigmTrOmZAYs=/450x450/images.sxsw.com/195/c74bc77d-dbc7-a67a-e378-2d8e99e8cc20/artist-76090","https://schedule.sxsw.com/2026/events/MS63935"],
+["Shreea Kaul","Fri","10:20pm -- 10:50pm","Flamingo Cantina","South Asian House Soundvilla","R & B","None","https://images.sxsw.com/Ie0BzzGN7Lig68b8hFoD5Ei8z04=/450x450/images.sxsw.com/195/3aecc047-b4ba-ef52-adac-f54013ac79e4/artist-74904","https://schedule.sxsw.com/2026/events/MS63279"],
+["Whitelands","Fri","10:20pm -- 10:50pm","Shangri-La","Pandora Music","Rock","Shoegaze","https://images.sxsw.com/1kzuy7e813txaHAKQx8_j2LqPI0=/450x450/images.sxsw.com/195/dedb1ab9-a9d1-acdd-9034-e11509d53a46/artist-75085","https://schedule.sxsw.com/2026/events/MS64458"],
+["J Soulja","Fri","10:25pm -- 10:40pm","Lefty's Brick Bar","KUTX - The Breaks","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/3s14qXP9QQbCbc2f61I2uqQPd40=/450x450/images.sxsw.com/195/78abca5b-d7bd-f30c-070a-8498af3a9a42/artist-74449","https://schedule.sxsw.com/2026/events/MS64438"],
+["TG Gates x BayBay Forreal","Fri","10:25pm -- 10:35pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","","https://images.sxsw.com/AQnBAhhNZXiNTUFWw5iHUoBUMe0=/450x450/images.sxsw.com/195/053b2859-e42a-4eeb-d46d-e5ee0bdaef64/artist-76355","https://schedule.sxsw.com/2026/events/MS65256"],
+["Boutique Feelings","Fri","10:30pm -- 11:00pm","Seven Grand","One Fiinix Live","Hip-Hop / Rap","Alternative","https://images.sxsw.com/nPy_Uy5Eoj4NruFxP_k353qL5pg=/450x450/images.sxsw.com/195/66a12813-6cf0-cccc-1435-a84319d2a20c/artist-74246","https://schedule.sxsw.com/2026/events/MS63360"],
+["Casmalia","Fri","10:30pm -- 12:00am","Neon Grotto","Corson Agency","Electronic","House / Techno","https://images.sxsw.com/0qQPHUrn9urLjHFsErNx7odLWFo=/450x450/images.sxsw.com/195/73feb155-d958-c9b9-dd2a-962dfe49fe10/artist-76166","https://schedule.sxsw.com/2026/events/MS63961"],
+["LIFEOFTHOM","Fri","10:30pm -- 11:00pm","Wanderlust Wine","REALM","R & B","Soul","https://images.sxsw.com/CLDSqyFdgX7RBh2EWA9uzWIUYjY=/450x450/images.sxsw.com/195/2b8a1985-f4ae-286f-4973-3417a26be156/artist-76340","https://schedule.sxsw.com/2026/events/MS64200"],
+["Montclair","Fri","10:30pm -- 11:00pm","Valhalla","Planetary Group","Americana","Indie Rock","https://images.sxsw.com/u5ncxfFVmWjoYknHsDnl6lbjW0E=/450x450/images.sxsw.com/195/63ed7595-586d-b616-f240-6787155e1f6d/artist-73749","https://schedule.sxsw.com/2026/events/MS64506"],
+["Olivia Morreale","Fri","10:40pm -- 11:20pm","Las Perlas","The Luna Collective x Bright Antenna Records","Pop","Rock","https://images.sxsw.com/slM7TNyUfQsmLL7ABFgXt_hKKbY=/450x450/images.sxsw.com/195/c5b83034-749d-505c-79a3-3b54c6d85a45/artist-75940","https://schedule.sxsw.com/2026/events/MS63566"],
+["TTOD Bumpy Johnson","Fri","10:40pm -- 10:50pm","Riviere","skills Over Politics Showcase","Hip-Hop / Rap","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64467"],
+["Werkha","Fri","10:40pm -- 11:10pm","BME @ Palm Door Patio","BBC Introducing","Electronic","Jazz","https://images.sxsw.com/A93S3HhN6oxKAWxTgTQbQd4tf6I=/450x450/images.sxsw.com/195/78e4429a-2431-a857-71c0-6ba040cc7e60/artist-75353","https://schedule.sxsw.com/2026/events/MS64265"],
+["Deloyd Elze","Fri","10:50pm -- 11:20pm","Zilker Brewing","UTOPiA Sessions","Alt Country","Ambient","https://images.sxsw.com/rXMMrpT0kq67xuXFlalZ2bxQ5fI=/450x450/images.sxsw.com/195/cfbc314b-a6a2-5600-5289-eadf891f5a7c/artist-74182","https://schedule.sxsw.com/2026/events/MS64740"],
+["Fuerza Regida","Fri","10:55pm -- 12:00am","ACL Live","Rolling Stone Future of Music","","","https://images.sxsw.com/87jfH1b5boaHgECksi4HrGDUGJA=/450x450/images.sxsw.com/195/0c84dfdb-52ec-0f2f-49a9-e31615101984/artist-76556","https://schedule.sxsw.com/2026/events/MS64857"],
+["Armanii","Fri","11:00pm -- 11:30pm","Wanderlust Wine","REALM","R & B","Soul","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64209"],
+["DR. GRECO","Fri","11:00pm -- 12:30am","Neon Grotto Rooftop","Corson Agency","Electronic","House / Techno","https://images.sxsw.com/v6uWkx1XcnrPBtfHz7dgzctkcN8=/450x450/images.sxsw.com/195/b015a98b-b236-1379-702c-d59f31225976/artist-76053","https://schedule.sxsw.com/2026/events/MS63706"],
+["Glaze","Fri","11:00pm -- 11:40pm","Chess Club","","Rock","Shoegaze","https://images.sxsw.com/yWjNW_UsXXV5PqkYkJY99alOmUo=/450x450/images.sxsw.com/195/970334c2-81db-8804-d998-0a28f66b3e9b/artist-75329","https://schedule.sxsw.com/2026/events/MS64011"],
+["Good Looks","Fri","11:00pm -- 11:40pm","Continental Club","Armadillo World Headquarters","Rock","Americana","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65020"],
+["Kids","Fri","11:00pm -- 11:40pm","Low Down Lounge","","Punk","Post-Punk","https://images.sxsw.com/XgaBxCVtATrIfjATkWENxZHpdV8=/450x450/images.sxsw.com/195/9813fee7-0623-b27b-db1e-68b7c45349c4/artist-74362","https://schedule.sxsw.com/2026/events/MS63422"],
+["Lola Tried","Fri","11:00pm -- 11:40pm","The 13th Floor","Art Decade Creatives - Austin Heavy Hitters","Punk","Garage","https://images.sxsw.com/ttF2Tup5lr-j23ukUFS6hMjRCLk=/450x450/images.sxsw.com/195/90e28a90-e026-2581-ba68-1cb37bba1aa7/artist-75777","https://schedule.sxsw.com/2026/events/MS63424"],
+["Marley Hale","Fri","11:00pm -- 11:40pm","Saxon Pub","","Americana","Alt Country","https://images.sxsw.com/f1tSUsUhf0s6Vbv-iwv4_EH6R3w=/450x450/images.sxsw.com/195/b15eb8c9-b4ee-caa9-8416-55c8a4eb1712/artist-74438","https://schedule.sxsw.com/2026/events/MS63289"],
+["Moio","Fri","11:00pm -- 11:40pm","Swan Dive Patio","Music From Ireland","Pop","Alternative","https://images.sxsw.com/o2cDH_-RwGJ7aIJRbIWFzfSGC5A=/450x450/images.sxsw.com/195/bba1ee12-3aaf-d072-c1ee-c4e46a7b5eaa/artist-76091","https://schedule.sxsw.com/2026/events/MS63775"],
+["Nilipek.","Fri","11:00pm -- 11:40pm","Speakeasy","European Union & German Music Export","Singer-Songwriter","Dream Pop","https://images.sxsw.com/DPDhz4dSYq6lMfuvhCsV3xfLsso=/450x450/images.sxsw.com/195/831b8033-526c-9078-0cfe-10cc51fec258/artist-74961","https://schedule.sxsw.com/2026/events/MS63449"],
+["Pei-Yu Hung","Fri","11:00pm -- 11:40pm","Venue 6","Taiwan Beats","Pop","Mandopop","https://images.sxsw.com/gpRNi--RGFuWVzqXEpVOXZ_QZmc=/450x450/images.sxsw.com/195/ef833050-5e9b-030c-9835-cb92e0d4ebb2/artist-74396","https://schedule.sxsw.com/2026/events/MS63367"],
+["Semisoft","Fri","11:00pm -- 11:40pm","Hotel Vegas","Spaace Camp","Rock","Garage","https://images.sxsw.com/9UV7Zn9_ZtBMrzwwzCiN1Jd7Ukk=/450x450/images.sxsw.com/195/8be29604-e74a-adcc-22d0-264e2dd6a11f/artist-75818","https://schedule.sxsw.com/2026/events/MS64532"],
+["Switchfoot","Fri","11:00pm -- 11:40pm","Elysium","BMG Label & Publishing","Rock","Alternative","https://images.sxsw.com/OBxmcWHr8FhgT3y4P6JgpaXWn0k=/450x450/images.sxsw.com/195/d4b70700-42ac-2856-b169-8672611beab0/artist-76190","https://schedule.sxsw.com/2026/events/MS63949"],
+["Wacotron","Fri","11:00pm -- 11:15pm","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/LFdd5ypl7Dg9sJEUGjjIqteR7IY=/450x450/images.sxsw.com/195/34a7bdf1-358f-080f-5d6b-ea0fe9d57d42/artist-76304","https://schedule.sxsw.com/2026/events/MS64146"],
+["KOAD","Fri","11:05pm -- 11:35pm","Flamingo Cantina","South Asian House Soundvilla","Hip-Hop / Rap","None","https://images.sxsw.com/bKS5JEX0PtBSP2f1FFBu4rnKUnI=/450x450/images.sxsw.com/195/65f99846-5090-6122-6a4b-10a529558a54/artist-74132","https://schedule.sxsw.com/2026/events/MS63185"],
+["ISCREAM NEVER GROUND","Fri","11:10pm -- 11:50pm","Downright Global Stage","TOKYO CALLING × INSPIRED BY TOKYO","Rock","Nu Metal","https://images.sxsw.com/rS9aBCjSbHlZRkAlmZjI17xEu-w=/450x450/images.sxsw.com/195/a3156a3d-08c2-1457-c630-e9519506ceff/artist-76102","https://schedule.sxsw.com/2026/events/MS63936"],
+["Seulement","Fri","11:10pm -- 11:40pm","Hotel Vegas Volstead","Spaace Camp","Electronic","Avant / Experimental","https://images.sxsw.com/_tnQMUHP5lGkhBl3b0go2nTfR9M=/450x450/images.sxsw.com/195/fc09eadf-1627-c4c4-2e1f-6e806e825b89/artist-74250","https://schedule.sxsw.com/2026/events/MS64528"],
+["The Sophs","Fri","11:10pm -- 11:40pm","Shangri-La","Pandora Music","Rock","Indie Rock","https://images.sxsw.com/vv4IPBzNf5tkzLJwS41H1Yed4Tk=/450x450/images.sxsw.com/195/61610f26-9ccd-1f01-f809-502c88536001/artist-73889","https://schedule.sxsw.com/2026/events/MS63205"],
+["Kai Castro","Fri","11:15pm -- 12:45am","Kingdom","Silva Bumpa","DJ","Dance","https://images.sxsw.com/aU5JbATkXz1qqKrq1Z5i9MrgeFw=/450x450/images.sxsw.com/195/9a15500e-f498-989d-5158-1067ef74c059/artist-76666","https://schedule.sxsw.com/2026/events/MS65090"],
+["SLASH NEED","Fri","11:15pm -- 11:55pm","Swan Dive","POP Montreal","Punk","Electronic","https://images.sxsw.com/SHNJ3N4s_xHKcOA3zjpLv61YvI0=/450x450/images.sxsw.com/195/1ed880a2-c3a4-02a4-c442-21c79b40612d/artist-76103","https://schedule.sxsw.com/2026/events/MS63988"],
+["ARXX","Fri","11:20pm -- 11:50pm","Seven Grand","One Fiinix Live","Rock","Power Pop","https://images.sxsw.com/jeV0uwtHOPFrumWZSmWFyKSB1FY=/450x450/images.sxsw.com/195/1e5ce975-d368-6484-275e-a4a629526c18/artist-75732","https://schedule.sxsw.com/2026/events/MS64222"],
+["Tom A Smith","Fri","11:20pm -- 11:50pm","BME @ Palm Door","BBC Introducing","Rock","Indie Rock","https://images.sxsw.com/RNKJn0SyRLQw9qelZOmHK6kAUBE=/450x450/images.sxsw.com/195/d955657a-26c1-8dca-516f-f11147ef02c3/artist-73845","https://schedule.sxsw.com/2026/events/MS63725"],
+["Grrrl Gang","Fri","11:30pm -- 12:00am","Valhalla","Planetary Group","Rock","Indie Rock","https://images.sxsw.com/i6SnMqWVxv6eXJAEHhmKTAMxmd0=/450x450/images.sxsw.com/195/5901e392-a01f-8db3-bfca-824b35b803ab/artist-74015","https://schedule.sxsw.com/2026/events/MS63872"],
+["Kazi","Fri","11:30pm -- 12:00am","Wanderlust Wine","REALM","R & B","Soul","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65149"],
+["Anna Shoemaker","Fri","11:40pm -- 12:10am","Las Perlas","The Luna Collective x Bright Antenna Records","Americana","Indie Pop","https://images.sxsw.com/-X65cqd0hEy68ZhsYI2yB8aUzCU=/450x450/images.sxsw.com/195/a84bbda5-3254-8c6c-c0d3-351c4d123972/artist-74384","https://schedule.sxsw.com/2026/events/MS63327"],
+["Mên An Tol","Fri","11:40pm -- 12:10am","Zilker Brewing","UTOPiA Sessions","R & B","Soul","https://images.sxsw.com/Z-Oe6TsOw62oEjxvbjCX9uYocP0=/450x450/images.sxsw.com/195/ce4931c7-c5bc-dd54-4ec6-1530d78ba015/artist-75752","https://schedule.sxsw.com/2026/events/MS64733"],
+["Stiff Barbie","Fri","11:50pm -- 12:05am","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","","https://images.sxsw.com/_JWFUPfHz3iyC8EeibZn0UROsPM=/450x450/images.sxsw.com/195/ebe0f8cf-a7fd-ab97-1d45-f5ac1aa728dc/artist-76605","https://schedule.sxsw.com/2026/events/MS64989"],
+["Karma Sheen","Fri","11:55pm -- 12:35am","Flamingo Cantina","South Asian House Soundvilla","Rock","Psychedelic","https://images.sxsw.com/dPJxFl9S31gHgGLKsQOUJdDzliA=/450x450/images.sxsw.com/195/9fd3bf6d-9e26-05b7-08e9-ff579653d253/artist-72708","https://schedule.sxsw.com/2026/events/MS63145"],
+["Boutique Feelings","Sat","12:00am -- 12:40am","Hotel Vegas Volstead","Spaace Camp","Hip-Hop / Rap","Alternative","https://images.sxsw.com/nPy_Uy5Eoj4NruFxP_k353qL5pg=/450x450/images.sxsw.com/195/66a12813-6cf0-cccc-1435-a84319d2a20c/artist-74246","https://schedule.sxsw.com/2026/events/MS65230"],
+["Bricknasty","Sat","12:00am -- 12:40am","Swan Dive Patio","Music From Ireland","Jazz","Hip-Hop / Rap","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS63230"],
+["Cheap Perfume","Sat","12:00am -- 12:40am","Low Down Lounge","","Punk","Garage","https://images.sxsw.com/sRY7hE-wJhM70ou44aetU9VNuCE=/450x450/images.sxsw.com/195/26f18914-a6c9-782f-718e-fb6d012b9377/artist-73158","https://schedule.sxsw.com/2026/events/MS63456"],
+["Gabby Got It","Sat","12:00am -- 2:00am","Mala Vida","","Latin","Reggaeton","https://images.sxsw.com/O7XY2kc7oZpr5HKZTddJqWqY6Ik=/450x450/images.sxsw.com/195/406ee0b4-03a5-062c-4f3e-8d6f8f78099d/artist-76269","https://schedule.sxsw.com/2026/events/MS64074"],
+["Grocery Bag","Sat","12:00am -- 12:40am","The 13th Floor","Art Decade Creatives - Austin Heavy Hitters","Rock","Garage","https://images.sxsw.com/pfWbti9DZehIuxhbTCV-JpY6uOw=/450x450/images.sxsw.com/195/26d88111-dcd2-54ba-be32-5ad1d211be33/artist-74243","https://schedule.sxsw.com/2026/events/MS63240"],
+["Haylee Wood","Sat","12:00am -- 1:30am","Neon Grotto","Corson Agency","DJ","House / Techno","https://images.sxsw.com/BpUOTkMbIV800deFDU4k7E3Us1w=/450x450/images.sxsw.com/195/8f59d327-a262-56f4-6d22-89977b8e9369/artist-76184","https://schedule.sxsw.com/2026/events/MS63952"],
+["Lauren Lakis","Sat","12:00am -- 12:40am","Hotel Vegas","Spaace Camp","Rock","Alternative","https://images.sxsw.com/zBM0Kzea0yaAOGBDOShJkPxXDmM=/450x450/images.sxsw.com/195/b5446485-626e-e752-5b76-a1b13a453b76/artist-75188","https://schedule.sxsw.com/2026/events/MS64534"],
+["Matthew Logan Vasquez","Sat","12:00am -- 12:40am","Continental Club","Armadillo World Headquarters","Rock","Americana","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65263"],
+["Packaging","Sat","12:00am -- 12:40am","Chess Club","","Pop","Psychedelic","https://images.sxsw.com/rAUf4Yd-8pXa6yVrEVXL7EaZoMI=/450x450/images.sxsw.com/195/87ea9438-7761-fc83-f762-2eadbedeb6eb/artist-75412","https://schedule.sxsw.com/2026/events/MS64654"],
+["Panic Shack","Sat","12:00am -- 12:40am","BME @ Palm Door Patio","BBC Introducing","Rock","Punk","https://images.sxsw.com/F_XGeon4SXBRBgoRry9-UHpNkNA=/450x450/images.sxsw.com/195/907b5655-23d4-b51f-ec2f-b49ced599a67/artist-75983","https://schedule.sxsw.com/2026/events/MS63628"],
+["The Red Eye Gamblers","Sat","12:00am -- 12:40am","Saxon Pub","","Rock","Americana","https://images.sxsw.com/tzrjWXQ6DHTL7w8s6uUdi8OS7rE=/450x450/images.sxsw.com/195/d31546e4-77bb-d0ee-e544-f002e32ca913/artist-74853","https://schedule.sxsw.com/2026/events/MS63233"],
+["Samy Sharif","Sat","12:00am -- 12:30am","Shangri-La","Pandora Music","Rock","Indie Rock","https://images.sxsw.com/e83iqcKl42aGnChkbwgVKVSvJOs=/450x450/images.sxsw.com/195/2db86829-0995-5d92-41f8-eab5141b6c3d/artist-75123","https://schedule.sxsw.com/2026/events/MS63356"],
+["Sorry Youth","Sat","12:00am -- 12:40am","Venue 6","Taiwan Beats","Rock","Alternative","https://images.sxsw.com/Cqy74HyQig5OeDKOMbh5kR26vEc=/450x450/images.sxsw.com/195/cea3044c-b8ee-a340-7776-b0c4568e9332/artist-74405","https://schedule.sxsw.com/2026/events/MS63369"],
+["60 JUNO","Sat","12:10am -- 12:30am","Seven Grand","","Rock","Post-Punk","https://images.sxsw.com/ZCbmju4nGj4D6y88BfVvNQ1pELY=/450x450/images.sxsw.com/195/6352fbbe-2c32-9f12-8b32-e5bdfb6318ca/artist-75177","https://schedule.sxsw.com/2026/events/MS64942"],
+["Radium Dolls","Sat","12:15am -- 12:45am","Valhalla","Planetary Group","Rock","Punk","https://images.sxsw.com/n1Z_OcOc3YHxsAIgtX_frTupE4c=/450x450/images.sxsw.com/195/a1673e3f-68c2-2f48-18f1-6dfdd43d4313/artist-73335","https://schedule.sxsw.com/2026/events/MS63869"],
+["Sunforger","Sat","12:15am -- 12:55am","Swan Dive","POP Montreal","Rock","Post-Punk","https://images.sxsw.com/NUuFQ-00X3PwInX5v31GVSHJ3Mw=/450x450/images.sxsw.com/195/cfe6fafa-bd8b-8aa8-981b-227e900e45a1/artist-75536","https://schedule.sxsw.com/2026/events/MS63983"],
+["AL LOVER","Sat","12:30am -- 2:00am","Hotel Vegas Patio","Spaace Camp","Rock","Alternative","https://images.sxsw.com/rB-PwIz4D75nG5f1RoPJPk0OckU=/450x450/images.sxsw.com/195/dd688d12-9c92-c697-79c6-8a19f1186a36/artist-76623","https://schedule.sxsw.com/2026/events/MS65023"],
+["Jenna Shaw","Sat","12:30am -- 2:00am","Neon Grotto Rooftop","Corson Agency","DJ","Electronic","https://images.sxsw.com/GTdTvI4zt_aaGgXVFyuJyC5DXuM=/450x450/images.sxsw.com/195/5b814a3d-2cbe-5441-1b7f-b13719538cb7/artist-76030","https://schedule.sxsw.com/2026/events/MS63697"],
+["Quiet Money Dot","Sat","12:30am -- 12:45am","Riviere","Skills Over Politics Showcase","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/8TKpJH6JU7Jh8oq5Duy9BMHuDVk=/450x450/images.sxsw.com/195/3dee6a36-7034-21ef-626a-b6840161f0f7/artist-75011","https://schedule.sxsw.com/2026/events/MS63299"],
+["SILVA BUMPA","Sat","12:45am -- 2:45am","Kingdom","Silva Bumpa","DJ","Dance","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65074"],
+["CDSM","Sat","12:50am -- 1:20am","Hotel Vegas Volstead","Spaace Camp","Punk","Post-Punk","https://images.sxsw.com/Jy1j8yzXJlnJuwXlJnf_zIPagwk=/450x450/images.sxsw.com/195/f605498d-459d-8060-fa1f-4e1bcb244663/artist-74249","https://schedule.sxsw.com/2026/events/MS64529"],
+["Sex Mask","Sat","12:50am -- 1:20am","Shangri-La","Pandora Music","Punk","Indie Rock","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS63631"],
+["SRI","Sat","12:50am -- 1:35am","Flamingo Cantina","South Asian House Soundvilla","DJ","Electronic","https://images.sxsw.com/exjJLWkhanCDfM9hfbF2lzCWUBY=/450x450/images.sxsw.com/195/79c1942e-c4de-7848-f288-abbc2e6b461c/artist-75728","https://schedule.sxsw.com/2026/events/MS63572"],
+["Atsuko Chiba","Sat","1:00am -- 1:40am","Hotel Vegas","Spaace Camp","Rock","Post-Rock","https://images.sxsw.com/ZRmsf8x_X71ZexhIorIOD6tmspM=/450x450/images.sxsw.com/195/2cf75818-7c20-4bad-e9b9-efcd4a246108/artist-74248","https://schedule.sxsw.com/2026/events/MS64533"],
+["Haters","Sat","1:00am -- 1:30am","Valhalla","Planetary Group","Punk","Indie Rock","https://images.sxsw.com/9kveJpuOoDrrgGYnsPpBIZ_QwAY=/450x450/images.sxsw.com/195/aed03237-29d1-ff05-f6e6-00870333788e/artist-72570","https://schedule.sxsw.com/2026/events/MS63363"],
+["His Lordship","Sat","1:00am -- 1:40am","Continental Club","Armadillo World Headquarters","Rock","Punk","https://images.sxsw.com/nlrVfac-ETbOF6XMt-1nlKWT-rA=/450x450/images.sxsw.com/195/c7dfd472-f476-f743-f3db-5bf40d7f1bfc/artist-75542","https://schedule.sxsw.com/2026/events/MS65268"],
+["ICHIGORINAHAMU","Sat","1:00am -- 1:40am","Chess Club","","Electronic","Hyperpop","https://images.sxsw.com/OPOl2F0ZBVLM38LduPr4r6K_7wQ=/450x450/images.sxsw.com/195/74744e17-a8f7-e2b7-b9c0-080c84a39684/artist-74700","https://schedule.sxsw.com/2026/events/MS64457"],
+["MUGGER","Sat","1:00am -- 1:40am","The 13th Floor","Art Decade Creatives - Austin Heavy Hitters","Punk","Hardcore","https://images.sxsw.com/VJwg_G4teAFTCWpI7HD-LB2YHtc=/450x450/images.sxsw.com/195/5799dadc-a6ea-d4e4-d321-66a98d5398d0/artist-76127","https://schedule.sxsw.com/2026/events/MS63824"],
+["West Texas Exiles","Sat","1:00am -- 1:45am","Saxon Pub","","Americana","Rock","https://images.sxsw.com/ora1dMnBk2cjTFuJ9tPjYotHBBM=/450x450/images.sxsw.com/195/741049b3-1c3f-84f1-c193-8d1e97c9c00a/artist-75140","https://schedule.sxsw.com/2026/events/MS63298"],
+["Winona Fighter","Sat","1:00am -- 1:40am","Elysium","BMG Label & Publishing","Pop","Alternative","https://images.sxsw.com/yOP9NDbUwI3oMAKqGFfgHvHJpaM=/450x450/images.sxsw.com/195/af8357c2-f7b9-889a-6c4f-c28eef949572/artist-76626","https://schedule.sxsw.com/2026/events/MS65019"],
+["YARD","Sat","1:00am -- 1:40am","Swan Dive Patio","Music From Ireland","Electronic","Post-Punk","https://images.sxsw.com/js-p6BA2M2OD8Fq4ZT6DIsKc6dI=/450x450/images.sxsw.com/195/a8b35710-6f7e-f333-7cd2-34161bf968da/artist-73792","https://schedule.sxsw.com/2026/events/MS63227"],
+["DLOW","Sat","2:45am -- 4:00am","Kingdom","Silva Bumpa","DJ","Dance","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65066"],
+["DJ Cee Watts","Fri","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","Pop","Hip-Hop / Rap","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64999"],
+["Don Toliver","Fri","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","Pop","Hip-Hop / Rap","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64763"],
+["Esty","Fri","Time TBA","Mala Fama Rooftop","","","","https://images.sxsw.com/iA22uDIMPjZYZLadVesfwXBuqAQ=/450x450/images.sxsw.com/195/6ccbacae-2307-bbb8-ff6a-a9348c7a1d54/artist-76598","https://schedule.sxsw.com/2026/events/MS64979"],
+["Flavia Laos","Fri","Time TBA","Mala Fama Rooftop","","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64973"],
+["MEEK","Fri","Time TBA","Elysium","BMG Label & Publishing","Pop","None","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS63372"],
+["NEZZA","Fri","Time TBA","Mala Fama Rooftop","","Latin","Pop","https://images.sxsw.com/bd7BiK3dEgoSspc_bec5kfvRCnQ=/450x450/images.sxsw.com/195/f0a62326-51ea-5177-c588-7140f670e3b0/artist-72491","https://schedule.sxsw.com/2026/events/MS65208"],
+["sosocamo","Fri","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/PBF93ayTMMNtoD0fKKt2hatQIbQ=/450x450/images.sxsw.com/195/05bce4d1-16b8-f5d4-53d3-02c8973506a3/artist-76074","https://schedule.sxsw.com/2026/events/MS64558"],
+["Trooko","Fri","Time TBA","Mala Fama Rooftop","","","","https://images.sxsw.com/dEDWdCXby5gGtz7AGAZCNctP8xQ=/450x450/images.sxsw.com/195/e5dc254a-3b78-4c09-30fa-51fd0e04e966/artist-76597","https://schedule.sxsw.com/2026/events/MS64972"],
+["Yakiyn","Fri","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","Pop","Hip-Hop / Rap","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64721"],
+["Karina Galicia","Sat","11:45am -- 12:05pm","Mohawk Outdoor","Billboard House","Pop","Indie Pop","https://images.sxsw.com/iZZWW4OgDbhj3bjGz8HQXk4Hri4=/450x450/images.sxsw.com/195/44fb4320-cb2e-ebab-97f6-0a64fc087e9a/artist-72882","https://schedule.sxsw.com/2026/events/MS65158"],
+["EddyJae","Sat","12:35pm -- 12:55pm","Mohawk Outdoor","Billboard House","Latin","Regional Mexican","https://images.sxsw.com/MNa2cifkceFq8djM2dC_pIDgBs0=/450x450/images.sxsw.com/195/af880815-4fee-9d38-fd0d-7954dcaf7aa4/artist-76020","https://schedule.sxsw.com/2026/events/MS65159"],
+["Famous Friend","Sat","1:00pm -- 1:40pm","Downright Radio Stage","BBC Introducing in America","Rock","Indie Rock","https://images.sxsw.com/7q25qWP0cW2cNuntVthLjewRoOY=/450x450/images.sxsw.com/195/cacc403e-7bcc-8665-75af-d87f3a3f6ab3/artist-73413","https://schedule.sxsw.com/2026/events/MS64504"],
+["Mosmo","Sat","1:30pm -- 1:55pm","Mohawk Outdoor","Billboard House","Latin","Norteño","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65160"],
+["Grace Sorensen","Sat","2:00pm -- 2:40pm","Downright Radio Stage","BBC Introducing in America","R & B","Pop","https://images.sxsw.com/F16OPGFA5Zz7U5AzNvDYwo21b7Y=/450x450/images.sxsw.com/195/ba90410f-c9b4-0873-525a-218339eb5975/artist-74315","https://schedule.sxsw.com/2026/events/MS64505"],
+["The Point.","Sat","2:00pm -- 2:40pm","Rivian Roadhouse","","","","https://images.sxsw.com/A_fecsqrWHmQ6bljP9HbJyoX62g=/450x450/images.sxsw.com/195/a3254702-3500-aa64-f645-72648e19c378/artist-76438","https://schedule.sxsw.com/2026/events/MS64727"],
+["DJ Jester the Filipino Fist","Sat","2:30pm -- 3:30pm","Flatstock @ Marriott","","DJ","None","https://images.sxsw.com/18U3N53CYNK4yZjq3V0fahMWDVc=/450x450/images.sxsw.com/195/541005a4-0fe7-70bf-d609-258fe5609738/artist-75961","https://schedule.sxsw.com/2026/events/MS63592"],
+["Oscar Ortiz","Sat","2:30pm -- 2:55pm","Mohawk Outdoor","Billboard House","Latin","Regional Mexican","https://images.sxsw.com/QFBPI4TrTHrlSLcf1vVyEzY38vo=/450x450/images.sxsw.com/195/f50d84a8-3c69-50fe-fe6b-fc3ff3008499/artist-75759","https://schedule.sxsw.com/2026/events/MS65161"],
+["Money Mark","Sat","2:35pm -- 3:30pm","Flatstock @ Marriott","","Singer-Songwriter","None","https://images.sxsw.com/KLaYqe1pD367op-mR_f5obkrNyg=/450x450/images.sxsw.com/195/a1250e5c-5e1a-7d86-2660-a80cb033be4e/artist-76300","https://schedule.sxsw.com/2026/events/MS64216"],
+["Lara'","Sat","3:00pm -- 3:40pm","Rivian Roadhouse","","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65012"],
+["The Sophs","Sat","3:00pm -- 3:40pm","Downright Radio Stage","BBC Introducing in America","Rock","Indie Rock","https://images.sxsw.com/vv4IPBzNf5tkzLJwS41H1Yed4Tk=/450x450/images.sxsw.com/195/61610f26-9ccd-1f01-f809-502c88536001/artist-73889","https://schedule.sxsw.com/2026/events/MS64406"],
+["Lena Dardelet","Sat","3:15pm -- 3:40pm","Mohawk Outdoor","Billboard House","Latin","Pop","https://images.sxsw.com/RpqakHG-U4mqJx--n2FyPQxxHBE=/450x450/images.sxsw.com/195/ba026fff-bf44-5ab9-20a8-6314baacefe9/artist-73098","https://schedule.sxsw.com/2026/events/MS65162"],
+["Anna Shoemaker","Sat","4:00pm -- 4:40pm","Downright Radio Stage","BBC Introducing in America","Americana","Indie Pop","https://images.sxsw.com/-X65cqd0hEy68ZhsYI2yB8aUzCU=/450x450/images.sxsw.com/195/a84bbda5-3254-8c6c-c0d3-351c4d123972/artist-74384","https://schedule.sxsw.com/2026/events/MS65238"],
+["Annabelle Chairlegs","Sat","4:00pm -- 4:40pm","Rivian Roadhouse","","Rock","Psychedelic","https://images.sxsw.com/xKfyyvaxSo-8rAUC1WPFlFxNKMY=/450x450/images.sxsw.com/195/696ea66a-d737-e0a7-b1a6-3f7de208dff9/artist-76073","https://schedule.sxsw.com/2026/events/MS64728"],
+["Melanie Dyer","Sat","4:00pm -- 5:00pm","Flatstock @ Marriott","","Country","Singer-Songwriter","https://images.sxsw.com/eVkDc2hoB4T5HUL4ZjUgmV_3ytc=/450x450/images.sxsw.com/195/f30f9fc5-e034-7615-6bf3-afd0ee838812/artist-73150","https://schedule.sxsw.com/2026/events/MS64242"],
+["Sofish","Sat","4:00pm -- 4:25pm","Mohawk Outdoor","Billboard House","Pop","Alternative","https://images.sxsw.com/DNaO8RF8iwatjitxW2AFiHX3D-o=/450x450/images.sxsw.com/195/f8abf914-7e3d-e0ef-6820-4fe708b41874/artist-73981","https://schedule.sxsw.com/2026/events/MS65163"],
+["BrunOG","Sat","4:45pm -- 5:10pm","Mohawk Outdoor","Billboard House","Pop","Reggaeton","https://images.sxsw.com/2-IIQwKX1J5OB7ZMKaBPSvoKBHM=/450x450/images.sxsw.com/195/33ef3aed-0548-1dff-0427-2994b2eab763/artist-72743","https://schedule.sxsw.com/2026/events/MS65164"],
+["Hermanos Espinoza","Sat","5:30pm -- 6:00pm","Mohawk Outdoor","Billboard House","Pop","Hip-Hop / Rap","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65165"],
+["Abstractamcr","Sat","7:00pm -- 7:40pm","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64517"],
+["Coffey","Sat","7:00pm -- 7:10pm","Riviere","DreamCon","Hip-Hop / Rap","R & B","https://images.sxsw.com/RuPWYfoYg8kmnjG5x3T_vnbFHPg=/450x450/images.sxsw.com/195/dcb7c07e-f502-062e-1d49-cccc011a3aec/artist-76479","https://schedule.sxsw.com/2026/events/MS64637"],
+["DragonnQueen","Sat","7:00pm -- 7:25pm","Riviere","DreamCon","Hip-Hop / Rap","R & B","https://images.sxsw.com/Q1lLnhwTE0xffy8-pN3vFo92S04=/450x450/images.sxsw.com/195/6005d430-3079-8e3e-0869-6709b87e1bb1/artist-76104","https://schedule.sxsw.com/2026/events/MS65080"],
+["Hania Derej","Sat","7:00pm -- 7:30pm","Downright Global Stage","","Classical","Jazz","https://images.sxsw.com/Sykuclm0v8Iva3jzzmzWLEJtNEk=/450x450/images.sxsw.com/195/45eb4434-bdda-f824-3cd6-3cbe7b6bc446/artist-73182","https://schedule.sxsw.com/2026/events/MS64006"],
+["Lucaa","Sat","7:00pm -- 7:40pm","Central Presbyterian","Audiofemme","Pop","Indie Pop","https://images.sxsw.com/WlyHt6H8KPKo9VNUy9iYdg-mNh4=/450x450/images.sxsw.com/195/a4bdda28-6163-dd25-e6a1-7ef255d78440/artist-74761","https://schedule.sxsw.com/2026/events/MS64205"],
+["Stalefish","Sat","7:00pm -- 7:40pm","Low Down Lounge","Poplife","Rock","Indie Pop","https://images.sxsw.com/EmgHeoLfSTfmnBTWUjyt7mSzXvI=/450x450/images.sxsw.com/195/9775e365-2835-3121-b242-a19e1fb36247/artist-73388","https://schedule.sxsw.com/2026/events/MS63391"],
+["Taraneh","Sat","7:00pm -- 7:40pm","Hotel Vegas","Academy Fight Songs / Rough Trade Publishing","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65243"],
+["Almost Heaven","Sat","7:15pm -- 7:50pm","Hotel Vegas Volstead","Academy Fight Songs / Rough Trade Publishing","Pop","Electronic","https://images.sxsw.com/yJ7fAxZzJDzg8PSdvOiO0HIl1gY=/450x450/images.sxsw.com/195/b6aaedaa-301e-b24a-de16-a54598fdac22/artist-76361","https://schedule.sxsw.com/2026/events/MS64815"],
+["Hemi Hemingway","Sat","7:15pm -- 7:45pm","Continental Club","","Pop","Indie Pop","https://images.sxsw.com/BVI_I6QLdTX6wmbOrORp2RM3Ouc=/450x450/images.sxsw.com/195/9cde5c9e-e804-2f03-ba45-cf12e83c0e9a/artist-74161","https://schedule.sxsw.com/2026/events/MS64766"],
+["Camila Rivers","Sat","7:30pm -- 7:45pm","Lefty's Brick Bar","KAZI:R&B and Soul Showcase","","","https://images.sxsw.com/IpIXJNDwLL5VoZJBr6CotDRVhFA=/450x450/images.sxsw.com/195/1c089c3a-182c-9ce2-469f-0c574ec544a8/artist-76382","https://schedule.sxsw.com/2026/events/MS64323"],
+["Flesh Juicer","Sat","7:30pm -- 8:15pm","Hotel Vegas Patio","Academy Fight Songs / Rough Trade Publishing","Metal","Heavy Metal","https://images.sxsw.com/BrVMfFjn4U_d4Zn4JhBog3ViXZc=/450x450/images.sxsw.com/195/0fcda83b-749c-8bc6-8d56-04742034e0d2/artist-74394","https://schedule.sxsw.com/2026/events/MS64773"],
+["Nik Parr & The Selfless Lovers","Sat","7:30pm -- 8:00pm","Zilker Brewing","UTOPiA Sessions","R & B","Soul","https://images.sxsw.com/0QmrCS7cYz_coMtaQ6OqnuSmzuE=/0x0:449x449/450x450/images.sxsw.com/196/f5de4157-8986-48b0-8fc3-3cfbc7ac0393/all-5","https://schedule.sxsw.com/2026/events/MS64293"],
+["Posavant","Sat","7:30pm -- 8:00pm","Elysium","Friends From Elsewhere","Rock","Alternative","https://images.sxsw.com/KyiqI7lKekjZIHJfY-ImpEst108=/450x450/images.sxsw.com/195/3be7c8b4-4009-4173-849e-7972ca51b3a2/artist-76133","https://schedule.sxsw.com/2026/events/MS63821"],
+["Prissy P","Sat","7:30pm -- 8:15pm","Taco n Maiz","La Buena Onda","DJ","R & B","https://images.sxsw.com/QYgpKj-rRd9mk99ZQ-XZEB8y2tw=/450x450/images.sxsw.com/195/904ce577-07f9-36e0-82c6-14dafbb3fa9c/artist-76270","https://schedule.sxsw.com/2026/events/MS64077"],
+["Still Blank","Sat","7:30pm -- 8:10pm","Las Perlas","End of the Trail","Rock","Indie Rock","https://images.sxsw.com/F0CV4kAlGQGH6Sq0douxbtxllMs=/450x450/images.sxsw.com/195/1918f827-8f3a-df2e-34b7-39d01b263119/artist-73374","https://schedule.sxsw.com/2026/events/MS63268"],
+["Yoshi Vintage","Sat","7:30pm -- 7:55pm","Riviere","DreamCon","Hip-Hop / Rap","R & B","https://images.sxsw.com/tr2NuOuqtiyj0Ta42zs8MSG5g_o=/450x450/images.sxsw.com/195/a8e43b1f-834c-2152-8071-87547ed7d269/artist-76486","https://schedule.sxsw.com/2026/events/MS64682"],
+["XRAREST","Sat","7:40pm -- 7:55pm","Brushy St Commons","Kaash Paige & Friends","","","https://images.sxsw.com/k9t44zlr8krTu3jDVJXMLfRUK6M=/450x450/images.sxsw.com/195/4a85627a-cd8f-2608-5e91-553224474c8f/artist-76430","https://schedule.sxsw.com/2026/events/MS64515"],
+["Ryan Dove","Sat","7:45pm -- 7:55pm","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","Alternative","https://images.sxsw.com/E1uAUKuYPTucsYpTnm5cfVyoeE8=/450x450/images.sxsw.com/195/4d372a35-2efb-1e2b-6063-aba30373dda0/artist-76062","https://schedule.sxsw.com/2026/events/MS63716"],
+["Zola Marcelle","Sat","7:50pm -- 8:20pm","Downright Global Stage","","Jazz","Fusion","https://images.sxsw.com/uhBiI69xJYUfEPNKeWnS6G14Rl4=/450x450/images.sxsw.com/195/aa95a93b-e8fe-705e-b9cf-53da80a3492a/artist-74360","https://schedule.sxsw.com/2026/events/MS64415"],
+["Adult Leisure","Sat","8:00pm -- 8:40pm","Seven Grand","Liift & Friends","Pop","Indie Pop","https://images.sxsw.com/TaRL9rUd2oZVmQzRblrJ1lsitFs=/450x450/images.sxsw.com/195/b5dca4e4-0f77-7e8e-4060-2d323358855d/artist-72806","https://schedule.sxsw.com/2026/events/MS64500"],
+["Aivila","Sat","8:00pm -- 8:10pm","Mala Fama Rooftop","SoSouth House","","","https://images.sxsw.com/epH4Rc8fqwsXS4-TgqYNqG1QjHE=/450x450/images.sxsw.com/195/04c1ba65-36ef-7e41-567c-0ad9eabc98fa/artist-76518","https://schedule.sxsw.com/2026/events/MS64741"],
+["better joy","Sat","8:00pm -- 8:30pm","BME @ Palm Door","BBC Introducing","Pop","Indie Pop","https://images.sxsw.com/Q8MQX3AkPWrU9h0YpBg0prVaEOk=/450x450/images.sxsw.com/195/abea1d8b-1713-05d0-88a8-8c60fc05f476/artist-73002","https://schedule.sxsw.com/2026/events/MS63634"],
+["BLK ODYSSY","Sat","8:00pm -- 8:40pm","Riviere","DreamCon","Hip-Hop / Rap","R & B","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64738"],
+["Bricknasty","Sat","8:00pm -- 8:40pm","Hotel Vegas","Academy Fight Songs / Rough Trade Publishing","Jazz","Hip-Hop / Rap","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64225"],
+["Brie Stoner","Sat","8:00pm -- 8:40pm","Saxon Pub","Armadillo World Headquarters","Rock","Alternative","https://images.sxsw.com/V36sqs6-N4xEY8RcaIOD0Tm7S_w=/450x450/images.sxsw.com/195/a2c742bd-1607-7d0b-2736-1ce6ba607aff/artist-75388","https://schedule.sxsw.com/2026/events/MS63476"],
+["Buckets","Sat","8:00pm -- 8:40pm","Valhalla","","Punk","Indie Rock","https://images.sxsw.com/3dAqQBHtZolkJwheJc0_EhpHMyc=/450x450/images.sxsw.com/195/1801df9d-649c-1831-96ac-65a33f0a199e/artist-74280","https://schedule.sxsw.com/2026/events/MS64490"],
+["DannyRitmo","Sat","8:00pm -- 9:30pm","Mala Vida","","","","https://images.sxsw.com/E2Ny1troTqtVarSMapTn7vT1xAk=/450x450/images.sxsw.com/195/17abe3a1-ec25-c4a3-7e28-17177cf84aea/artist-76474","https://schedule.sxsw.com/2026/events/MS64607"],
+["Easy Honey","Sat","8:00pm -- 8:40pm","Low Down Lounge","Poplife","Rock","Indie Rock","https://images.sxsw.com/GBERH4Q828UZbqc_EMWV5UiAW6o=/450x450/images.sxsw.com/195/eadaa961-373c-7649-9cc1-4f1e656502ad/artist-74963","https://schedule.sxsw.com/2026/events/MS63254"],
+["Emily Frembgen","Sat","8:00pm -- 8:30pm","The 13th Floor","Don Giovanni Records","Americana","Country","https://images.sxsw.com/NABTQzoZxYxzCOsNzsbrOmlHakE=/450x450/images.sxsw.com/195/65087a4e-dddb-051d-3831-d19ccd3ca3c4/artist-74082","https://schedule.sxsw.com/2026/events/MS63177"],
+["Horsepower","Sat","8:00pm -- 8:40pm","Central Presbyterian","Audiofemme","Rock","Indie Rock","https://images.sxsw.com/RoER5PTdFtdApVf7V8UvnAIqJKU=/450x450/images.sxsw.com/195/087fcd33-a054-73f8-cdf2-146f07794541/artist-75848","https://schedule.sxsw.com/2026/events/MS63885"],
+["Just Jim","Sat","8:00pm -- 9:00pm","Wanderlust Wine","Dave Guy & Friends","DJ","Hip-Hop / Rap","https://images.sxsw.com/keFL27SHQG2PIu09T3YnkE7QuFU=/450x450/images.sxsw.com/195/c9aa7656-44c7-5ced-fe9f-44a16a880135/artist-72484","https://schedule.sxsw.com/2026/events/MS64787"],
+["Melaina Kol","Sat","8:00pm -- 8:35pm","Chess Club","Good English Records","Folk","Electronic","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS63763"],
+["Ryley Hall","Sat","8:00pm -- 8:10pm","Shangri-La","College Of Hip Hop Knowledge","Pop","Alternative","https://images.sxsw.com/WaROdv1fmIqvywk-jZvBePyadd8=/450x450/images.sxsw.com/195/3388422a-66c3-f6b8-8168-42d31b97ee48/artist-76153","https://schedule.sxsw.com/2026/events/MS63859"],
+["Scuttino","Sat","8:00pm -- 8:15pm","Brushy St Commons","Kaash Paige & Friends","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/Vr0VosaoPKoHG3bjua3MuHGWudw=/450x450/images.sxsw.com/195/64a40f29-62a5-51b5-ecd0-808fd104437b/artist-75895","https://schedule.sxsw.com/2026/events/MS63523"],
+["Shunk","Sat","8:00pm -- 8:40pm","Swan Dive","Mothland","Rock","Alternative","https://images.sxsw.com/INmeLgdDh0TYFSSbUIEmEvPIzO4=/450x450/images.sxsw.com/195/ab374525-a75c-c590-8e76-d54c3c127c9c/artist-74251","https://schedule.sxsw.com/2026/events/MS63192"],
+["Suxxy Puxxy","Sat","8:00pm -- 8:30pm","Speakeasy","Berlin House","DJ","Reggaeton","https://images.sxsw.com/vG1wTrv-T_Pv1n9h0KHSFEAgXco=/450x450/images.sxsw.com/195/fc9e48c3-86b3-77a2-605e-019150ed0822/artist-76052","https://schedule.sxsw.com/2026/events/MS64723"],
+["Maya Sampleton","Sat","8:05pm -- 8:20pm","Lefty's Brick Bar","KAZI:R&B and Soul Showcase","","","https://images.sxsw.com/c2TOcZB8_y8eSw5aaBl_fnyaJvw=/0x0:450x450/450x450/images.sxsw.com/196/8c22d4d7-e69d-4550-baa2-aef990fcc8ac/all-12","https://schedule.sxsw.com/2026/events/MS64636"],
+["The Tiarras","Sat","8:05pm -- 8:35pm","Continental Club","","Rock","Indie Pop","https://images.sxsw.com/qJ1JrrvsnXH5oy_ccJmsEV0qibo=/450x450/images.sxsw.com/195/5d930240-4f9e-272f-7292-77a3c5ea9583/artist-75423","https://schedule.sxsw.com/2026/events/MS63475"],
+["Ben Buck","Sat","8:15pm -- 8:25pm","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/F_Ab-w5m8_LwULe36tN7--g2fqs=/450x450/images.sxsw.com/195/af9fb22d-b066-234b-b8bf-631233390d7c/artist-76152","https://schedule.sxsw.com/2026/events/MS63858"],
+["Haters","Sat","8:15pm -- 8:50pm","Hotel Vegas Volstead","Academy Fight Songs / Rough Trade Publishing","Punk","Indie Rock","https://images.sxsw.com/9kveJpuOoDrrgGYnsPpBIZ_QwAY=/450x450/images.sxsw.com/195/aed03237-29d1-ff05-f6e6-00870333788e/artist-72570","https://schedule.sxsw.com/2026/events/MS64181"],
+["Mac-K the K Baby","Sat","8:15pm -- 8:25pm","Mala Fama Rooftop","SoSouth House","","","https://images.sxsw.com/J6xu6UEJ4RDTXLBkkuZEgmaJUf4=/450x450/images.sxsw.com/195/656df79e-0d68-6fd7-adc0-5dbbe5bd0b90/artist-76564","https://schedule.sxsw.com/2026/events/MS64871"],
+["Desmond Jones","Sat","8:20pm -- 8:50pm","Zilker Brewing","UTOPiA Sessions","R & B","Soul","https://images.sxsw.com/yxShsOkCC7JRnbQGQ6lAlCA-BHE=/450x450/images.sxsw.com/195/32132532-f009-70ce-7b85-39c4f51e23e7/artist-76168","https://schedule.sxsw.com/2026/events/MS64263"],
+["Fatherr","Sat","8:20pm -- 8:35pm","Taco n Maiz","La Buena Onda","","","https://images.sxsw.com/PWy9Z-PhAn0d_6hse4xbNz5y-70=/450x450/images.sxsw.com/195/1b408b3a-ef4f-1221-f7aa-44bd126bad92/artist-76384","https://schedule.sxsw.com/2026/events/MS64300"],
+["Kofi Stone","Sat","8:20pm -- 8:35pm","Brushy St Commons","Kaash Paige & Friends","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/xpTZaZ0mvqy5RhYmQK4nI-rP22c=/450x450/images.sxsw.com/195/0f199c13-40e0-e1ae-c137-34a242113f22/artist-75722","https://schedule.sxsw.com/2026/events/MS63731"],
+["Alien Chicks","Sat","8:30pm -- 9:00pm","Hotel Vegas Patio","Academy Fight Songs / Rough Trade Publishing","Punk","Hip-Hop / Rap","https://images.sxsw.com/gu8iXmbd2WRqF0xhlqPIG7Iv8ZE=/450x450/images.sxsw.com/195/e76e50a7-67e4-75c1-ff49-6a588fdb65e7/artist-72896","https://schedule.sxsw.com/2026/events/MS64891"],
+["Ancient Greece","Sat","8:30pm -- 9:10pm","Swan Dive Patio","Project Nowhere x Exclaim! Magazine","Punk","Post-Punk","https://images.sxsw.com/cHPEDW67_LfMVYWSHMSs15FLFgE=/450x450/images.sxsw.com/195/a4c677ef-dfa7-e5e6-8cad-168d56336d7f/artist-75993","https://schedule.sxsw.com/2026/events/MS63633"],
+["Hector Gannet","Sat","8:30pm -- 9:10pm","Las Perlas","End of the Trail","Rock","Folk","https://images.sxsw.com/ay9zAOtJR43CObzzaFqIX5yq6hM=/450x450/images.sxsw.com/195/eae1e237-4673-eb26-c248-52c86865e017/artist-73452","https://schedule.sxsw.com/2026/events/MS63167"],
+["Isis Destiny","Sat","8:30pm -- 8:40pm","Shangri-La","College Of Hip Hop Knowledge","R & B","Dream Pop","https://images.sxsw.com/J7TZGkLoUWuJHrV1c1A-ZFjw5nw=/450x450/images.sxsw.com/195/a3333745-820f-6ef0-19f9-1b0d6e7a4932/artist-74369","https://schedule.sxsw.com/2026/events/MS63805"],
+["My Favorite Color","Sat","8:30pm -- 9:00pm","Flamingo Cantina","Found on Nero","","","https://images.sxsw.com/xhJZBic9usPAUgWaIF-UBUrVQG8=/450x450/images.sxsw.com/195/99090f44-2092-c8f7-d336-868c7df8add2/artist-76675","https://schedule.sxsw.com/2026/events/MS65115"],
+["Orya","Sat","8:30pm -- 9:00pm","Speakeasy","Berlin House","","","https://images.sxsw.com/PgVlj7uMDYpX2YWplF8Ji4TE0hY=/450x450/images.sxsw.com/195/52447f3a-475f-0096-6a3b-87bbd237a0dd/artist-76519","https://schedule.sxsw.com/2026/events/MS65228"],
+["Stiff Barbie","Sat","8:30pm -- 8:40pm","Mala Fama Rooftop","SoSouth House","","","https://images.sxsw.com/_JWFUPfHz3iyC8EeibZn0UROsPM=/450x450/images.sxsw.com/195/ebe0f8cf-a7fd-ab97-1d45-f5ac1aa728dc/artist-76605","https://schedule.sxsw.com/2026/events/MS64985"],
+["Synapson","Sat","8:30pm -- 10:00pm","Venue 6","","","","https://images.sxsw.com/wryidqjEll1LWBFw3Zc5_7CvfLo=/450x450/images.sxsw.com/195/1f02bff3-4077-e1b7-fe9f-ea54b789bc63/artist-76537","https://schedule.sxsw.com/2026/events/MS65135"],
+["600 ENT","Sat","8:35pm -- 9:15pm","ACL Live","Rolling Stone Future of Music","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64789"],
+["Amor Vincit Omnia","Sat","8:40pm -- 9:10pm","Downright Global Stage","","Pop","Electronic","https://images.sxsw.com/M1_lIEC1BPvwwzwU0l97BceekFE=/450x450/images.sxsw.com/195/498ffe3f-4f5f-3e38-7f58-542c249692e3/artist-75950","https://schedule.sxsw.com/2026/events/MS64673"],
+["Gio","Sat","8:40pm -- 8:55pm","Lefty's Brick Bar","KAZI:R&B and Soul Showcase","R & B","Soul","https://images.sxsw.com/ShzsILQ45_gl08JXLduv7dYR9KM=/450x450/images.sxsw.com/195/294eb3a8-47e2-a62d-330c-b350d8127e72/artist-76240","https://schedule.sxsw.com/2026/events/MS64121"],
+["Grandmas House","Sat","8:40pm -- 9:10pm","BME @ Palm Door Patio","BBC Introducing","Rock","Punk","https://images.sxsw.com/KTK1pEvEUIbevc4m1hudgpI6Wx0=/450x450/images.sxsw.com/195/a8ae6723-f19a-a5ba-1356-edb765ce4a0d/artist-74102","https://schedule.sxsw.com/2026/events/MS63510"],
+["Julia Blair","Sat","8:40pm -- 9:10pm","The 13th Floor","Don Giovanni Records","Soul","Indie Pop","https://images.sxsw.com/ybhtMAsSa33_CEri3bhViotFBjQ=/450x450/images.sxsw.com/195/ab8b81c4-668b-3109-0ee6-229103d5f370/artist-75926","https://schedule.sxsw.com/2026/events/MS63542"],
+["Leonilo Jaimes","Sat","8:40pm -- 9:00pm","Taco n Maiz","La Buena Onda","","","https://images.sxsw.com/FbqXCfWnLSQRPMXk5EL7KQTQPSw=/450x450/images.sxsw.com/195/0e6ce0c0-2e5f-1fdc-a5f6-96c31a2d0b92/artist-76385","https://schedule.sxsw.com/2026/events/MS64318"],
+["Aaron Page","Sat","8:45pm -- 9:00pm","Brushy St Commons","Kaash Paige & Friends","R & B","None","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS63218"],
+["DJ Hella Yella","Sat","8:45pm -- 9:00pm","Riviere","DreamCon","Hip-Hop / Rap","R & B","https://images.sxsw.com/dt2wDPbEv8CsSHE9OOxys4FPo5s=/450x450/images.sxsw.com/195/a244a529-025f-e89e-0cc9-348eb9225b67/artist-76458","https://schedule.sxsw.com/2026/events/MS64571"],
+["Ideal Collective","Sat","8:45pm -- 9:05pm","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","Jazz","https://images.sxsw.com/202c2jVA2Ea7x6WfcJzcUm-IlNA=/450x450/images.sxsw.com/195/54f5a7e7-a29b-33f2-c4b0-2ce8faeb87a3/artist-76071","https://schedule.sxsw.com/2026/events/MS63720"],
+["Total Wife","Sat","8:55pm -- 9:30pm","Chess Club","Good English Records","Rock","Alternative","https://images.sxsw.com/ke0V8LNr4MHTMT6rluV5GfNiqmQ=/450x450/images.sxsw.com/195/a7dcd4f1-7f83-feff-830d-0ca7653c98ff/artist-75490","https://schedule.sxsw.com/2026/events/MS63416"],
+["Amy Gadiaga","Sat","9:00pm -- 9:40pm","Central Presbyterian","Audiofemme","Jazz","Soul","https://images.sxsw.com/aFGPbpVGryxRIgmWGS1dIuVzxZE=/450x450/images.sxsw.com/195/80fce733-e333-a5ed-6554-ee8c280fdf5b/artist-75187","https://schedule.sxsw.com/2026/events/MS63939"],
+["Angela Autumn","Sat","9:00pm -- 9:40pm","Saxon Pub","Armadillo World Headquarters","Alt Country","Indie Rock","https://images.sxsw.com/_vcDb5zsdQ-sZICJfhZrrEzjXLE=/450x450/images.sxsw.com/195/336e4d34-5a10-aadd-9ab7-36a1eeb2817d/artist-72993","https://schedule.sxsw.com/2026/events/MS65179"],
+["Brainwasher","Sat","9:00pm -- 9:40pm","Swan Dive","Mothland","Rock","Psychedelic","https://images.sxsw.com/Ipm-cJ39-VVIoBczkNBsm2KDweQ=/450x450/images.sxsw.com/195/b70b258e-7db5-67b1-187c-026dfef1aaa8/artist-74253","https://schedule.sxsw.com/2026/events/MS63564"],
+["The Braymores","Sat","9:00pm -- 9:40pm","Low Down Lounge","Poplife","Rock","Indie Rock","https://images.sxsw.com/ht3AtPn0ifewiTuB662-2KewhOU=/450x450/images.sxsw.com/195/9ea49a05-3850-7142-3371-fae842764a67/artist-73685","https://schedule.sxsw.com/2026/events/MS63603"],
+["c_robo_","Sat","9:00pm -- 10:00pm","Kingdom","DJ_Dave","","","https://images.sxsw.com/vY34cBH4OGdIsFHOGvwG7zdRKY0=/450x450/images.sxsw.com/195/a51e3d96-3aa4-9062-2837-2f4ed11fc1c8/artist-76427","https://schedule.sxsw.com/2026/events/MS64483"],
+["Fime","Sat","9:00pm -- 9:40pm","Hotel Vegas","Academy Fight Songs / Rough Trade Publishing","Rock","Alternative","https://images.sxsw.com/nUqAHDHZwK0mQ-yD6mupiCdpt5g=/450x450/images.sxsw.com/195/3c9b294e-c578-e6f0-d07f-f3d8efc1eb27/artist-75175","https://schedule.sxsw.com/2026/events/MS64888"],
+["Los Lobos","Sat","9:00pm -- 10:00pm","Continental Club","","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64680"],
+["Lucky","Sat","9:00pm -- 9:40pm","Seven Grand","Liift & Friends","Rock","Indie Rock","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64992"],
+["Martin Eyerer","Sat","9:00pm -- 10:30pm","Speakeasy","Berlin House","DJ","House / Techno","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS63636"],
+["Semisoft","Sat","9:00pm -- 9:40pm","Valhalla","","Rock","Garage","https://images.sxsw.com/9UV7Zn9_ZtBMrzwwzCiN1Jd7Ukk=/450x450/images.sxsw.com/195/8be29604-e74a-adcc-22d0-264e2dd6a11f/artist-75818","https://schedule.sxsw.com/2026/events/MS64416"],
+["Andrea Daniela","Sat","9:05pm -- 9:25pm","Taco n Maiz","La Buena Onda","Latin","Regional Mexican","https://images.sxsw.com/PmdG5B0nOda_8ypCek-vBeV3EYw=/450x450/images.sxsw.com/195/050f6459-6c08-b06b-06d7-abeae361e258/artist-75033","https://schedule.sxsw.com/2026/events/MS64761"],
+["Dee Gatti","Sat","9:05pm -- 9:20pm","Brushy St Commons","Kaash Paige & Friends","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64929"],
+["Trap Sushi","Sat","9:05pm -- 9:35pm","Riviere","DreamCon","Hip-Hop / Rap","R & B","https://images.sxsw.com/VvLU75s57kEM8szT4lFWBkyKato=/450x450/images.sxsw.com/195/66593752-9ff8-9b0d-81c6-2a08d913cb11/artist-76649","https://schedule.sxsw.com/2026/events/MS65100"],
+["Azamiah","Sat","9:10pm -- 9:40pm","Zilker Brewing","UTOPiA Sessions","Jazz","R & B","https://images.sxsw.com/Z_0cH4YQneyHg5KtKG3XNNgvbiE=/450x450/images.sxsw.com/195/c8d05803-7830-f44e-5995-4d3eea173132/artist-75082","https://schedule.sxsw.com/2026/events/MS63884"],
+["Die Slo","Sat","9:10pm -- 9:30pm","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/-CDD0G4gMUeBCAiaemFisCfIJT4=/450x450/images.sxsw.com/195/89a38c56-a5b5-5061-0a67-119409633192/artist-76292","https://schedule.sxsw.com/2026/events/MS64113"],
+["eldon","Sat","9:15pm -- 9:50pm","Elysium","Friends From Elsewhere","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64767"],
+["Mélat","Sat","9:15pm -- 9:30pm","Lefty's Brick Bar","KAZI:R&B and Soul Showcase","","","https://images.sxsw.com/6LMjKgRFBwT9_AmOwX09vICOyMc=/450x450/images.sxsw.com/195/6cc1a314-e02b-4af2-bbb8-a6969fe0c9ae/artist-76451","https://schedule.sxsw.com/2026/events/MS64549"],
+["The Sheila Divine","Sat","9:15pm -- 9:50pm","Hotel Vegas Volstead","Academy Fight Songs / Rough Trade Publishing","Rock","Alternative","https://images.sxsw.com/542AJBZxonymLDbRvV0EY6zXzT0=/450x450/images.sxsw.com/195/691100a0-3e13-0223-2d7f-be68298e992d/artist-76247","https://schedule.sxsw.com/2026/events/MS64886"],
+["SLASH NEED","Sat","9:15pm -- 9:45pm","Hotel Vegas Patio","Academy Fight Songs / Rough Trade Publishing","Punk","Electronic","https://images.sxsw.com/SHNJ3N4s_xHKcOA3zjpLv61YvI0=/450x450/images.sxsw.com/195/1ed880a2-c3a4-02a4-c442-21c79b40612d/artist-76103","https://schedule.sxsw.com/2026/events/MS64338"],
+["Jacquie","Sat","9:20pm -- 9:50pm","Flamingo Cantina","Found on Nero","","","https://images.sxsw.com/NZllFNFsFDZoyqhjbYsWmvTuK7Q=/450x450/images.sxsw.com/195/2f85bb40-e1b8-7da4-b879-2d505582aa1c/artist-76620","https://schedule.sxsw.com/2026/events/MS65013"],
+["Knats","Sat","9:20pm -- 10:10pm","Wanderlust Wine","Dave Guy & Friends","Jazz","Fusion","https://images.sxsw.com/QhKlvw0ma8pCJavOKUSoRIsmhRU=/450x450/images.sxsw.com/195/d237f94d-3951-821f-f63e-8bb5676af585/artist-74460","https://schedule.sxsw.com/2026/events/MS64819"],
+["Lee Bains","Sat","9:20pm -- 9:50pm","The 13th Floor","Don Giovanni Records","Rock","None","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS63265"],
+["Mên An Tol","Sat","9:20pm -- 9:50pm","BME @ Palm Door","BBC Introducing","Rock","Indie Rock","https://images.sxsw.com/Z-Oe6TsOw62oEjxvbjCX9uYocP0=/450x450/images.sxsw.com/195/ce4931c7-c5bc-dd54-4ec6-1530d78ba015/artist-75752","https://schedule.sxsw.com/2026/events/MS63375"],
+["Young Tmo","Sat","9:20pm -- 9:35pm","Mala Fama Rooftop","SoSouth House","","","https://images.sxsw.com/jmrR_nmWdZgiiNNPMZAgJLsOTgA=/450x450/images.sxsw.com/195/e800b8de-2a05-1b94-9bb6-341d15215952/artist-76472","https://schedule.sxsw.com/2026/events/MS64610"],
+["Grace Sorensen","Sat","9:25pm -- 9:40pm","Brushy St Commons","Kaash Paige & Friends","R & B","Pop","https://images.sxsw.com/F16OPGFA5Zz7U5AzNvDYwo21b7Y=/450x450/images.sxsw.com/195/ba90410f-c9b4-0873-525a-218339eb5975/artist-74315","https://schedule.sxsw.com/2026/events/MS63433"],
+["DJ BAYRON","Sat","9:30pm -- 10:30pm","Mala Vida","","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64623"],
+["DW SANTY","Sat","9:30pm -- 9:45pm","Taco n Maiz","La Buena Onda","","","https://images.sxsw.com/ZeeDpjfkaapr5Ozi41r53ZDYAu4=/450x450/images.sxsw.com/195/1e449ca6-717a-ae57-924c-0ada4f636a2b/artist-76662","https://schedule.sxsw.com/2026/events/MS65071"],
+["Kali Horse","Sat","9:30pm -- 10:10pm","Swan Dive Patio","Project Nowhere x Exclaim! Magazine","Rock","Avant / Experimental","https://images.sxsw.com/A3Tr_3dW9djVELbUBAl667qpNoY=/450x450/images.sxsw.com/195/5822f2cf-97fa-106e-c582-f07fb9a0a019/artist-75364","https://schedule.sxsw.com/2026/events/MS63394"],
+["Korda Korder","Sat","9:30pm -- 10:10pm","Las Perlas","End of the Trail","Rock","Indie Pop","https://images.sxsw.com/6sbt4Qilx-3m-CX0iGDH5d3owRs=/450x450/images.sxsw.com/195/e394ee2d-6c69-996d-81d7-be6b5056bd73/artist-75760","https://schedule.sxsw.com/2026/events/MS63855"],
+["Sarah Crean","Sat","9:30pm -- 10:00pm","Downright Global Stage","","Pop","Dream Pop","https://images.sxsw.com/4Lz6gg068QEag6qfkKs4ZZW2Z7E=/450x450/images.sxsw.com/195/64ad9295-05c9-98a0-3e7c-f3436b7a6fd3/artist-74481","https://schedule.sxsw.com/2026/events/MS64497"],
+["INK","Sat","9:35pm -- 10:20pm","ACL Live","Rolling Stone Future of Music","Country","Pop","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64157"],
+["Mid Century Modern","Sat","9:35pm -- 9:55pm","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","Jazz","https://images.sxsw.com/_Abl55moZ_BpBCk4EFGwEzqhxHQ=/450x450/images.sxsw.com/195/1e109d6d-ea09-9e07-7717-774b39733cf1/artist-76061","https://schedule.sxsw.com/2026/events/MS63717"],
+["TTOD Bumpy Johnson","Sat","9:40pm -- 9:55pm","Mala Fama Rooftop","SoSouth House","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65032"],
+["YUME","Sat","9:40pm -- 10:00pm","Riviere","DreamCon","Hip-Hop / Rap","R & B","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65204"],
+["Lynn","Sat","9:45pm -- 10:00pm","Brushy St Commons","Kaash Paige & Friends","Hip-Hop / Rap","R & B","https://images.sxsw.com/rj5J6mbMa39bglu0LDcmR1Kp4EY=/450x450/images.sxsw.com/195/e1f59211-68b8-c200-1c62-b9ca631acc38/artist-74337","https://schedule.sxsw.com/2026/events/MS63209"],
+["Chief Cleopatra","Sat","9:50pm -- 10:10pm","Lefty's Brick Bar","KAZI:R&B and Soul Showcase","Rock","Indie Pop","https://images.sxsw.com/Y1ajaRY4mn4CKUpEIGOMgT4P5ts=/450x450/images.sxsw.com/195/57d3b8b5-4f3a-920f-b984-e7958c9d299d/artist-73878","https://schedule.sxsw.com/2026/events/MS64065"],
+["Fish Hunt","Sat","9:50pm -- 10:25pm","Chess Club","Good English Records","Rock","Alternative","https://images.sxsw.com/RnGkY7qnm5GiwVx8EKXyliA9fiU=/450x450/images.sxsw.com/195/132b4f66-8529-0dfa-9cfd-120a65c976d4/artist-76031","https://schedule.sxsw.com/2026/events/MS63682"],
+["Kenzzo","Sat","9:50pm -- 10:05pm","Taco n Maiz","La Buena Onda","Pop","None","https://images.sxsw.com/2YEJclbc0EOn5ojTLO0G2zlnYE8=/450x450/images.sxsw.com/195/fea203fd-bba4-5a18-d655-2962f7082d33/artist-75892","https://schedule.sxsw.com/2026/events/MS64760"],
+["Ben Ellis","Sat","10:00pm -- 10:40pm","Seven Grand","Liift & Friends","Singer-Songwriter","Indie Pop","https://images.sxsw.com/xxd39kl1tLkUqqngi3D57TytHx8=/450x450/images.sxsw.com/195/71402f14-2f52-caa8-5deb-7f64a313ac3e/artist-73676","https://schedule.sxsw.com/2026/events/MS65199"],
+["Commercial Breaks","Sat","10:00pm -- 10:40pm","Hotel Vegas","Academy Fight Songs / Rough Trade Publishing","Rock","Power Pop","https://images.sxsw.com/Av-PoIHcwzFOgoAZdgAmOejNGyk=/450x450/images.sxsw.com/195/24355f9a-2fd7-a443-54ec-3ed602ee12a3/artist-74115","https://schedule.sxsw.com/2026/events/MS64502"],
+["Ella Langley","Sat","10:00pm -- 10:40pm","Stubb's","Spotify 20: Live at Stubb's","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65078"],
+["Eric Zayne","Sat","10:00pm -- 10:30pm","Zilker Brewing","UTOPiA Sessions","Pop","R & B","https://images.sxsw.com/YiuuU6mE6o2vCqu89wQdfmF1_h4=/0x0:450x450/450x450/images.sxsw.com/196/93a0edad-5096-47ff-97b4-db5e6cc0f4f1/all-10","https://schedule.sxsw.com/2026/events/MS63338"],
+["Gus Englehorn","Sat","10:00pm -- 10:40pm","Valhalla","","Singer-Songwriter","Alternative","https://images.sxsw.com/TfTCdUi7TW4kiMHG_Yhr3EHgCIU=/450x450/images.sxsw.com/195/cdb891df-661c-5e75-b028-3735dc090507/artist-73365","https://schedule.sxsw.com/2026/events/MS63150"],
+["haha Laughing","Sat","10:00pm -- 10:35pm","Hotel Vegas Patio","Academy Fight Songs / Rough Trade Publishing","Avant / Experimental","Hip-Hop / Rap","https://images.sxsw.com/-_yMfadQU611WVJGwkgQ9vTBA8E=/450x450/images.sxsw.com/195/67df6375-f570-692e-1938-c7b37f72e59c/artist-76012","https://schedule.sxsw.com/2026/events/MS64774"],
+["Rob Baird","Sat","10:00pm -- 10:40pm","Saxon Pub","Armadillo World Headquarters","Rock","Americana","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65264"],
+["Sassy 009","Sat","10:00pm -- 10:40pm","Central Presbyterian","Audiofemme","Electronic","Indie Pop","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64302"],
+["Seulement","Sat","10:00pm -- 10:40pm","Swan Dive","Mothland","Electronic","Avant / Experimental","https://images.sxsw.com/_tnQMUHP5lGkhBl3b0go2nTfR9M=/450x450/images.sxsw.com/195/fc09eadf-1627-c4c4-2e1f-6e806e825b89/artist-74250","https://schedule.sxsw.com/2026/events/MS63359"],
+["Sibby Liv","Sat","10:00pm -- 2:00am","Flamingo Cantina","Found on Nero","","","https://images.sxsw.com/Z9JKosi7MsEg_XnACV30H23LUoA=/450x450/images.sxsw.com/195/9e29c7ca-3f72-ea55-2387-6fe7958f9cfc/artist-76391","https://schedule.sxsw.com/2026/events/MS64895"],
+["SpaceGoonz","Sat","10:00pm -- 10:20pm","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","Funk","https://images.sxsw.com/0J5EpY_Zix49aOviabW_CJQT3PE=/450x450/images.sxsw.com/195/6fc20de9-a364-35d9-daad-d5d1fd2ca0b3/artist-76289","https://schedule.sxsw.com/2026/events/MS64109"],
+["SRI","Sat","10:00pm -- 11:00pm","Kingdom","DJ_Dave","DJ","Electronic","https://images.sxsw.com/exjJLWkhanCDfM9hfbF2lzCWUBY=/450x450/images.sxsw.com/195/79c1942e-c4de-7848-f288-abbc2e6b461c/artist-75728","https://schedule.sxsw.com/2026/events/MS64262"],
+["Steven Bamidele","Sat","10:00pm -- 10:30pm","BME @ Palm Door Patio","BBC Introducing","Jazz","Indie Pop","https://images.sxsw.com/S9K-r4ZctBFXAZDWCgu7fXWZnwQ=/450x450/images.sxsw.com/195/c3b4f1a2-d166-d101-3c1c-b8c8af629eb5/artist-74064","https://schedule.sxsw.com/2026/events/MS63179"],
+["willoh","Sat","10:00pm -- 10:40pm","Low Down Lounge","Poplife","R & B","Ambient","https://images.sxsw.com/1UuB_-kmdQ1eVZaq8GkvBqF3PEY=/450x450/images.sxsw.com/195/60cd29a8-992b-ec16-3f1f-dc61039f3081/artist-75754","https://schedule.sxsw.com/2026/events/MS64499"],
+["David Huckfelt","Sat","10:05pm -- 10:40pm","The 13th Floor","Don Giovanni Records","Folk","Americana","https://images.sxsw.com/P-hqyvhsCnX2XwSIVll0cMtmLAs=/450x450/images.sxsw.com/195/56376656-abe7-b018-4df3-9c754c1b0e2a/artist-74479","https://schedule.sxsw.com/2026/events/MS63235"],
+["KID PHENOMENON","Sat","10:10pm -- 10:50pm","Elysium","Friends From Elsewhere","Pop","J-Pop","https://images.sxsw.com/jsVlFY9LkH5oNokKLSNiQ8_9PyU=/450x450/images.sxsw.com/195/df3be7e2-c0ee-d39e-f009-6be43a506e83/artist-75669","https://schedule.sxsw.com/2026/events/MS63497"],
+["Olly Sholotan","Sat","10:10pm -- 10:40pm","Flamingo Cantina","Found on Nero","","","https://images.sxsw.com/VxUZPYFqPH9qf1UUwIP8faMSB1s=/450x450/images.sxsw.com/195/7ee20c28-a61f-921c-ca14-e96e6411ba40/artist-76619","https://schedule.sxsw.com/2026/events/MS65008"],
+["Vintage Jay","Sat","10:10pm -- 10:25pm","Taco n Maiz","La Buena Onda","Hip-Hop / Rap","Reggaeton","https://images.sxsw.com/0arlZh9U9iBmZY1cr_xxgu0JnjQ=/450x450/images.sxsw.com/195/2776ab2d-4b64-dd37-267c-c8ae65ccc2a9/artist-76272","https://schedule.sxsw.com/2026/events/MS64076"],
+["Endearments","Sat","10:15pm -- 10:50pm","Hotel Vegas Volstead","Academy Fight Songs / Rough Trade Publishing","Rock","Dream Pop","https://images.sxsw.com/ndMvWypXJr4XjItiLss-ERGNIbU=/450x450/images.sxsw.com/195/01d09584-7ad5-8694-2b55-07a52ba5da75/artist-76034","https://schedule.sxsw.com/2026/events/MS64887"],
+["The Bures Band","Sat","10:20pm -- 11:00pm","Continental Club","","Americana","Rock","https://images.sxsw.com/L15CZuQ96FazYJkK_qJ96d0WwNo=/450x450/images.sxsw.com/195/06f32887-1e18-3817-6bb2-89d3446d9aff/artist-72652","https://schedule.sxsw.com/2026/events/MS64771"],
+["Lena Dardelet","Sat","10:20pm -- 10:50pm","Downright Global Stage","","Latin","Pop","https://images.sxsw.com/RpqakHG-U4mqJx--n2FyPQxxHBE=/450x450/images.sxsw.com/195/ba026fff-bf44-5ab9-20a8-6314baacefe9/artist-73098","https://schedule.sxsw.com/2026/events/MS65031"],
+["College of Hip Hop Knowledge","Sat","10:25pm -- 11:10pm","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","Alternative","https://images.sxsw.com/odo1Z0La4Xpq4wItnOgCi6V4gXQ=/450x450/images.sxsw.com/195/26690d0b-060a-261e-85e8-dfc07c8f35c2/artist-74887","https://schedule.sxsw.com/2026/events/MS63348"],
+["2BYG","Sat","10:30pm -- 10:45pm","Brushy St Commons","Kaash Paige & Friends","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64519"],
+["Adrian Activo","Sat","10:30pm -- 10:50pm","Taco n Maiz","La Buena Onda","Latin","Alternative","https://images.sxsw.com/F16XUD5x-zaVP7oFeuo-UdXOA5Q=/450x450/images.sxsw.com/195/e5f889a2-affd-01ce-ca9c-048900f37f9e/artist-76038","https://schedule.sxsw.com/2026/events/MS63694"],
+["Dave Guy & Stro Elliot of THE ROOTS","Sat","10:30pm -- 11:45pm","Wanderlust Wine","Dave Guy & Friends","","","https://images.sxsw.com/E8PCO77eT4lGzqYnlCd-FQp6ggU=/450x450/images.sxsw.com/195/7fdf2966-ee36-5629-7af8-f01071401fdf/artist-76615","https://schedule.sxsw.com/2026/events/MS65003"],
+["Don Esco","Sat","10:30pm -- 11:30pm","Mala Vida","","","","https://images.sxsw.com/e4Gch854ds1uETsFt7PLIuJAqXs=/450x450/images.sxsw.com/195/da7ebd84-a921-4318-bca5-834226b20484/artist-76473","https://schedule.sxsw.com/2026/events/MS64609"],
+["JOPLYN","Sat","10:30pm -- 12:00am","Speakeasy","Berlin House","Electronic","House / Techno","https://images.sxsw.com/Sa-cA-M6R4f0ZSIVc0dPB7wHVAA=/450x450/images.sxsw.com/195/0d448ce6-95c5-5b86-eb85-7e8dff2a4b89/artist-75881","https://schedule.sxsw.com/2026/events/MS63589"],
+["OOZ","Sat","10:30pm -- 11:10pm","Swan Dive Patio","Project Nowhere x Exclaim! Magazine","Rock","Hardcore","https://images.sxsw.com/jNJTb_n-cIkwl6fuA3YtXti-wTY=/450x450/images.sxsw.com/195/ad260c0f-4940-7ae1-08f3-56e2bf810804/artist-75978","https://schedule.sxsw.com/2026/events/MS63609"],
+["Smooth Nature","Sat","10:30pm -- 10:50pm","Lefty's Brick Bar","KAZI:R&B and Soul Showcase","R & B","Rock","https://images.sxsw.com/8GXa9uPtWedWMx4mPQHPLRgDTsc=/450x450/images.sxsw.com/195/fd225592-d480-5faa-473f-741aca90db35/artist-74466","https://schedule.sxsw.com/2026/events/MS64066"],
+["Tom A Smith","Sat","10:30pm -- 11:10pm","Las Perlas","End of the Trail","Rock","Indie Rock","https://images.sxsw.com/RNKJn0SyRLQw9qelZOmHK6kAUBE=/450x450/images.sxsw.com/195/d955657a-26c1-8dca-516f-f11147ef02c3/artist-73845","https://schedule.sxsw.com/2026/events/MS63266"],
+["Whitelands","Sat","10:40pm -- 11:10pm","BME @ Palm Door","BBC Introducing","Rock","Shoegaze","https://images.sxsw.com/1kzuy7e813txaHAKQx8_j2LqPI0=/450x450/images.sxsw.com/195/dedb1ab9-a9d1-acdd-9034-e11509d53a46/artist-75085","https://schedule.sxsw.com/2026/events/MS63252"],
+["Wesley Wolffe","Sat","10:45pm -- 11:20pm","Chess Club","Good English Records","Rock","Post-Punk","https://images.sxsw.com/UHRwiw0nDB2-hhXvM1RffOtyiRQ=/450x450/images.sxsw.com/195/7b1fa885-f862-f3fd-11da-0283a6f15a0c/artist-76076","https://schedule.sxsw.com/2026/events/MS63764"],
+["The Animeros","Sat","10:50pm -- 11:20pm","Zilker Brewing","UTOPiA Sessions","Latin","Cumbia","https://images.sxsw.com/FmI5GaZf1qumXioHKouevJCMm_Q=/450x450/images.sxsw.com/195/e890b9ce-8a96-9807-d251-a9d4bc480078/artist-75338","https://schedule.sxsw.com/2026/events/MS63350"],
+["Paisley Fields","Sat","10:50pm -- 11:40pm","The 13th Floor","Don Giovanni Records","Country","Americana","https://images.sxsw.com/rJFa9jf3QEgFh5j3cSQdQYvKNF8=/450x450/images.sxsw.com/195/0d0d3b33-259e-7566-b057-44aa5cec6d3d/artist-74081","https://schedule.sxsw.com/2026/events/MS63178"],
+["2wnty4K","Sat","10:55pm -- 11:15pm","Brushy St Commons","kaash Paige & Friends","","","https://images.sxsw.com/5zx7IcMMnBdNP3O_2ZshhhOD63g=/450x450/images.sxsw.com/195/5a026b8b-e50e-398a-22b5-5feb923c8ab1/artist-76706","https://schedule.sxsw.com/2026/events/MS65191"],
+["BigXthaPlug","Sat","10:55pm -- 12:00am","ACL Live","Rolling Stone Future of Music","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS63578"],
+["Short Life","Sat","10:55pm -- 11:15pm","Taco n Maiz","La Buena Onda","Latin","Electronic","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64758"],
+["Tyla Yaweh","Sat","10:55pm -- 11:15pm","Brushy St Commons","Kaash Paige & Friends","Pop","Pop","https://images.sxsw.com/KCld5dkXL0hkeF0ZlqQJyhhu2gE=/450x450/images.sxsw.com/195/428f94fb-08a6-a2e0-e5ca-1445c0ce24aa/artist-76137","https://schedule.sxsw.com/2026/events/MS63886"],
+["2charm","Sat","11:00pm -- 11:30pm","Kingdom","DJ_Dave","Pop","House / Techno","https://images.sxsw.com/wOxMyyjx3AGPkEEiuV3nQ2aE2hM=/450x450/images.sxsw.com/195/b90a61c3-99ac-974d-c952-4864210eb839/artist-75167","https://schedule.sxsw.com/2026/events/MS64260"],
+["Alanis Morissette","Sat","11:00pm -- 12:00am","Stubb's","Spotify 20: Live at Stubb's","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65151"],
+["Amie Blu","Sat","11:00pm -- 11:45pm","Central Presbyterian","Audiofemme","Singer-Songwriter","Indie Pop","https://images.sxsw.com/y7v4vRlw7uOBg1QZty7PAPioA7U=/450x450/images.sxsw.com/195/9acff9c3-a301-b1c8-0a95-c440cd88054c/artist-75846","https://schedule.sxsw.com/2026/events/MS63938"],
+["Boutique Feelings","Sat","11:00pm -- 11:40pm","Swan Dive","Mothland","Hip-Hop / Rap","Alternative","https://images.sxsw.com/nPy_Uy5Eoj4NruFxP_k353qL5pg=/450x450/images.sxsw.com/195/66a12813-6cf0-cccc-1435-a84319d2a20c/artist-74246","https://schedule.sxsw.com/2026/events/MS63647"],
+["Calder Allen","Sat","11:00pm -- 11:40pm","Saxon Pub","Armadillo World Headquarters","Country","Americana","https://images.sxsw.com/hSJ82qcZaGq3IbkN8a2jkgsUcTg=/450x450/images.sxsw.com/195/a41cfb19-8639-feff-8077-ba53329b79b6/artist-74484","https://schedule.sxsw.com/2026/events/MS65177"],
+["CQ Wrestling","Sat","11:00pm -- 11:40pm","Seven Grand","Liift & Friends","Rock","Grunge","https://images.sxsw.com/yEJcirOp19JpY-0R6faWJuJQrVc=/450x450/images.sxsw.com/195/daa5e6d1-d330-095c-b0ab-7728ddbcf657/artist-75849","https://schedule.sxsw.com/2026/events/MS64495"],
+["DJ X.O.","Sat","11:00pm -- 11:20pm","Mala Fama Rooftop","SoSouth House","R & B","Hip-Hop / Rap","https://images.sxsw.com/CbdEje9P4OEGIj23dc81XbnWiXI=/450x450/images.sxsw.com/195/144331fb-e8ea-12c9-e94f-ea66b9ef94f4/artist-76251","https://schedule.sxsw.com/2026/events/MS64938"],
+["Good Flying Birds","Sat","11:00pm -- 11:40pm","Hotel Vegas","Academy Fight Songs / Rough Trade Publishing","Rock","Indie Pop","https://images.sxsw.com/SnNQK_3HNF-MzcWA2bw_xy6cXDs=/450x450/images.sxsw.com/195/ff8911f0-c7ba-7d45-6e0e-172cec97b7fa/artist-75880","https://schedule.sxsw.com/2026/events/MS64226"],
+["Kids","Sat","11:00pm -- 11:40pm","Valhalla","","Punk","Post-Punk","https://images.sxsw.com/XgaBxCVtATrIfjATkWENxZHpdV8=/450x450/images.sxsw.com/195/9813fee7-0623-b27b-db1e-68b7c45349c4/artist-74362","https://schedule.sxsw.com/2026/events/MS64435"],
+["LOS GUITARRAZOS","Sat","11:00pm -- 2:00am","Mohawk Outdoor","Billboard House","Pop","Hip-Hop / Rap","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64288"],
+["Marketplace","Sat","11:00pm -- 11:40pm","Low Down Lounge","Poplife","Rock","Indie Pop","https://images.sxsw.com/GHCr4YJ7_rCQ3FXy6TcVkpAp50I=/0x0:450x450/450x450/images.sxsw.com/196/6cb54e93-53f4-444b-94b3-d592cc795b74/all-3","https://schedule.sxsw.com/2026/events/MS64659"],
+["Neptune XXI","Sat","11:00pm -- 11:30pm","Flamingo Cantina","Found on Nero","","","https://images.sxsw.com/Wg3XZD5mQTJo1ttZRr0TJOX8MFE=/450x450/images.sxsw.com/195/d604c9e9-489a-d6c5-b73e-02c44f55ec4b/artist-76286","https://schedule.sxsw.com/2026/events/MS64107"],
+["BrunOG","Sat","11:10pm -- 11:40pm","Downright Global Stage","","Pop","Reggaeton","https://images.sxsw.com/2-IIQwKX1J5OB7ZMKaBPSvoKBHM=/450x450/images.sxsw.com/195/33ef3aed-0548-1dff-0427-2994b2eab763/artist-72743","https://schedule.sxsw.com/2026/events/MS65125"],
+["Magnolian","Sat","11:10pm -- 11:50pm","Elysium","Friends From Elsewhere","Folk","Indie Rock","https://images.sxsw.com/Iz6FdyD4fMe5meflnhv9ZJy4fmo=/450x450/images.sxsw.com/195/196ca150-ee86-fb93-e886-c791d5bc3dde/artist-73339","https://schedule.sxsw.com/2026/events/MS63452"],
+["Foliage","Sat","11:15pm -- 11:50pm","Hotel Vegas Volstead","Academy Fight Songs / Rough Trade Publishing","Rock","Indie Rock","https://images.sxsw.com/e_thfsDoGPAHS8rz-qPU2SUXCRs=/450x450/images.sxsw.com/195/76b88250-7a82-d60d-965c-4dfbc5140fd8/artist-72761","https://schedule.sxsw.com/2026/events/MS65186"],
+["Tone Royal","Sat","11:15pm -- 12:00am","Shangri-La","College Of Hip Hop Knowledge","Hip-Hop / Rap","","https://images.sxsw.com/YSAsrlVuIsGTChoiTNVhlmxt79I=/450x450/images.sxsw.com/195/3e68452c-4387-708b-43de-1606096b86bc/artist-76402","https://schedule.sxsw.com/2026/events/MS64364"],
+["The Last Jimenez","Sat","11:20pm -- 12:00am","Continental Club","","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64780"],
+["TTSSFU","Sat","11:20pm -- 11:50pm","BME @ Palm Door Patio","BBC Introducing","Rock","Alternative","https://images.sxsw.com/Kp503ZcJUSARdM-2t5U6xmfEnUQ=/450x450/images.sxsw.com/195/dea1bae8-44ac-1617-6d73-a509ca162801/artist-74561","https://schedule.sxsw.com/2026/events/MS63223"],
+["Vanita Leo","Sat","11:20pm -- 11:40pm","Taco n Maiz","La Buena Onda","Latin","Cumbia","https://images.sxsw.com/_Lzd1mpn3mj9M0K1bX7a9ChIY-k=/450x450/images.sxsw.com/195/8f97c496-0624-6de3-dd4f-810cfd8b79be/artist-76027","https://schedule.sxsw.com/2026/events/MS64759"],
+["Qui","Sat","11:25pm -- 11:45pm","Mala Fama Rooftop","SoSouth House","","","https://images.sxsw.com/8KwI3k2dxnhrfSqcbqlk5MM6L54=/450x450/images.sxsw.com/195/51724a19-8f3e-7c71-6d88-35e603657849/artist-76487","https://schedule.sxsw.com/2026/events/MS64644"],
+["DJ_Dave","Sat","11:30pm -- 12:30am","Kingdom","DJ_Dave","Electronic","Dance","https://images.sxsw.com/MlWXMvEPIPxg8hqPxayfR353Ymg=/450x450/images.sxsw.com/195/9d408b0d-ff43-7921-a198-fba396eeef89/artist-73160","https://schedule.sxsw.com/2026/events/MS63158"],
+["Kaash Paige","Sat","11:30pm -- 12:00am","Brushy St Commons","Kaash Paige & Friends","Hip-Hop / Rap","Alternative","https://images.sxsw.com/LUn-oReWdzWrp0eWE8_15vHv1k0=/450x450/images.sxsw.com/195/7c585c43-ada6-4c85-51b0-61736c46c5ab/artist-74903","https://schedule.sxsw.com/2026/events/MS63241"],
+["The Kellows","Sat","11:30pm -- 12:10am","Las Perlas","End of the Trail","Rock","Indie Rock","https://images.sxsw.com/fH4-_TZWM5FHCW0yDVSXvMdu09E=/450x450/images.sxsw.com/195/37ca6b02-fc49-9a6f-1bc4-3ca58f3c77b4/artist-73987","https://schedule.sxsw.com/2026/events/MS63319"],
+["Sebaxxss","Sat","11:30pm -- 1:30am","Mala Vida","","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65156"],
+["Spoon Benders","Sat","11:30pm -- 12:10am","Swan Dive Patio","Project Nowhere x Exclaim! Magazine","Rock","Punk","https://images.sxsw.com/LnlLyIPZvgDVXL_T7TJaBXlJ-pM=/450x450/images.sxsw.com/195/52ce3515-8da2-7f25-def6-c849de1f916b/artist-75270","https://schedule.sxsw.com/2026/events/MS63441"],
+["Yuksek","Sat","11:30pm -- 12:30am","Venue 6","","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65136"],
+["Cashier","Sat","11:35pm -- 12:10am","Chess Club","Good English Records","Rock","Alternative","https://images.sxsw.com/0UHrqH8Bd_naLg-H1MOIBEJxZJA=/450x450/images.sxsw.com/195/62193194-24a9-80ae-73af-e6af2253e554/artist-75488","https://schedule.sxsw.com/2026/events/MS63415"],
+["Femi Temowo","Sat","11:40pm -- 12:10am","Zilker Brewing","UTOPiA Sessions","Jazz","Afrobeat","https://images.sxsw.com/Bx4v-xxNZSACL1LcIdvkaP0mX28=/450x450/images.sxsw.com/195/363cb7f0-b52d-7d66-8e3b-4c5fc6d2032e/artist-75853","https://schedule.sxsw.com/2026/events/MS64967"],
+["EL DUSTY","Sat","11:50pm -- 12:30am","Taco n Maiz","La Buena Onda","DJ","Cumbia","https://images.sxsw.com/WX-rMvXsVo8XC9jbJexPSIkLBqw=/450x450/images.sxsw.com/195/eaefd599-dcfb-af20-2ab4-7a4cbf590d3a/artist-76046","https://schedule.sxsw.com/2026/events/MS63703"],
+["Pär Hagström and Charlatans of Love","Sat","11:50pm -- 12:50am","The 13th Floor","Don Giovanni Records","Rock","Psychedelic","https://images.sxsw.com/SUn8URzfMXuVAMwRW5lbcjR1Z6U=/450x450/images.sxsw.com/195/0e11f0eb-0d5c-ceea-2b57-e10a1c46a589/artist-73642","https://schedule.sxsw.com/2026/events/MS63887"],
+["Quiet Money Dot","Sat","11:50pm -- 12:10am","Mala Fama Rooftop","SoSouth House","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/8TKpJH6JU7Jh8oq5Duy9BMHuDVk=/450x450/images.sxsw.com/195/3dee6a36-7034-21ef-626a-b6840161f0f7/artist-75011","https://schedule.sxsw.com/2026/events/MS64838"],
+["Samy Sharif","Sat","11:50pm -- 12:20am","Flamingo Cantina","Found on Nero","Rock","Indie Rock","https://images.sxsw.com/e83iqcKl42aGnChkbwgVKVSvJOs=/450x450/images.sxsw.com/195/2db86829-0995-5d92-41f8-eab5141b6c3d/artist-75123","https://schedule.sxsw.com/2026/events/MS63626"],
+["ANJA SCHNEIDER","Sun","12:00am -- 2:00am","Speakeasy","Berlin House","DJ","House / Techno","https://images.sxsw.com/Sy05akUS5ZFYxn2YyZHT7YfAhYE=/450x450/images.sxsw.com/195/345c3a18-8684-4c43-4327-2fc29f62b898/artist-76322","https://schedule.sxsw.com/2026/events/MS64155"],
+["Basht.","Sun","12:00am -- 12:40am","Seven Grand","Liift & Friends","Rock","Alternative","https://images.sxsw.com/zeyPu8SOf_lKu65X1PcZeeUwKRg=/450x450/images.sxsw.com/195/c5d04b7b-db62-2e00-1087-c6900aa2b9cb/artist-72725","https://schedule.sxsw.com/2026/events/MS64255"],
+["congratulations","Sun","12:00am -- 12:40am","Low Down Lounge","Poplife","Rock","Alternative","https://images.sxsw.com/TkivQBDJ-gYvZDGb4Z3_OO0Z_40=/450x450/images.sxsw.com/195/6340e6d5-774e-de12-73ea-e0b6807d0f77/artist-73421","https://schedule.sxsw.com/2026/events/MS64587"],
+["The Dharma Chain","Sun","12:00am -- 12:40am","Hotel Vegas","Academy Fight Songs / Rough Trade Publishing","Rock","Psychedelic","https://images.sxsw.com/Wt-k9l3qEUw5eqSYO1-w6fAslto=/450x450/images.sxsw.com/195/0a2e22af-ec5f-3149-9e5d-6e98331a0b09/artist-75272","https://schedule.sxsw.com/2026/events/MS64775"],
+["Hot Garbage","Sun","12:00am -- 12:40am","Swan Dive","Mothland","Rock","Psychedelic","https://images.sxsw.com/35YYJgtk9W5ahsXuLLJoUTz26qs=/450x450/images.sxsw.com/195/548bc903-4654-7a0e-56f9-aa7ae4a6cacd/artist-74247","https://schedule.sxsw.com/2026/events/MS63191"],
+["Nug","Sun","12:00am -- 12:40am","Valhalla","","Rock","Indie Rock","https://images.sxsw.com/ukIiZog3AZbpGWXfK7xiuk2lfFo=/450x450/images.sxsw.com/195/706b461f-050c-8dfe-7a48-f99a74510987/artist-72509","https://schedule.sxsw.com/2026/events/MS64299"],
+["She Returns From War","Sun","12:00am -- 12:40am","Saxon Pub","Armadillo World Headquarters","Rock","Americana","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65242"],
+["Suxxy Puxxy","Sun","12:00am -- 2:00am","Hotel Vegas Patio","Academy Fight Songs / Rough Trade Publishing","DJ","Reggaeton","https://images.sxsw.com/vG1wTrv-T_Pv1n9h0KHSFEAgXco=/450x450/images.sxsw.com/195/fc9e48c3-86b3-77a2-605e-019150ed0822/artist-76052","https://schedule.sxsw.com/2026/events/MS65073"],
+["YES AND MAYBE","Sun","12:00am -- 12:30am","BME @ Palm Door Patio","BBC Introducing","Pop","Indie Pop","https://images.sxsw.com/HhjucdH57Mr-ShFPlzCr_VtOQn8=/450x450/images.sxsw.com/195/b20fda52-2f05-7a19-9944-7eb12a80fd2a/artist-73896","https://schedule.sxsw.com/2026/events/MS64627"],
+["FINLANDS","Sun","12:10am -- 12:50am","Elysium","Friends From Elsewhere","Rock","J-Pop","https://images.sxsw.com/qifbNdOsrERvJpboigmTrOmZAYs=/450x450/images.sxsw.com/195/c74bc77d-dbc7-a67a-e378-2d8e99e8cc20/artist-76090","https://schedule.sxsw.com/2026/events/MS64925"],
+["Lil' Keke","Sun","12:15am -- 12:35am","Mala Fama Rooftop","SoSouth House","","","https://images.sxsw.com/36H_HY8a3AQ1Pp-4NQJw7YgAIag=/450x450/images.sxsw.com/195/1f0f5188-e740-19fe-fc93-64baf156df2f/artist-76668","https://schedule.sxsw.com/2026/events/MS65094"],
+["Packaging","Sun","12:15am -- 12:50am","Hotel Vegas Volstead","Academy Fight Songs / Rough Trade Publishing","Pop","Psychedelic","https://images.sxsw.com/rAUf4Yd-8pXa6yVrEVXL7EaZoMI=/450x450/images.sxsw.com/195/87ea9438-7761-fc83-f762-2eadbedeb6eb/artist-75412","https://schedule.sxsw.com/2026/events/MS64776"],
+["Andrew Cushin","Sun","12:30am -- 1:10am","Las Perlas","End of the Trail","Singer-Songwriter","Indie Pop","https://images.sxsw.com/FGwaVivxZAIRRrIoP6Ek4sQOwAY=/450x450/images.sxsw.com/195/21c76fa0-b5c9-cdb6-9e3b-091f0d688c0f/artist-75136","https://schedule.sxsw.com/2026/events/MS63314"],
+["bloodsports","Sun","12:30am -- 1:05am","Chess Club","Good English Records","Avant/Experimental","Alternative","https://images.sxsw.com/pvQ0ahwuEleXo82cOvfVn_xM4Ug=/450x450/images.sxsw.com/195/116397af-0e06-230d-0c63-398c3db8e3a4/artist-75101","https://schedule.sxsw.com/2026/events/MS63274"],
+["CDSM","Sun","12:30am -- 1:10am","Swan Dive Patio","Project Nowhere x Exclaim! Magazine","Punk","Post-Punk","https://images.sxsw.com/Jy1j8yzXJlnJuwXlJnf_zIPagwk=/450x450/images.sxsw.com/195/f605498d-459d-8060-fa1f-4e1bcb244663/artist-74249","https://schedule.sxsw.com/2026/events/MS65021"],
+["Switch Angel","Sun","12:30am -- 1:30am","Kingdom","DJ_Dave","","","https://images.sxsw.com/1pSv7KLC8NwFBu3wI2Sdbr746Ow=/450x450/images.sxsw.com/195/afdc0b1f-fa67-cedc-ed13-b5929b033d1c/artist-76429","https://schedule.sxsw.com/2026/events/MS64485"],
+["Principe Q","Sun","12:35am -- 1:15am","Taco n Maiz","La Buena Onda","","","https://images.sxsw.com/AVuatCYxG2a9mWd9E8C9nwXEw-Q=/450x450/images.sxsw.com/195/b09e733b-23f0-e662-af83-1eaa8ccca067/artist-76531","https://schedule.sxsw.com/2026/events/MS64784"],
+["BALACLAVA","Sun","1:00am -- 1:50am","Swan Dive","M for Mothland","Punk","Garage","https://images.sxsw.com/r6UL73Y2YCAx9bIyEGh9soYzE9w=/450x450/images.sxsw.com/195/f5c8959c-4743-5f34-90a1-b88ad438aa42/artist-74050","https://schedule.sxsw.com/2026/events/MS63962"],
+["Easy Honey","Sun","1:00am -- 1:40am","The 13th Floor","Don Giovanni Records","Rock","Indie Rock","https://images.sxsw.com/GBERH4Q828UZbqc_EMWV5UiAW6o=/450x450/images.sxsw.com/195/eadaa961-373c-7649-9cc1-4f1e656502ad/artist-74963","https://schedule.sxsw.com/2026/events/MS65150"],
+["Nightbus","Sun","1:00am -- 1:40am","Seven Grand","Liift & Friends","Electronic","Alternative","https://images.sxsw.com/ThD3bYGdshDTgAXYabTxBjL57Uc=/450x450/images.sxsw.com/195/c60de8d4-8a28-ccfb-09ec-13efa7af5bd1/artist-75742","https://schedule.sxsw.com/2026/events/MS63364"],
+["Unsafe Space Garden","Sun","1:00am -- 1:50am","Valhalla","","Rock","Progressive","https://images.sxsw.com/qa9Oe8RclTQdMcxex_CgFmVSzYM=/450x450/images.sxsw.com/195/a680cb0f-138f-f43a-73ae-afe3769fb12c/artist-73768","https://schedule.sxsw.com/2026/events/MS64316"],
+["YARD","Sun","1:00am -- 1:40am","Hotel Vegas","Academy Fight Songs / Rough Trade Publishing","Electronic","Post-Punk","https://images.sxsw.com/js-p6BA2M2OD8Fq4ZT6DIsKc6dI=/450x450/images.sxsw.com/195/a8b35710-6f7e-f333-7cd2-34161bf968da/artist-73792","https://schedule.sxsw.com/2026/events/MS63750"],
+["Frankfurt Helmet","Sun","1:10am -- 1:50am","Elysium","Friends From Elsewhere","Electronic","Indie Rock","https://images.sxsw.com/0ImCiiQL9li0A0O7XJt0FEoSEHA=/450x450/images.sxsw.com/195/8e2bc71a-5ab1-84ea-77cc-c63a00648527/artist-73246","https://schedule.sxsw.com/2026/events/MS63423"],
+["Forty Feet Tall","Sun","1:15am -- 1:50am","Hotel Vegas Volstead","Academy Fight Songs / Rough Trade Publishing","Punk","Post-Punk","https://images.sxsw.com/2jlEyBOBaHQxdLnUMtyh_vqEVT0=/450x450/images.sxsw.com/195/b6a6679b-4157-4c25-f417-9c80e6659e19/artist-75963","https://schedule.sxsw.com/2026/events/MS63593"],
+["EDDY","Sun","1:20am -- 2:00am","Taco n Maiz","La Buena Onda","","","https://images.sxsw.com/BQFVxzS_XegXFUB8Hp_gpAodP1c=/450x450/images.sxsw.com/195/81b20cde-e7d7-6377-7954-92f0e6867800/artist-76291","https://schedule.sxsw.com/2026/events/MS64112"],
+["Victoryland","Sun","1:25am -- 2:00am","Chess Club","Good English Records","Rock","Indie Pop","https://images.sxsw.com/2aNrvFNU5lfj4xOiUMgQybFlzBI=/450x450/images.sxsw.com/195/a9337a9d-8e0b-e27d-0d98-3e56efe77c0c/artist-74549","https://schedule.sxsw.com/2026/events/MS63362"],
+["DannyRitmo","Sun","1:30am -- 2:00am","Mala Vida","","","","https://images.sxsw.com/E2Ny1troTqtVarSMapTn7vT1xAk=/450x450/images.sxsw.com/195/17abe3a1-ec25-c4a3-7e28-17177cf84aea/artist-76474","https://schedule.sxsw.com/2026/events/MS64608"],
+["Kingdom DJs","Sun","1:30am -- 4:00am","Kingdom","DJ_Dave","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65241"],
+["Helios","Sat","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","Pop","Hip-Hop / Rap","https://images.sxsw.com/bcOrO5_CD4PBffDYlbyUnbmLCb0=/450x450/images.sxsw.com/195/fa25672e-a492-7b33-8518-3e8a6bea4044/artist-76560","https://schedule.sxsw.com/2026/events/MS64858"],
+["Junior H","Sat","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64580"],
+["Oscar Ortiz","Sat","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","Latin","Regional Mexican","https://images.sxsw.com/QFBPI4TrTHrlSLcf1vVyEzY38vo=/450x450/images.sxsw.com/195/f50d84a8-3c69-50fe-fe6b-fc3ff3008499/artist-75759","https://schedule.sxsw.com/2026/events/MS64722"],
+["Vic Mensa","Sat","Time TBA","Flamingo Cantina","Found on Nero","","","https://images.sxsw.com/6a7ClW31I0p0dqIg0rM5Iggv2pc=/450x450/images.sxsw.com/195/f8ac2275-ed58-a736-bca9-85a584993c63/artist-76405","https://schedule.sxsw.com/2026/events/MS64376"],
+["Jenna Cole","Sun","12:00pm -- 12:40pm","Downright Radio Stage","BBC Introducing","R & B","Afrobeat","https://images.sxsw.com/1pCrGeLVHc2n9lr6OQale5LTdYA=/450x450/images.sxsw.com/195/0c7f4805-2671-4011-28c0-8501ef075041/artist-75879","https://schedule.sxsw.com/2026/events/MS64411"],
+["The Gringos","Sun","12:05pm -- 12:25pm","Mohawk Outdoor","Billboard House","Rock","Alternative","https://images.sxsw.com/Ax5nRDyfUp1EQ2s73aReuDUMEEY=/450x450/images.sxsw.com/195/e1cee9c2-7f7f-fa66-c747-968d4e39cfe8/artist-75019","https://schedule.sxsw.com/2026/events/MS65166"],
+["Victoria Segovia","Sun","12:30pm -- 2:00pm","Neon Grotto","Floppy Disko","","","https://images.sxsw.com/cWWavTQbh7GbjaF-VRDNd5eXfaM=/450x450/images.sxsw.com/195/f9aa43c6-1061-8813-d70a-20cca6de8ad3/artist-76742","https://schedule.sxsw.com/2026/events/MS65261"],
+["feel trip.","Sun","12:40pm -- 1:00pm","Mohawk Outdoor","Billboard House","Pop","Hip-Hop / Rap","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65266"],
+["KOJ","Sun","1:00pm -- 1:40pm","Downright Radio Stage","BBC Introducing","Hip-Hop / Rap","Post-Punk","https://images.sxsw.com/YTSHadXUQ8AEll_rDk_xT2vVyxg=/450x450/images.sxsw.com/195/dac9364a-67a0-25c8-8b5b-7e59a3c41357/artist-75859","https://schedule.sxsw.com/2026/events/MS64412"],
+["Still Blank","Sun","1:00pm -- 1:30pm","BME @ Palm Door Patio","Northern Sound","Rock","Indie Rock","https://images.sxsw.com/F0CV4kAlGQGH6Sq0douxbtxllMs=/450x450/images.sxsw.com/195/1918f827-8f3a-df2e-34b7-39d01b263119/artist-73374","https://schedule.sxsw.com/2026/events/MS64330"],
+["Sassy 009","Sun","1:30pm -- 2:00pm","Mohawk Outdoor","Billboard House","Electronic","Indie Pop","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65167"],
+["Basht.","Sun","2:00pm -- 2:40pm","Downright Radio Stage","BBC Introducing in America","Rock","Alternative","https://images.sxsw.com/zeyPu8SOf_lKu65X1PcZeeUwKRg=/450x450/images.sxsw.com/195/c5d04b7b-db62-2e00-1087-c6900aa2b9cb/artist-72725","https://schedule.sxsw.com/2026/events/MS64409"],
+["THEBROSFRESH","Sun","2:00pm -- 2:40pm","Rivian Roadhouse","","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64919"],
+["Hector Gannet","Sun","2:20pm -- 2:50pm","BME @ Palm Door Patio","Northern Sound","Rock","Folk","https://images.sxsw.com/ay9zAOtJR43CObzzaFqIX5yq6hM=/450x450/images.sxsw.com/195/eae1e237-4673-eb26-c248-52c86865e017/artist-73452","https://schedule.sxsw.com/2026/events/MS63921"],
+["Amie Blu","Sun","2:30pm -- 2:55pm","Mohawk Outdoor","Billboard House","Singer-Songwriter","Indie Pop","https://images.sxsw.com/y7v4vRlw7uOBg1QZty7PAPioA7U=/450x450/images.sxsw.com/195/9acff9c3-a301-b1c8-0a95-c440cd88054c/artist-75846","https://schedule.sxsw.com/2026/events/MS65168"],
+["Simone Tang","Sun","2:30pm -- 3:30pm","Flatstock @ Marriott","","Singer-Songwriter","Americana","https://images.sxsw.com/GJgPqd3VngKaVtrJdhwAdvAxhjM=/450x450/images.sxsw.com/195/dda583ac-d663-c42c-6a9b-e0614bc80375/artist-75318","https://schedule.sxsw.com/2026/events/MS64201"],
+["Blah Spa","Sun","3:00pm -- 3:40pm","Rivian Roadhouse","","","","https://images.sxsw.com/QD6_YHYI8Osyj7rBEcSErB4sE1o=/450x450/images.sxsw.com/195/a8304739-9d54-c903-9cd6-9dd41170c930/artist-76587","https://schedule.sxsw.com/2026/events/MS64948"],
+["Jenna Cole","Sun","3:00pm -- 3:30pm","BME @ Palm Door","Northern Sound","R & B","Afrobeat","https://images.sxsw.com/1pCrGeLVHc2n9lr6OQale5LTdYA=/450x450/images.sxsw.com/195/0c7f4805-2671-4011-28c0-8501ef075041/artist-75879","https://schedule.sxsw.com/2026/events/MS64657"],
+["MEEK","Sun","3:00pm -- 3:40pm","Downright Radio Stage","BBC Introducing","Pop","None","https://images.sxsw.com/a4TwXrHNv1lVyiYLFi6fArupQAQ=/0x412:4452x4864/450x450/images.sxsw.com/179/6f2e5db3-685b-0c7a-3711-1851b2329a96/artist-75761","https://schedule.sxsw.com/2026/events/MS64410"],
+["MOMO BOYD","Sun","3:10pm -- 3:40pm","Mohawk Outdoor","Billboard House","Pop","Hip-Hop / Rap","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65281"],
+["Loren Heat","Sun","3:40pm -- 4:10pm","BME @ Palm Door Patio","Northern Sound","Pop","Pop","https://images.sxsw.com/MaOgWnoeqKOznjvB6D5AadIwTxM=/450x450/images.sxsw.com/195/a186adf8-b5f7-e6ac-c796-fb08a9ad41e7/artist-75118","https://schedule.sxsw.com/2026/events/MS63773"],
+["Bayonne","Sun","4:00pm -- 4:40pm","Rivian Roadhouse","","Electronic","Pop","https://images.sxsw.com/xiW1_aL6b36sRN_hi690B1fux_Q=/450x450/images.sxsw.com/195/a1f2f07b-bba3-5b50-19bb-ddb2256458c4/artist-73899","https://schedule.sxsw.com/2026/events/MS64729"],
+["CHALK","Sun","4:00pm -- 4:45pm","Downright Radio Stage","BBC Introducing","Rock","Electronic","https://images.sxsw.com/tWYRlZB_sAKiH3b6eP1yBjM9jZw=/450x450/images.sxsw.com/195/378a74de-bd18-ddb6-1596-1a8c98760242/artist-73135","https://schedule.sxsw.com/2026/events/MS64413"],
+["Pedal Steel Noah","Sun","4:00pm -- 5:00pm","Flatstock @ Marriott","","Rock","Alt Country","https://images.sxsw.com/rC_kdjvx952maa6Lm75AfiqWI0Q=/450x450/images.sxsw.com/195/87011ebd-5dfe-e71c-1552-34104fc4d8a7/artist-76040","https://schedule.sxsw.com/2026/events/MS64148"],
+["INK","Sun","4:10pm -- 4:40pm","Mohawk Outdoor","Billboard House","Country","Pop","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65169"],
+["KING NO-ONE","Sun","4:20pm -- 4:50pm","BME @ Palm Door","Northern Sound","Rock","Indie Rock","https://images.sxsw.com/rFa7EEnI9hYha3oQIyBfRiP-AC4=/450x450/images.sxsw.com/195/54cf2400-b9d9-9061-30f8-bca1f02794c2/artist-74262","https://schedule.sxsw.com/2026/events/MS64662"],
+["Lauren Light","Sun","5:00pm -- 5:45pm","The Pershing","Auntie's House","","","https://images.sxsw.com/T2mwTDLfOjBfSUUxyZv0G1Q6guU=/450x450/images.sxsw.com/195/44b3f2ee-76ad-237d-b927-ebe2b7808a72/artist-76420","https://schedule.sxsw.com/2026/events/MS64464"],
+["Marketplace","Sun","5:00pm -- 5:30pm","BME @ Palm Door Patio","Northern Sound","Rock","Indie Pop","https://images.sxsw.com/GHCr4YJ7_rCQ3FXy6TcVkpAp50I=/0x0:450x450/450x450/images.sxsw.com/196/6cb54e93-53f4-444b-94b3-d592cc795b74/all-3","https://schedule.sxsw.com/2026/events/MS63507"],
+["TTSSFU","Sun","5:10pm -- 5:30pm","Mohawk Outdoor","Billboard House","Rock","Alternative","https://images.sxsw.com/Kp503ZcJUSARdM-2t5U6xmfEnUQ=/450x450/images.sxsw.com/195/dea1bae8-44ac-1617-6d73-a509ca162801/artist-74561","https://schedule.sxsw.com/2026/events/MS65170"],
+["Community Concert at Lady Bird Lake with Tune-Yards","Sun","5:30pm -- 8:00pm","Auditorium Shores","","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65293"],
+["Tom A Smith","Sun","5:40pm -- 6:10pm","BME @ Palm Door","Northern Sound","Rock","Indie Rock","https://images.sxsw.com/RNKJn0SyRLQw9qelZOmHK6kAUBE=/450x450/images.sxsw.com/195/d955657a-26c1-8dca-516f-f11147ef02c3/artist-73845","https://schedule.sxsw.com/2026/events/MS64663"],
+["Lyric Rachae","Sun","5:45pm -- 6:00pm","The Pershing","Auntie's House","","","https://images.sxsw.com/hqEj-Lveam-PvHDmXfPh_HkrGwA=/450x450/images.sxsw.com/195/59867f1b-25f7-dcd3-f49f-ac180ecbc710/artist-75203","https://schedule.sxsw.com/2026/events/MS64459"],
+["Panic Shack","Sun","5:55pm -- 6:20pm","Mohawk Outdoor","Billboard House","Rock","Punk","https://images.sxsw.com/F_XGeon4SXBRBgoRry9-UHpNkNA=/450x450/images.sxsw.com/195/907b5655-23d4-b51f-ec2f-b49ced599a67/artist-75983","https://schedule.sxsw.com/2026/events/MS65079"],
+["Alex Lambert","Sun","6:00pm -- 6:30pm","Stubb's","Big Loud Presents","Country","Americana","https://images.sxsw.com/MJUDnQMQ2Y2dvOfo4nN4QDVhrac=/450x450/images.sxsw.com/195/937d8f5a-994f-eb0c-6ebb-5fc18efbcf3d/artist-76325","https://schedule.sxsw.com/2026/events/MS64189"],
+["Jaylon Ashaun","Sun","6:05pm -- 6:20pm","The Pershing","Auntie's House","R & B","Pop","https://images.sxsw.com/UzPBWsFNAqTiNxUOYM8eYwqUSu8=/450x450/images.sxsw.com/195/f8226ed3-eb6d-c3c8-8df2-7ff9dcd568eb/artist-73864","https://schedule.sxsw.com/2026/events/MS65278"],
+["King Cooley","Sun","6:25pm -- 6:40pm","The Pershing","Auntie's House","Hip-Hop / Rap","R & B","https://images.sxsw.com/ZYoBnjLtvIuUSmbqBq2Ceq-o0us=/450x450/images.sxsw.com/195/4909f4ef-9546-1999-0c67-7ea2111d66a4/artist-76169","https://schedule.sxsw.com/2026/events/MS63905"],
+["THEBROSFRESH","Sun","6:40pm -- 7:00pm","Mohawk Outdoor","Billboard House","Pop","Hip-Hop / Rap","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65171"],
+["Planet Dev","Sun","6:45pm -- 7:30pm","The Pershing","Auntie's House","","","https://images.sxsw.com/QKjS5e7N3Ky5_tMYARMDvpwa2fM=/450x450/images.sxsw.com/195/d67e21b1-2e4e-a1c7-266b-4aa3e0d40335/artist-76428","https://schedule.sxsw.com/2026/events/MS64545"],
+["Thelma and James","Sun","6:45pm -- 7:15pm","Stubb's","Big Loud Presents","","","https://images.sxsw.com/n_jtGmd5LRu5itna7PBz-yficsA=/450x450/images.sxsw.com/195/70a8e7d8-aeca-96ca-693b-f303e4a1c20d/artist-76488","https://schedule.sxsw.com/2026/events/MS64646"],
+["Alina Pash","Sun","7:00pm -- 7:30pm","Downright Global Stage","","Hip-Hop / Rap","Folk","https://images.sxsw.com/IbKqL1EIy7X8bm2D7zPGC1dX4ho=/450x450/images.sxsw.com/195/268dd879-8754-1a95-27e2-7147a27a4c2f/artist-75941","https://schedule.sxsw.com/2026/events/MS63757"],
+["DJ Gotta Strut","Sun","7:00pm -- 7:30pm","Wanderlust Wine","CareFreeBlackGirl","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64301"],
+["EddieAngel","Sun","7:00pm -- 7:40pm","Lefty's Brick Bar","EQ Austin","Rock","Indie Rock","https://images.sxsw.com/Y0tMKE5ENjlL6W7g-IBIFJEVq2w=/450x450/images.sxsw.com/195/32c63294-e4be-bdc3-1131-83ffe8ef76c8/artist-73524","https://schedule.sxsw.com/2026/events/MS64439"],
+["Korda Korder","Sun","7:00pm -- 7:40pm","Low Down Lounge","","Rock","Indie Pop","https://images.sxsw.com/6sbt4Qilx-3m-CX0iGDH5d3owRs=/450x450/images.sxsw.com/195/e394ee2d-6c69-996d-81d7-be6b5056bd73/artist-75760","https://schedule.sxsw.com/2026/events/MS64354"],
+["Merrick Winter","Sun","7:00pm -- 7:35pm","Central Presbyterian","Pastorale","Singer-Songwriter","Folk","https://images.sxsw.com/OQ7lQTOwrvACzThdLEzetInF_u4=/450x450/images.sxsw.com/195/f5a1d8f9-a1ec-c7c5-dad9-c24be1fd64cc/artist-74354","https://schedule.sxsw.com/2026/events/MS63894"],
+["Pehuenche","Sun","7:00pm -- 7:40pm","Shangri-La","Vinilious Records","Singer-Songwriter","Indie Pop","https://images.sxsw.com/_HLqZnmPm0kxR0VihGFvyCGhzEM=/450x450/images.sxsw.com/195/1c4b54fd-2da8-e186-7285-8d8c61a53fb9/artist-75006","https://schedule.sxsw.com/2026/events/MS63287"],
+["Simone Tang","Sun","7:00pm -- 7:25pm","Zilker Brewing","Nordic Nite by SXSW","Singer-Songwriter","Americana","https://images.sxsw.com/GJgPqd3VngKaVtrJdhwAdvAxhjM=/450x450/images.sxsw.com/195/dda583ac-d663-c42c-6a9b-e0614bc80375/artist-75318","https://schedule.sxsw.com/2026/events/MS63344"],
+["TTSSFU","Sun","7:00pm -- 7:30pm","Hotel Vegas Patio","Grillo's","Rock","Alternative","https://images.sxsw.com/Kp503ZcJUSARdM-2t5U6xmfEnUQ=/450x450/images.sxsw.com/195/dea1bae8-44ac-1617-6d73-a509ca162801/artist-74561","https://schedule.sxsw.com/2026/events/MS64893"],
+["Vinilious DJ","Sun","7:05pm -- 12:00am","Shangri-La","Vinilious Records","Latin","Indie Pop","https://images.sxsw.com/kxH5EGZUbFgLrjG8F8XWKWx4flI=/450x450/images.sxsw.com/195/7ccd0f95-6ffe-7aec-ea8b-e273a794320a/artist-76183","https://schedule.sxsw.com/2026/events/MS63947"],
+["J Soulja","Sun","7:30pm -- 7:45pm","The Pershing","Auntie's House","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/3s14qXP9QQbCbc2f61I2uqQPd40=/450x450/images.sxsw.com/195/78abca5b-d7bd-f30c-070a-8498af3a9a42/artist-74449","https://schedule.sxsw.com/2026/events/MS63958"],
+["Jazz re:freshed DJs","Sun","7:30pm -- 2:00am","Flamingo Cantina","Jazz re:freshed Outernational","Jazz","Fusion","https://images.sxsw.com/-XBDX-I8TGX1F8ThK3nEAiNSiBc=/450x450/images.sxsw.com/195/40c57e45-2b3b-1884-842e-d5d0a2b01418/artist-75311","https://schedule.sxsw.com/2026/events/MS63291"],
+["Mika Häkki & Dark Yonder","Sun","7:30pm -- 8:00pm","Zilker Brewing","Nordic Nite by SXSW","Alt Country","Rock","https://images.sxsw.com/ww9e7uQK5iIXKXzFKuQgC9FWTZE=/450x450/images.sxsw.com/195/a48c29cd-6fde-7123-60ab-1c4ffaa27948/artist-73624","https://schedule.sxsw.com/2026/events/MS63280"],
+["Saige Davis","Sun","7:30pm -- 7:55pm","Antone's","","Americana","Country","https://images.sxsw.com/OmqPTvq8U4TeCzeQ_r_I8EfosOM=/450x450/images.sxsw.com/195/a1322a2e-3d48-00ee-39e6-4464413e6b87/artist-75868","https://schedule.sxsw.com/2026/events/MS64133"],
+["TALK","Sun","7:30pm -- 8:05pm","Stubb's","Big Loud Presents","Rock","Pop","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64041"],
+["J. Mill","Sun","7:40pm -- 7:55pm","Taco n Maiz","Future of Indie Showcase","","","https://images.sxsw.com/N-vDBj-f00eP6e_EgHX24t50uWg=/450x450/images.sxsw.com/195/9a019ae1-512c-145a-66fe-6343b3530f2f/artist-76744","https://schedule.sxsw.com/2026/events/MS65273"],
+["Ifeanyi Elswith","Sun","7:45pm -- 7:55pm","Wanderlust Wine","CareFreeBlackGirl","R & B","Caribbean","https://images.sxsw.com/e-zeVd7xNNEP268YuxImchDEyr4=/450x450/images.sxsw.com/195/4cd7148c-cd69-460c-30ec-753b2254c0a3/artist-76179","https://schedule.sxsw.com/2026/events/MS63908"],
+["VÕ.A 2000","Sun","7:45pm -- 8:45pm","Las Perlas","Made in Malaysia","","","https://images.sxsw.com/MsRrKN6MA3F1Fz2RbedmCE062Ew=/450x450/images.sxsw.com/195/5ef94ee7-ce18-93ec-b42c-75884d215777/artist-76386","https://schedule.sxsw.com/2026/events/MS64319"],
+["Worlds Worst","Sun","7:45pm -- 8:15pm","Hotel Vegas Patio","Grillo's","Rock","Alternative","https://images.sxsw.com/6aYTv0-Z7VsBjcCV-GTcDKtYdTI=/450x450/images.sxsw.com/195/9a0d46e8-04af-ab8b-3047-3c3b1f74438b/artist-75934","https://schedule.sxsw.com/2026/events/MS64851"],
+["Jasmine Jethwa","Sun","7:50pm -- 8:25pm","Central Presbyterian","Pastorale","Folk","Pop","https://images.sxsw.com/SvdLgWGM7U25gvzA7Es-L7ujPBk=/450x450/images.sxsw.com/195/111df6c9-a7bc-b30a-b882-04838cf1a6a2/artist-75723","https://schedule.sxsw.com/2026/events/MS65277"],
+["lucky break","Sun","7:50pm -- 8:30pm","Hotel Vegas","Fire Records x Songbird x Anniversary","Rock","Indie Rock","https://images.sxsw.com/MvU_RHQd0aTeJUAnyGqWQ_3NsrM=/450x450/images.sxsw.com/195/ff93b59b-b080-6ef5-8906-da7629ed7dd5/artist-74288","https://schedule.sxsw.com/2026/events/MS63622"],
+["Mother Nature","Sun","7:50pm -- 8:05pm","The Pershing","Auntie's House","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64249"],
+["Sugabooo","Sun","7:50pm -- 8:20pm","Downright Global Stage","","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/6Xnp6OpWWhOsjqo0T9Rj_nt0UUo=/450x450/images.sxsw.com/195/637b3836-37da-627f-e7f3-900f3d9e4e61/artist-75190","https://schedule.sxsw.com/2026/events/MS63469"],
+["Aitchdub","Sun","8:00pm -- 9:30pm","Neon Grotto","Floppy Disko","DJ","House / Techno","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64085"],
+["Ashaine White","Sun","8:00pm -- 8:30pm","BME @ Palm Door","BBC Introducing","Rock","Indie Rock","https://images.sxsw.com/eZv8a5g7P258crunF90H8bO9798=/450x450/images.sxsw.com/195/f3fed995-552c-47e8-3d66-ea07d997b1dd/artist-76456","https://schedule.sxsw.com/2026/events/MS64573"],
+["ASHMAR.","Sun","8:00pm -- 9:00pm","Coconut Club / Coconut Club Rooftop","Take A Break","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64258"],
+["Boogietraxx","Sun","8:00pm -- 9:00pm","Coconut Club / Coconut Club Rooftop","Take A Break","DJ","Disco","https://images.sxsw.com/uXPXT9Lf74jt-6Y8QtK5qYtGDJ4=/450x450/images.sxsw.com/195/24c70075-b358-8fe5-c727-fa6dfd97fe7e/artist-76098","https://schedule.sxsw.com/2026/events/MS65053"],
+["Casie Farrell","Sun","8:00pm -- 9:00pm","Coconut Club","Take A Break","DJ","House / Techno","https://images.sxsw.com/yg4ZrbxpxNM1l-Y4QjA4aYgS-GQ=/450x450/images.sxsw.com/195/3f5614a8-bec6-1471-145e-b00e4ce51521/artist-76308","https://schedule.sxsw.com/2026/events/MS64144"],
+["deCasa","Sun","8:00pm -- 8:40pm","Lefty's Brick Bar","EQ Austin","Latin","Alternative","https://images.sxsw.com/Fi8-4Tuqi3YEohZZXqQAIQ5DDHI=/450x450/images.sxsw.com/195/63733fc6-4af3-6258-9a6f-f36daed89827/artist-76335","https://schedule.sxsw.com/2026/events/MS64187"],
+["DJ Kay Cali","Sun","8:00pm -- 8:15pm","Marlow","RnB Block Party","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64687"],
+["Dr Dak","Sun","8:00pm -- 9:30pm","Neon Grotto Rooftop","Floppy Disko","Electronic","House / Techno","https://images.sxsw.com/ADuOydbrkpzLnSUOXKrkbUK7HsU=/450x450/images.sxsw.com/195/d8e178b9-c6af-47a6-598a-40c19131b114/artist-76143","https://schedule.sxsw.com/2026/events/MS64912"],
+["The Family Battenberg","Sun","8:00pm -- 8:30pm","Swan Dive","FOCUS Wales","Rock","Alternative","https://images.sxsw.com/FtOo9gPEsayxGtTba_Pb_inWwNY=/450x450/images.sxsw.com/195/506d1adc-a8e1-60f1-449e-624b7a3ac137/artist-73584","https://schedule.sxsw.com/2026/events/MS63228"],
+["Grrrl Gang","Sun","8:00pm -- 8:40pm","Hotel Vegas Volstead","Fire Records x Songbird x Anniversary","Rock","Indie Rock","https://images.sxsw.com/i6SnMqWVxv6eXJAEHhmKTAMxmd0=/450x450/images.sxsw.com/195/5901e392-a01f-8db3-bfca-824b35b803ab/artist-74015","https://schedule.sxsw.com/2026/events/MS63170"],
+["Honey I'm Home","Sun","8:00pm -- 8:40pm","Low Down Lounge","","Rock","Shoegaze","https://images.sxsw.com/iFsHSKlaX11PJLjxZ9Vwu2ByYKI=/450x450/images.sxsw.com/195/81b80628-c713-f671-311e-5ad67ff36e74/artist-75116","https://schedule.sxsw.com/2026/events/MS63421"],
+["Jamaica Moana","Sun","8:00pm -- 8:40pm","Seven Grand","BIGSOUND Festival","Hip-Hop / Rap","R & B","https://images.sxsw.com/8UnbUf51aNp-7QtfL6xzjD_IkXo=/450x450/images.sxsw.com/195/0375bb26-5cf3-08c8-fa20-773207cbc4de/artist-75921","https://schedule.sxsw.com/2026/events/MS63751"],
+["Javiera Electra","Sun","8:00pm -- 8:40pm","Shangri-La","Vinilious Records","Avant / Experimental","Folk","https://images.sxsw.com/tBxE5GiqROsy05pbYeCsdpjnOME=/450x450/images.sxsw.com/195/f8f22313-4207-ef54-dc53-40d20b454017/artist-75497","https://schedule.sxsw.com/2026/events/MS63325"],
+["Jaxs","Sun","8:00pm -- 8:15pm","Taco n Maiz","Future of Indie Showcase","Hip-Hop / Rap","Freestyle","https://images.sxsw.com/lwsWW9rk8GG4LhJycyV9_2NfziI=/450x450/images.sxsw.com/195/65357a74-aee3-0ce0-4abb-e9d6fab5e7d2/artist-72945","https://schedule.sxsw.com/2026/events/MS65250"],
+["Kanho Yakushiji","Sun","8:00pm -- 8:40pm","Elysium","Japan Vibes powered by TuneCore Japan","Avant / Experimental","Singer-Songwriter","https://images.sxsw.com/WI15J7-hsemTNzQg6hX7rCC-sIE=/450x450/images.sxsw.com/195/f00e9bd1-563b-03d0-9153-1ab61c28cc6b/artist-74711","https://schedule.sxsw.com/2026/events/MS63455"],
+["Killakmadeinbrooklyn","Sun","8:00pm -- 8:10pm","Wanderlust Wine","CareFreeBlackGirl","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/RZrpUf1sUxVIpnrpclD7T9Z0a08=/450x450/images.sxsw.com/195/ba36fa41-f705-e48f-d1ab-7628aabebe2c/artist-76125","https://schedule.sxsw.com/2026/events/MS63813"],
+["Luke Tyler Shelton","Sun","8:00pm -- 8:30pm","Antone's","","Americana","Rock","https://images.sxsw.com/AKXED-yq-gbmorf9LMBC73IOt-g=/450x450/images.sxsw.com/195/6f08134a-8481-0f7c-beb6-2aea56c78ed8/artist-75869","https://schedule.sxsw.com/2026/events/MS63484"],
+["Mên An Tol","Sun","8:00pm -- 8:40pm","The 13th Floor","Beyond The Music","","","https://images.sxsw.com/Z-Oe6TsOw62oEjxvbjCX9uYocP0=/450x450/images.sxsw.com/195/ce4931c7-c5bc-dd54-4ec6-1530d78ba015/artist-75752","https://schedule.sxsw.com/2026/events/MS64268"],
+["NEZZA","Sun","8:00pm -- 8:40pm","Mala Fama Rooftop","De Los","Latin","Pop","https://images.sxsw.com/bd7BiK3dEgoSspc_bec5kfvRCnQ=/450x450/images.sxsw.com/195/f0a62326-51ea-5177-c588-7140f670e3b0/artist-72491","https://schedule.sxsw.com/2026/events/MS64872"],
+["Pedro TQM","Sun","8:00pm -- 8:40pm","Chess Club","Norte Shida","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64674"],
+["Pirscription","Sun","8:00pm -- 8:10pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","","","https://images.sxsw.com/IuSRnR0GzGiUWFsEI_ZJSlPZivU=/450x450/images.sxsw.com/195/82f4f657-ce49-21a4-c0a6-36b9297b72ec/artist-76566","https://schedule.sxsw.com/2026/events/MS64874"],
+["Somebody Someone","Sun","8:00pm -- 8:40pm","Continental Club","Traffic Music Group","Pop","Dream Pop","https://images.sxsw.com/4_qJBD5YXGKkYzsUTsIGcC0kcdg=/450x450/images.sxsw.com/195/e9ca92f4-4112-3443-efac-db6a196c2330/artist-75715","https://schedule.sxsw.com/2026/events/MS63380"],
+["Victor Jones","Sun","8:00pm -- 8:40pm","Valhalla","Armadillo World Headquarters","Rock","Dance","https://images.sxsw.com/fO-8mPmeFw5b1s9VmPfzxezkYhc=/450x450/images.sxsw.com/195/8bb79605-d867-7f3d-24cc-b4b8bf195885/artist-74060","https://schedule.sxsw.com/2026/events/MS65085"],
+["Woes","Sun","8:00pm -- 8:20pm","Seven Spirits","HOT TAKES","","","https://images.sxsw.com/dgywG_1zMVgBngfscDnW1orVxSA=/450x450/images.sxsw.com/195/13731e27-4422-5022-a8fd-7d7854997f9a/artist-76086","https://schedule.sxsw.com/2026/events/MS64524"],
+["Xuco Baby","Sun","8:00pm -- 8:40pm","Chess Club","Norte Shida","","","https://images.sxsw.com/wRCJaFIJq8sPGdH-dWeHgEr7aVk=/450x450/images.sxsw.com/195/d97c0b3d-4317-38cf-9fe7-2c8b794e52df/artist-76450","https://schedule.sxsw.com/2026/events/MS64547"],
+["Zola Marcelle","Sun","8:00pm -- 8:40pm","Flamingo Cantina","Jazz re:freshed Outernational","Jazz","Fusion","https://images.sxsw.com/uhBiI69xJYUfEPNKeWnS6G14Rl4=/450x450/images.sxsw.com/195/aa95a93b-e8fe-705e-b9cf-53da80a3492a/artist-74360","https://schedule.sxsw.com/2026/events/MS63204"],
+["Tiara Thomas","Sun","8:10pm -- 8:25pm","The Pershing","Auntie's House","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65276"],
+["Mai Anna","Sun","8:15pm -- 8:30pm","Marlow","RnB Forever","","","https://images.sxsw.com/SnTGJWoudmbrC9ekna227JOSddM=/450x450/images.sxsw.com/195/9c500198-6f83-cec7-7b78-b4a7630002be/artist-76401","https://schedule.sxsw.com/2026/events/MS64365"],
+["Niiasii","Sun","8:15pm -- 8:25pm","Wanderlust Wine","CareFreeBlackGirl","Pop","Alternative","https://images.sxsw.com/IGk-XeLH2J3w_NmxdzjsacmmHT4=/450x450/images.sxsw.com/195/2fc9ffc4-e3c3-e735-0c6f-8b9742c4839c/artist-76047","https://schedule.sxsw.com/2026/events/MS63702"],
+["RAKEL","Sun","8:15pm -- 8:45pm","Zilker Brewing","Nordic Nite by SXSW","","","https://images.sxsw.com/8aiZQKNua5hjUeBe36BRAourtEM=/450x450/images.sxsw.com/195/9dfb5a4b-8c4d-6eca-8921-f144f2afc474/artist-74560","https://schedule.sxsw.com/2026/events/MS63255"],
+["Sonny Vercettie","Sun","8:15pm -- 8:25pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","","","https://images.sxsw.com/mTmro3DEpSTVGsO82kSTsnJbaLk=/450x450/images.sxsw.com/195/feb06bc1-ce35-5d4b-57b8-706a34bd1948/artist-76701","https://schedule.sxsw.com/2026/events/MS65173"],
+["Blair Davie","Sun","8:20pm -- 9:00pm","Swan Dive Patio","Wide Days Scotland","Singer-Songwriter","Folk","https://images.sxsw.com/vGXgMvhH0Iyi0Hd9kFYLelscyM8=/450x450/images.sxsw.com/195/1b911789-ecd4-f67e-ce8e-a9420a6ca549/artist-74998","https://schedule.sxsw.com/2026/events/MS63315"],
+["Carissa Cruz","Sun","8:20pm -- 8:35pm","Taco n Maiz","Future of Indie Showcase","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65117"],
+["In Color","Sun","8:20pm -- 8:50pm","Stubb's","Big Loud Presents","Pop","Indie Rock","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64463"],
+["Ace Park","Sun","8:30pm -- 8:40pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","","","https://images.sxsw.com/H1yJItmlyQfq_y3kt4dtZjXuFGs=/450x450/images.sxsw.com/195/22100b20-1d2a-7b38-2e22-bee121378f9d/artist-73012","https://schedule.sxsw.com/2026/events/MS64618"],
+["Bijaan","Sun","8:30pm -- 9:00pm","Seven Spirits","HOT TAKES","","","https://images.sxsw.com/shlS2loHfceRexzWi7lBuuqDZZU=/450x450/images.sxsw.com/195/559a9c7e-ec7b-5647-e803-a833fc413d33/artist-75479","https://schedule.sxsw.com/2026/events/MS64259"],
+["Fleshripper","Sun","8:30pm -- 9:00pm","Hotel Vegas Patio","Grillo's","","","https://images.sxsw.com/ltvyYIoyRKKq9GfeS-YivGv3KUc=/450x450/images.sxsw.com/195/5e49834e-21d8-5638-1cdd-afc8956ce7f7/artist-76570","https://schedule.sxsw.com/2026/events/MS64899"],
+["Kayanne Peppa","Sun","8:30pm -- 8:40pm","Wanderlust Wine","CareFreeBlackGirl","Hip-Hop / Rap","Punk","https://images.sxsw.com/DL5qUS21QdQ9noaIY0OIfwapFtY=/450x450/images.sxsw.com/195/2065f00c-6949-80c7-a4b4-59d4308be93d/artist-76041","https://schedule.sxsw.com/2026/events/MS63693"],
+["Tamera King","Sun","8:35pm -- 8:50pm","Marlow","RnB Forever","","","https://images.sxsw.com/GmO6GDyMI2LcDxzJiUWs0mJwMnQ=/450x450/images.sxsw.com/195/9a4e23f4-319c-22bd-1780-a51595174e31/artist-76352","https://schedule.sxsw.com/2026/events/MS64230"],
+["Avanti Patel","Sun","8:40pm -- 9:15pm","Central Presbyterian","Pastorale","Classical","Folk","https://images.sxsw.com/CP8GNruO1yzFyi0F87-RxI71qNk=/450x450/images.sxsw.com/195/aede5075-a74d-c790-26b9-a80dffbe8924/artist-73702","https://schedule.sxsw.com/2026/events/MS63463"],
+["Mobeethicc","Sun","8:40pm -- 9:10pm","Wanderlust Wine","CareFreeBlackGirl","DJ","Hip-Hop / Rap","https://images.sxsw.com/_xw-q0kf4qbwzECgdJX9bNVmhyA=/450x450/images.sxsw.com/195/db242abe-4e4b-9326-918b-26132ff963ac/artist-76022","https://schedule.sxsw.com/2026/events/MS63657"],
+["MT Jones","Sun","8:40pm -- 9:10pm","BME @ Palm Door Patio","BBC Introducing","Pop","Soul","https://images.sxsw.com/6SNeyyY5fiRnRC88f7_repZFtHQ=/0x0:450x450/450x450/images.sxsw.com/196/93fc6441-c35c-40bf-9bcd-7f93400f713a/all-1","https://schedule.sxsw.com/2026/events/MS63521"],
+["Pierce Washington","Sun","8:40pm -- 8:55pm","Taco n Maiz","Future of Indie Showcase","Hip-Hop / Rap","Jazz","https://images.sxsw.com/PYASnTEymBxPmWU_ci2V_9hyrmM=/450x450/images.sxsw.com/195/4caa930c-a6b3-9a85-2c74-51e0cf0cf260/artist-74205","https://schedule.sxsw.com/2026/events/MS64710"],
+["someshiit","Sun","8:40pm -- 9:10pm","Downright Global Stage","","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/_PyR2qJXdvxpArpU3c2dx1GCiuA=/450x450/images.sxsw.com/195/4b8b990f-58b1-b2ec-c955-4b8b6658fb39/artist-74395","https://schedule.sxsw.com/2026/events/MS65224"],
+["Timmy Skelly","Sun","8:40pm -- 9:10pm","Antone's","","Americana","Indie Rock","https://images.sxsw.com/eoAYGsLxwAej-Rzou__kzbpHqf4=/450x450/images.sxsw.com/195/fdd07fab-9612-0e4c-4156-2fa1985e2396/artist-75876","https://schedule.sxsw.com/2026/events/MS63584"],
+["60 JUNO","Sun","8:50pm -- 9:30pm","Hotel Vegas","Fire Records x Songbird x Anniversary","Rock","Post-Punk","https://images.sxsw.com/ZCbmju4nGj4D6y88BfVvNQ1pELY=/450x450/images.sxsw.com/195/6352fbbe-2c32-9f12-8b32-e5bdfb6318ca/artist-75177","https://schedule.sxsw.com/2026/events/MS63442"],
+["Ben Ellis","Sun","8:50pm -- 9:20pm","Swan Dive","FOCUS Wales","Singer-Songwriter","Indie Pop","https://images.sxsw.com/xxd39kl1tLkUqqngi3D57TytHx8=/450x450/images.sxsw.com/195/71402f14-2f52-caa8-5deb-7f64a313ac3e/artist-73676","https://schedule.sxsw.com/2026/events/MS63206"],
+["JeRonelle","Sun","8:55pm -- 9:10pm","Marlow","RnB Forever","","","https://images.sxsw.com/bUa6z18EbSz1c-THmtzN9hFvkpE=/450x450/images.sxsw.com/195/0635fdac-e02e-b743-b776-74e7ce2539f3/artist-76469","https://schedule.sxsw.com/2026/events/MS64595"],
+["TTG HUNCHO","Sun","8:55pm -- 9:05pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","","","https://images.sxsw.com/r8xNZyB5SX06utZWzXvWo5Jbf-Y=/450x450/images.sxsw.com/195/635c3932-c08f-4b36-a8f1-74a7294fa622/artist-76454","https://schedule.sxsw.com/2026/events/MS64553"],
+["Zoe Tan","Sun","8:55pm -- 9:25pm","Las Perlas","Made in Malaysia","","","https://images.sxsw.com/QvsmJhdClJ51wkzJ76FrgL-ooQ0=/450x450/images.sxsw.com/195/61b6dfc4-e072-b549-6bbc-88d3f7b78c0e/artist-76348","https://schedule.sxsw.com/2026/events/MS64236"],
+["2BYG","Sun","9:00pm -- 9:15pm","Venue 6","RnB Block Party","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65144"],
+["Amy Gadiaga","Sun","9:00pm -- 9:40pm","Flamingo Cantina","Jazz re:freshed Outernational","Jazz","Soul","https://images.sxsw.com/aFGPbpVGryxRIgmWGS1dIuVzxZE=/450x450/images.sxsw.com/195/80fce733-e333-a5ed-6554-ee8c280fdf5b/artist-75187","https://schedule.sxsw.com/2026/events/MS63293"],
+["BettySoo","Sun","9:00pm -- 9:40pm","Continental Club","Traffic Music Group","Folk","Singer-Songwriter","https://images.sxsw.com/2m0If0aG1Ei_5OtNkYoepXAx3sg=/450x450/images.sxsw.com/195/2cafbe30-b738-cc45-d0a9-8d7a022db68d/artist-75727","https://schedule.sxsw.com/2026/events/MS63378"],
+["BULLETBALLET","Sun","9:00pm -- 9:40pm","Chess Club","Norte Shida","Avant / Experimental","Alternative","https://images.sxsw.com/1EHKR-XtthWk3uI8cAu2pxGLDeo=/450x450/images.sxsw.com/195/0838dacd-765a-1029-4606-c97df066d4ea/artist-74325","https://schedule.sxsw.com/2026/events/MS63354"],
+["Chatterton","Sun","9:00pm -- 9:40pm","Low Down Lounge","","","","https://images.sxsw.com/udTL7IoenscFwNKTRT5k1zCh9sw=/450x450/images.sxsw.com/195/3924a757-e27f-a9ce-a70a-1beb29e944b5/artist-74544","https://schedule.sxsw.com/2026/events/MS64342"],
+["Hot Donna","Sun","9:00pm -- 10:00pm","Coconut Club / Coconut Club Rooftop","Take A Break","DJ","Disco","https://images.sxsw.com/ABfydY_T7Zp_29j44t08BhTHVXY=/450x450/images.sxsw.com/195/a12a8894-4664-d256-71ca-9d138ac31f6d/artist-76363","https://schedule.sxsw.com/2026/events/MS64239"],
+["KING NO-ONE","Sun","9:00pm -- 9:40pm","The 13th Floor","Beyond The Music","Rock","Indie Rock","https://images.sxsw.com/rFa7EEnI9hYha3oQIyBfRiP-AC4=/450x450/images.sxsw.com/195/54cf2400-b9d9-9061-30f8-bca1f02794c2/artist-74262","https://schedule.sxsw.com/2026/events/MS63335"],
+["Little Guilt","Sun","9:00pm -- 9:40pm","Seven Grand","BIGSOUND Festival","Pop","Indie Pop","https://images.sxsw.com/yTuhk-7OLomE_NOP4NyLQ8lnwKo=/450x450/images.sxsw.com/195/ce403246-92d3-da43-54b1-e978cb278eb8/artist-75161","https://schedule.sxsw.com/2026/events/MS63339"],
+["Marissa Nadler","Sun","9:00pm -- 9:40pm","Hotel Vegas Volstead","Fire Records x Songbird x Anniversary","Folk","Avant / Experimental","https://images.sxsw.com/WwAkLUQ4k5TFnER1lGHxmUcAC8U=/450x450/images.sxsw.com/195/dbd46b20-a73a-e541-1e6e-8432706a7470/artist-76211","https://schedule.sxsw.com/2026/events/MS64002"],
+["Montclair","Sun","9:00pm -- 9:40pm","Valhalla","Armadillo World Headquarters","Americana","Indie Rock","https://images.sxsw.com/u5ncxfFVmWjoYknHsDnl6lbjW0E=/450x450/images.sxsw.com/195/63ed7595-586d-b616-f240-6787155e1f6d/artist-73749","https://schedule.sxsw.com/2026/events/MS65092"],
+["Short Life","Sun","9:00pm -- 9:40pm","Lefty's Brick Bar","EQ Austin","Latin","Electronic","https://images.sxsw.com/cc_dvrmWc_t2uN-Vgci_SQ-1ZoU=/0x0:450x450/450x450/images.sxsw.com/196/b2aadb7c-e6ad-4632-b94c-7177ef77e213/all-14","https://schedule.sxsw.com/2026/events/MS63470"],
+["Sūn Byrd","Sun","9:00pm -- 9:30pm","Zilker Brewing","Nordic Nite by SXSW","Soul","Soul","https://images.sxsw.com/Or1jKohXO_pWRIeZ5mCqPqlvojE=/450x450/images.sxsw.com/195/2e7f5729-ccd7-fda4-baa1-143df3c85507/artist-74501","https://schedule.sxsw.com/2026/events/MS63263"],
+["Trey Kams","Sun","9:00pm -- 10:00pm","Coconut Club","Take A Break","","","https://images.sxsw.com/hZgpe4RjEbJjVy0mQax9SGn7920=/450x450/images.sxsw.com/195/bd191125-0b65-b07b-5092-d147794c36d3/artist-76520","https://schedule.sxsw.com/2026/events/MS64768"],
+["Valsian","Sun","9:00pm -- 9:40pm","Shangri-La","Vinilious Records","Pop","Alternative","https://images.sxsw.com/fQYURP2tu-9bASYYbcnbNGp-Yxg=/450x450/images.sxsw.com/195/898f09b7-1c3a-2e6d-ac18-201a730be7b6/artist-73058","https://schedule.sxsw.com/2026/events/MS63439"],
+["YAMORI","Sun","9:00pm -- 9:30pm","Elysium","Japan Vibes powered by TuneCore Japan","","","https://images.sxsw.com/2WMz15o9QkFiBlHwPkRMiJGzE1A=/450x450/images.sxsw.com/195/9fb2999d-d18f-dfab-afd1-f5dfb9a9e433/artist-74860","https://schedule.sxsw.com/2026/events/MS65055"],
+["Dylan Gossett","Sun","9:05pm -- 9:50pm","Stubb's","Big Loud Presents","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64706"],
+["Amber Jaii","Sun","9:10pm -- 9:25pm","Wanderlust Wine","CareFreeBlackGirl","Dance","Alternative","https://images.sxsw.com/7qOFieXds-5SyeC1x3rgB-Qgf44=/450x450/images.sxsw.com/195/11fb93a6-f606-b4bf-bae5-ba1edcc81a7c/artist-76330","https://schedule.sxsw.com/2026/events/MS64170"],
+["Baby Sam","Sun","9:10pm -- 9:20pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","Hip-Hop / Rap","Soul","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65061"],
+["Jade Omari","Sun","9:10pm -- 9:30pm","Seven Spirits","HOT TAKES","R & B","Pop","https://images.sxsw.com/bLmousUBp-4RuWJtgnXDLq96Prc=/450x450/images.sxsw.com/195/820f1c25-f4f2-331a-cb0b-fc2e256e3c1b/artist-76057","https://schedule.sxsw.com/2026/events/MS63711"],
+["Remey Williams","Sun","9:15pm -- 9:30pm","Marlow","RnB Forever","R & B","Soul","https://images.sxsw.com/H0d-ylifvPUbu-aMBYXz2dx_JJI=/450x450/images.sxsw.com/195/ead45768-d369-867f-2b0f-e62c4bd2a549/artist-76144","https://schedule.sxsw.com/2026/events/MS63852"],
+["SLASH NEED","Sun","9:15pm -- 9:45pm","Hotel Vegas Patio","Grillo's","Punk","Electronic","https://images.sxsw.com/SHNJ3N4s_xHKcOA3zjpLv61YvI0=/450x450/images.sxsw.com/195/1ed880a2-c3a4-02a4-c442-21c79b40612d/artist-76103","https://schedule.sxsw.com/2026/events/MS64852"],
+["ARXX","Sun","9:20pm -- 9:50pm","BME @ Palm Door","BBC Introducing","Rock","Power Pop","https://images.sxsw.com/jeV0uwtHOPFrumWZSmWFyKSB1FY=/450x450/images.sxsw.com/195/1e5ce975-d368-6484-275e-a4a629526c18/artist-75732","https://schedule.sxsw.com/2026/events/MS63635"],
+["YES AND MAYBE","Sun","9:20pm -- 10:00pm","Swan Dive Patio","Wide Days Scotland","Pop","Indie Pop","https://images.sxsw.com/HhjucdH57Mr-ShFPlzCr_VtOQn8=/450x450/images.sxsw.com/195/b20fda52-2f05-7a19-9944-7eb12a80fd2a/artist-73896","https://schedule.sxsw.com/2026/events/MS63320"],
+["Stockz","Sun","9:25pm -- 9:35pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","Hip-Hop / Rap","R & B","https://images.sxsw.com/5b-6YZ3_S_mGa_6bnucDRC4sUuY=/450x450/images.sxsw.com/195/fc225d79-4cca-37e4-4a4d-4b7ed478841d/artist-76194","https://schedule.sxsw.com/2026/events/MS65060"],
+["Alex Irish","Sun","9:30pm -- 9:45pm","Taco n Maiz","Future of Indie Showcase","Hip-Hop / Rap","Alternative","https://images.sxsw.com/Az8uSmSuacKfX6twF-v0Giuj_YI=/450x450/images.sxsw.com/195/8da9d185-050f-b575-fbe4-1b5486e3d85f/artist-76243","https://schedule.sxsw.com/2026/events/MS64036"],
+["Alkyone","Sun","9:30pm -- 10:05pm","Central Presbyterian","Pastorale","Folk","Indie Pop","https://images.sxsw.com/GNsfaL1aXPpnbjKOuRUjKiFyedE=/450x450/images.sxsw.com/195/b01d2a1e-f1a5-1df2-ea09-f4e2cdd4aad3/artist-73447","https://schedule.sxsw.com/2026/events/MS63321"],
+["Boogietraxx","Sun","9:30pm -- 11:00pm","Neon Grotto Rooftop","Floppy Disko","DJ","Disco","https://images.sxsw.com/uXPXT9Lf74jt-6Y8QtK5qYtGDJ4=/450x450/images.sxsw.com/195/24c70075-b358-8fe5-c727-fa6dfd97fe7e/artist-76098","https://schedule.sxsw.com/2026/events/MS63758"],
+["Dyna Edyne","Sun","9:30pm -- 9:45pm","Wanderlust Wine","CareFreeBlackGirl","","","https://images.sxsw.com/04gMY4QiRhfTq6htp_lI83BUMd0=/450x450/images.sxsw.com/195/233eb3fb-95e2-5d5f-0140-4f2736846b6d/artist-76406","https://schedule.sxsw.com/2026/events/MS64402"],
+["KAGE","Sun","9:30pm -- 9:50pm","Seven Spirits","HOT TAKES","","","https://images.sxsw.com/wAx1cFSir-pTaMZwTJ1mzpbxCBE=/450x450/images.sxsw.com/195/3d493153-06f3-fe0e-3725-1637a97f8608/artist-76637","https://schedule.sxsw.com/2026/events/MS65046"],
+["Miss Bashful","Sun","9:30pm -- 10:30pm","Speakeasy","German Music Export by Initiative Musik","Electronic","Dance","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63651"],
+["Synchrolyst","Sun","9:30pm -- 11:00pm","Neon Grotto","Floppy Disko","Electronic","Disco","https://images.sxsw.com/P3k6LGHyI3lrE9YTAbLv76bJmL0=/450x450/images.sxsw.com/195/ea954e69-b060-bfef-9e4a-8362249c116e/artist-76158","https://schedule.sxsw.com/2026/events/MS63880"],
+["Lee Vasi","Sun","9:35pm -- 9:55pm","Marlow","RnB Forever","R & B","Soul","https://images.sxsw.com/5OSoUgolFJRY3xBSrwdEc8cFvl8=/450x450/images.sxsw.com/195/bfede418-558d-191e-1cad-11fac270e32a/artist-76151","https://schedule.sxsw.com/2026/events/MS63857"],
+["Gwenno","Sun","9:40pm -- 10:10pm","Swan Dive","FOCUS Wales","Indie Pop","https://open.spotify.com/artist/44mRrrRjaV8iu1VLIKuwty?si=FawlgcebTky_na58LixsQQ","https://images.sxsw.com/EpBNQG07XZm0qEnLWeYuo1qu32Q=/450x450/images.sxsw.com/195/ca28d5fb-78cd-b068-294f-9eb96aa48748/artist-75346","https://schedule.sxsw.com/2026/events/MS63734"],
+["Yung Al","Sun","9:40pm -- 9:50pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","Hip-Hop / Rap","R & B","https://images.sxsw.com/TCib4he7YiCenD4-mCv7OMef2PQ=/450x450/images.sxsw.com/195/2081812a-408d-95d6-d2a7-42ffaecfdb73/artist-76327","https://schedule.sxsw.com/2026/events/MS64164"],
+["Pär Hagström and Charlatans of Love","Sun","9:45pm -- 10:15pm","Zilker Brewing","Nordic Nite by SXSW","Rock","Psychedelic","https://images.sxsw.com/SUn8URzfMXuVAMwRW5lbcjR1Z6U=/450x450/images.sxsw.com/195/0e11f0eb-0d5c-ceea-2b57-e10a1c46a589/artist-73642","https://schedule.sxsw.com/2026/events/MS63272"],
+["Haylie Davis","Sun","9:50pm -- 10:30pm","Hotel Vegas","Fire Records x Songbird x Anniversary","Singer-Songwriter","Folk","https://images.sxsw.com/bnXtSMI2tLs-iq0k40izcW82bsU=/450x450/images.sxsw.com/195/77e18927-c56d-d7e3-3f0d-2fd24b7f0858/artist-74287","https://schedule.sxsw.com/2026/events/MS63727"],
+["Jairo","Sun","9:50pm -- 10:20pm","Elysium","Japan Vibes powered by TuneCore Japan","","","https://images.sxsw.com/HNZBGg-xF3HbqzlILYCIS44IahE=/450x450/images.sxsw.com/195/3e1c8d6f-bfcf-bca7-b0ed-25e48a278835/artist-74814","https://schedule.sxsw.com/2026/events/MS64098"],
+["Ms. Ca$H","Sun","9:50pm -- 10:05pm","Wanderlust Wine","CareFreeBlackGirl","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/CDSV4702RNtqdbksEbU6SOba_68=/450x450/images.sxsw.com/195/36040dc7-c01f-9bb3-a5f6-e920cd21ae8d/artist-76029","https://schedule.sxsw.com/2026/events/MS63698"],
+["Lil Bri","Sun","9:55pm -- 10:05pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","","","https://images.sxsw.com/uiXwyG1tJnkFYqV-i_zbRdNjzao=/450x450/images.sxsw.com/195/dbd21a72-ef4a-5e98-8f29-fa80f1540f4a/artist-76667","https://schedule.sxsw.com/2026/events/MS65096"],
+["Luke Herbert","Sun","9:55pm -- 10:55pm","Taco n Maiz","Future of Indie Showcase","","","https://images.sxsw.com/ecPIX0uV8Tf1jdWWkIHBG5IG5ng=/450x450/images.sxsw.com/195/c7134f77-9c24-30b5-e70d-ea1374e083f4/artist-76388","https://schedule.sxsw.com/2026/events/MS64841"],
+["Alumni Cloud","Sun","10:00pm -- 10:30pm","Seven Spirits","HOT TAKES","","","https://images.sxsw.com/a4kTTbzDLTear5VSTINbZh0nY5g=/450x450/images.sxsw.com/195/a4542f94-92ab-fa8e-3383-3a099d99f871/artist-76065","https://schedule.sxsw.com/2026/events/MS63724"],
+["Brandon Blue","Sun","10:00pm -- 11:00pm","Coconut Club / Coconut Club Rooftop","Take A Break","DJ","House / Techno","https://images.sxsw.com/xE9bby7dUvq9anshBBrw3lSvqHs=/450x450/images.sxsw.com/195/8fba6c78-4455-17b3-99e2-423a3c6f2a2d/artist-76305","https://schedule.sxsw.com/2026/events/MS64160"],
+["The Bures Band","Sun","10:00pm -- 10:40pm","Valhalla","Armadillo World Headquarters","Americana","Rock","https://images.sxsw.com/L15CZuQ96FazYJkK_qJ96d0WwNo=/450x450/images.sxsw.com/195/06f32887-1e18-3817-6bb2-89d3446d9aff/artist-72652","https://schedule.sxsw.com/2026/events/MS64975"],
+["Byron Juane","Sun","10:00pm -- 10:20pm","Marlow","RnB Forever","R & B","Soul","https://images.sxsw.com/AAwqHnENSsi9IzQ00WWY0FgQpTo=/450x450/images.sxsw.com/195/5c9c6c66-e237-d0df-0426-95c2c47b8b55/artist-76148","https://schedule.sxsw.com/2026/events/MS63848"],
+["DJ Hella Yella","Sun","10:00pm -- 11:55pm","Venue 6","RnB Block Party","","","https://images.sxsw.com/dt2wDPbEv8CsSHE9OOxys4FPo5s=/450x450/images.sxsw.com/195/a244a529-025f-e89e-0cc9-348eb9225b67/artist-76458","https://schedule.sxsw.com/2026/events/MS64922"],
+["Dylan LeBlanc","Sun","10:00pm -- 10:40pm","Continental Club","Traffic Music Group","Americana","Indie Rock","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS63494"],
+["Ella Ion","Sun","10:00pm -- 10:40pm","Seven Grand","BIGSOUND Festival","Folk","Indie Rock","https://images.sxsw.com/XgGVJcmKUKG4fqZ0XL9xdimV-6U=/450x450/images.sxsw.com/195/70a1f85c-9b0c-9093-f636-8824287d6981/artist-74119","https://schedule.sxsw.com/2026/events/MS63318"],
+["Hemi Hemingway","Sun","10:00pm -- 10:40pm","The 13th Floor","Beyond The Music","Pop","Indie Pop","https://images.sxsw.com/BVI_I6QLdTX6wmbOrORp2RM3Ouc=/450x450/images.sxsw.com/195/9cde5c9e-e804-2f03-ba45-cf12e83c0e9a/artist-74161","https://schedule.sxsw.com/2026/events/MS63511"],
+["JayaHadADream","Sun","10:00pm -- 10:30pm","BME @ Palm Door Patio","BBC Introducing","Hip-Hop / Rap","UK Garage","https://images.sxsw.com/rz8rbEhs6rO4OglPHUFLqxqpvKk=/450x450/images.sxsw.com/195/2460df34-6f85-dbbe-eb63-70fd6764ccc4/artist-75902","https://schedule.sxsw.com/2026/events/MS63519"],
+["Knats","Sun","10:00pm -- 10:40pm","Flamingo Cantina","Jazz re:freshed Outernational","Jazz","Fusion","https://images.sxsw.com/QhKlvw0ma8pCJavOKUSoRIsmhRU=/450x450/images.sxsw.com/195/d237f94d-3951-821f-f63e-8bb5676af585/artist-74460","https://schedule.sxsw.com/2026/events/MS63202"],
+["Marilina Bertoldi","Sun","10:00pm -- 10:40pm","Shangri-La","Vinilious Records","Rock","Alternative","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63555"],
+["Nudo","Sun","10:00pm -- 10:40pm","Chess Club","Norte Shida","Avant / Experimental","Regional Mexican","https://images.sxsw.com/wbHziy3DHjU9XdMG8aRZ3ymOWXI=/450x450/images.sxsw.com/195/4337e282-1583-1098-3434-42029d4e35af/artist-74450","https://schedule.sxsw.com/2026/events/MS63351"],
+["Sheer Mag","Sun","10:00pm -- 10:30pm","Hotel Vegas Patio","Grillo's","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65035"],
+["Sun Room","Sun","10:00pm -- 10:30pm","Antone's","","Rock","Surf","https://images.sxsw.com/teESS_OmLfPjnjHDRvNgj339nOE=/450x450/images.sxsw.com/195/397a34ad-4dc5-ffee-1290-d9dc6e66cafe/artist-75870","https://schedule.sxsw.com/2026/events/MS63483"],
+["Tia Tutt","Sun","10:00pm -- 10:20pm","Seven Spirits","HOT TAKES","Hip-Hop / Rap","R & B","https://images.sxsw.com/in0Zm45-WWDbnBBPNrx6w9x7G64=/450x450/images.sxsw.com/195/6f36d19c-b7f5-71be-7d7e-5a46a8031c7a/artist-76051","https://schedule.sxsw.com/2026/events/MS63712"],
+["The Tremolo Beer Gut","Sun","10:00pm -- 10:40pm","Low Down Lounge","","Rock","Surf","https://images.sxsw.com/LVE7n36fL9uNGSSFPopbF9qSV9A=/450x450/images.sxsw.com/195/a2f3128f-5211-f877-931e-8abcb3693a12/artist-75265","https://schedule.sxsw.com/2026/events/MS63312"],
+["Tropa Magica","Sun","10:00pm -- 10:40pm","Mala Fama Rooftop","De Los","Latin","Pop","https://images.sxsw.com/YBqSDXNhYo7YtAwQxZt9mXR2QRM=/450x450/images.sxsw.com/195/546042bd-d775-0d04-4ca7-92c440f8734f/artist-76504","https://schedule.sxsw.com/2026/events/MS65274"],
+["Vintage Jay","Sun","10:00pm -- 10:50pm","Lefty's Brick Bar","EQ Austin","Hip-Hop / Rap","Reggaeton","https://images.sxsw.com/0arlZh9U9iBmZY1cr_xxgu0JnjQ=/450x450/images.sxsw.com/195/2776ab2d-4b64-dd37-267c-c8ae65ccc2a9/artist-76272","https://schedule.sxsw.com/2026/events/MS64803"],
+["Yndent","Sun","10:00pm -- 11:00pm","Coconut Club","Take A Break","","","https://images.sxsw.com/qpAKWsZ1e38jKegmJe-MrP8sYvo=/450x450/images.sxsw.com/195/357f1b17-99c2-2558-3d5c-97185d63f550/artist-76332","https://schedule.sxsw.com/2026/events/MS64814"],
+["The 502s","Sun","10:05pm -- 10:35pm","Stubb's","Big Loud Presents","","","https://images.sxsw.com/ysHQB0UZA_Uh3_NDvi-qmY4HzlA=/450x450/images.sxsw.com/195/1d8f46b6-ef8f-e7d5-274a-b4fd4096dedb/artist-76447","https://schedule.sxsw.com/2026/events/MS64540"],
+["Miss GIRL6","Sun","10:10pm -- 10:25pm","Wanderlust Wine","CareFreeBlackGirl","","","https://images.sxsw.com/UOjuU1-ohCDVtw0oPz6cmiatH0U=/450x450/images.sxsw.com/195/7c2a08e0-0d13-2819-094c-e0c3cc1e9ef5/artist-76341","https://schedule.sxsw.com/2026/events/MS64312"],
+["ZAMAERA","Sun","10:15pm -- 10:55pm","Las Perlas","Made in Malaysia","Hip-Hop / Rap","Electronic","https://images.sxsw.com/CDXVI9nYWk3VhC0MO5wfY3v5-0A=/450x450/images.sxsw.com/195/78fa2d38-d3fd-b3c2-2739-fa09e323fa3d/artist-75514","https://schedule.sxsw.com/2026/events/MS63426"],
+["Alesia Lani","Sun","10:20pm -- 10:35pm","Taco n Maiz","Future of Indie Showcase","","","https://images.sxsw.com/2olKHuLVrAlRwTA6KMXU6F5A6ng=/450x450/images.sxsw.com/195/eb2607bd-d8e3-bd20-8b82-af8b11c146f1/artist-76631","https://schedule.sxsw.com/2026/events/MS65044"],
+["Azamiah","Sun","10:20pm -- 11:00pm","Swan Dive Patio","Wide Days Scotland","Jazz","R & B","https://images.sxsw.com/Z_0cH4YQneyHg5KtKG3XNNgvbiE=/450x450/images.sxsw.com/195/c8d05803-7830-f44e-5995-4d3eea173132/artist-75082","https://schedule.sxsw.com/2026/events/MS63269"],
+["Firecracker","Sun","10:20pm -- 10:50pm","Downright Global Stage","","Rock","Punk","https://images.sxsw.com/X07i-61RVfjeBc-6XuwenhFi92k=/0x0:450x450/450x450/images.sxsw.com/196/901f6b14-f70a-4ac0-bbc1-b6fb79366df2/all-2","https://schedule.sxsw.com/2026/events/MS64802"],
+["Hania Derej","Sun","10:20pm -- 10:55pm","Central Presbyterian","Pastorale","Classical","Jazz","https://images.sxsw.com/Sykuclm0v8Iva3jzzmzWLEJtNEk=/450x450/images.sxsw.com/195/45eb4434-bdda-f824-3cd6-3cbe7b6bc446/artist-73182","https://schedule.sxsw.com/2026/events/MS63920"],
+["E.M.E","Sun","10:30pm -- 10:50pm","Seven Spirits","HOT TAKES","R & B","Afrobeat","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64904"],
+["GoGo Morrow","Sun","10:30pm -- 10:50pm","Marlow","RnB Block Party","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65246"],
+["Jastin Martin","Sun","10:30pm -- 10:45pm","Venue 6","RnB Block Party","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64918"],
+["MikMula","Sun","10:30pm -- 10:45pm","Wanderlust Wine","CareFreeBlackGirl","","","https://images.sxsw.com/gHlfgv3GYaNPKWnBhO8vHpAiwIw=/450x450/images.sxsw.com/195/7f7bc255-691f-f934-17fc-0f7ee5cd02d7/artist-76399","https://schedule.sxsw.com/2026/events/MS64370"],
+["Panic Shack","Sun","10:30pm -- 11:00pm","Swan Dive","FOCUS Wales","Rock","Punk","https://images.sxsw.com/F_XGeon4SXBRBgoRry9-UHpNkNA=/450x450/images.sxsw.com/195/907b5655-23d4-b51f-ec2f-b49ced599a67/artist-75983","https://schedule.sxsw.com/2026/events/MS63735"],
+["Spacestation","Sun","10:30pm -- 11:00pm","Zilker Brewing","Nordic Nite by SXSW","Rock","Indie Rock","https://images.sxsw.com/Cz8MgfDB6GzFnLA4PihXKTI-Poc=/450x450/images.sxsw.com/195/216fc43b-389b-d298-6544-423777a03818/artist-74067","https://schedule.sxsw.com/2026/events/MS63288"],
+["Doeman","Sun","10:40pm -- 10:50pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","","","https://images.sxsw.com/VLj8vQYABLR50zFZ4sEZR_2trlI=/450x450/images.sxsw.com/195/b8ca2757-9b69-8a18-4cca-6573b3bba9b0/artist-76711","https://schedule.sxsw.com/2026/events/MS65194"],
+["ICHIGORINAHAMU","Sun","10:40pm -- 11:20pm","Elysium","Japan Vibes powered by TuneCore Japan","Electronic","Hyperpop","https://images.sxsw.com/OPOl2F0ZBVLM38LduPr4r6K_7wQ=/450x450/images.sxsw.com/195/74744e17-a8f7-e2b7-b9c0-080c84a39684/artist-74700","https://schedule.sxsw.com/2026/events/MS63664"],
+["Nightbus","Sun","10:40pm -- 11:10pm","BME @ Palm Door","BBC Introducing","Electronic","Alternative","https://images.sxsw.com/ThD3bYGdshDTgAXYabTxBjL57Uc=/450x450/images.sxsw.com/195/c60de8d4-8a28-ccfb-09ec-13efa7af5bd1/artist-75742","https://schedule.sxsw.com/2026/events/MS63913"],
+["Gavin Copeland","Sun","10:45pm -- 11:00pm","Taco n Maiz","Future of Indie Showcase","Soul","Hip-Hop / Rap","https://images.sxsw.com/53TIBXSTZE2wxb0eL9N1GGHQQe4=/450x450/images.sxsw.com/195/c28d4b31-16de-0101-874e-51494908cd26/artist-76196","https://schedule.sxsw.com/2026/events/MS64907"],
+["The Spits","Sun","10:45pm -- 11:30pm","Hotel Vegas Patio","Grillo's","","","https://images.sxsw.com/I5VPaPwoB5u0_Q7h1Xj1sa-_v1M=/450x450/images.sxsw.com/195/cc49d3ca-f964-fa5f-5fac-e5cac1667594/artist-76607","https://schedule.sxsw.com/2026/events/MS64996"],
+["The Droptines","Sun","10:50pm -- 11:20pm","Stubb's","Big Loud Presents","Alt Country","Rock","https://images.sxsw.com/JgXkYYxvVRVa6OTRk21j8yFkQRU=/450x450/images.sxsw.com/195/830c7314-5263-8299-977f-d449be13e502/artist-76250","https://schedule.sxsw.com/2026/events/MS64042"],
+["Gracie and Rachel","Sun","10:50pm -- 11:30pm","Hotel Vegas","Fire Records x Songbird x Anniversary","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63987"],
+["QUANNA","Sun","10:50pm -- 11:05pm","Wanderlust Wine","CareFreeBlackGirl","Hip-Hop / Rap","Dance","https://images.sxsw.com/diZPOIO3HgaW0n0ndohbqfsmOKM=/450x450/images.sxsw.com/195/7f78890a-3fcc-e28d-eb57-3ce032af9ef3/artist-75964","https://schedule.sxsw.com/2026/events/MS63594"],
+["Hashi Senjoo","Sun","10:55pm -- 11:05pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64056"],
+["2BYG","Sun","11:00pm -- 11:20pm","Marlow","RnB Forever","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64377"],
+["4NEY","Sun","11:00pm -- 12:00am","Coconut Club","Take A Break","DJ","House / Techno","https://images.sxsw.com/05WTyEkomRJa1I_qN-rkNKtfII0=/450x450/images.sxsw.com/195/a3f6b2e7-68e7-cc77-7188-8ca9b19dfdc5/artist-76298","https://schedule.sxsw.com/2026/events/MS64159"],
+["Amor Vincit Omnia","Sun","11:00pm -- 11:40pm","Low Down Lounge","","Pop","Electronic","https://images.sxsw.com/M1_lIEC1BPvwwzwU0l97BceekFE=/450x450/images.sxsw.com/195/498ffe3f-4f5f-3e38-7f58-542c249692e3/artist-75950","https://schedule.sxsw.com/2026/events/MS63689"],
+["Cardinal Bloom","Sun","11:00pm -- 11:40pm","Valhalla","Armadillo World Headquarters","Rock","Indie Rock","https://images.sxsw.com/r4QAmV1ZFWHyJjii_zXasLlBsOk=/450x450/images.sxsw.com/195/fbdf1038-affb-0a81-a9c0-8dcdeffff2bc/artist-73099","https://schedule.sxsw.com/2026/events/MS65084"],
+["FEET","Sun","11:00pm -- 11:40pm","The 13th Floor","Beyond The Music","Rock","Indie Rock","https://images.sxsw.com/kwRgKAPK9TjZcVzD1fXiP-Z3Umo=/450x450/images.sxsw.com/195/51e6346e-c067-a3d5-2d2a-a96a87a494c8/artist-73643","https://schedule.sxsw.com/2026/events/MS63259"],
+["Femi Temowo","Sun","11:00pm -- 11:40pm","Flamingo Cantina","Jazz re:freshed Outernational","Jazz","Afrobeat","https://images.sxsw.com/Bx4v-xxNZSACL1LcIdvkaP0mX28=/450x450/images.sxsw.com/195/363cb7f0-b52d-7d66-8e3b-4c5fc6d2032e/artist-75853","https://schedule.sxsw.com/2026/events/MS63403"],
+["Graham Reynolds","Sun","11:00pm -- 11:40pm","Hotel Vegas Volstead","Fire Records x Songbird x Anniversary","Classical","Avant / Experimental","https://images.sxsw.com/G2-aKmjxFeOYGVSHCzzA773mqiQ=/450x450/images.sxsw.com/195/cc101629-f42a-aa45-3416-368536e54fb0/artist-75965","https://schedule.sxsw.com/2026/events/MS63680"],
+["Jadarrion","Sun","11:00pm -- 12:30am","Neon Grotto","Floppy Disko","DJ","House / Techno","https://images.sxsw.com/i_P--jYt_5Hk2-mgkUovi2YS9as=/450x450/images.sxsw.com/195/1b6e528b-c68c-d953-ee62-225f1dd15661/artist-76138","https://schedule.sxsw.com/2026/events/MS63856"],
+["JAKEGATEWOOD","Sun","11:00pm -- 12:00am","Coconut Club / Coconut Club Rooftop","Take A Break","DJ","Disco","https://images.sxsw.com/gpsJWlmEK0xj5OmwDekK8wNvmEQ=/450x450/images.sxsw.com/195/16d9f2e0-b659-11da-899f-72f083c8e8a0/artist-76275","https://schedule.sxsw.com/2026/events/MS64087"],
+["La Texana","Sun","11:00pm -- 11:50pm","Shangri-La","Vinilious Records","Rock","Alternative","https://images.sxsw.com/htGXIVrks-_QBsY5QEtC1UQhjr4=/450x450/images.sxsw.com/195/8bdceb63-a068-d193-2280-0dac04bb525d/artist-73779","https://schedule.sxsw.com/2026/events/MS63184"],
+["Lew Apollo","Sun","11:00pm -- 11:40pm","Continental Club","Traffic Music Group","R & B","Indie Pop","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS63290"],
+["Luca Eck","Sun","11:00pm -- 1:00am","Speakeasy","German Music Export by Initiative Musik","Electronic","Dance","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS63638"],
+["Michael The Lion","Sun","11:00pm -- 12:30am","Neon Grotto Rooftop","Floppy Disko","DJ","Disco","https://images.sxsw.com/M9t_JlNMtu8yI9xlFzcwxlz9cZw=/450x450/images.sxsw.com/195/95fd4f41-470c-37a2-fad5-bd3097452c3c/artist-76227","https://schedule.sxsw.com/2026/events/MS64029"],
+["San Charbel","Sun","11:00pm -- 12:40am","Chess Club","Norte Shida","Rock","Alternative","https://images.sxsw.com/XHjturcfZPPdGndlYwunJugRZuo=/450x450/images.sxsw.com/195/0dc9702b-7cb1-4f6d-9d0a-1532ac2b9032/artist-74321","https://schedule.sxsw.com/2026/events/MS63353"],
+["The Tullamarines","Sun","11:00pm -- 11:40pm","Seven Grand","BIGSOUND Festival","Pop","Indie Pop","https://images.sxsw.com/-U2pF0UWpIkPl7S8GbYbpMet5QM=/450x450/images.sxsw.com/195/3ec79d19-b6ea-8537-1e07-07d77c05581e/artist-73833","https://schedule.sxsw.com/2026/events/MS63226"],
+["Vanita Leo","Sun","11:00pm -- 11:40pm","Mala Fama Rooftop","De Los","Latin","Cumbia","https://images.sxsw.com/_Lzd1mpn3mj9M0K1bX7a9ChIY-k=/450x450/images.sxsw.com/195/8f97c496-0624-6de3-dd4f-810cfd8b79be/artist-76027","https://schedule.sxsw.com/2026/events/MS64287"],
+["Coach Tev","Sun","11:05pm -- 11:20pm","Taco n Maiz","Future of Indie Showcase","","","https://images.sxsw.com/uvosdfjuBOwEYYRpZ-28YfJU06A=/450x450/images.sxsw.com/195/c2c10878-60ec-fcf8-67a4-cfb3181e08e8/artist-76656","https://schedule.sxsw.com/2026/events/MS65097"],
+["Lil Asian Thiccie","Sun","11:05pm -- 11:35pm","Las Perlas","Made in Malaysia","Electronic","Hyperpop","https://images.sxsw.com/OaFup-nucOOjBdv3IkLN7B3-GKw=/450x450/images.sxsw.com/195/04b9aaa9-a823-14f7-f04d-260528b87cd6/artist-75927","https://schedule.sxsw.com/2026/events/MS63753"],
+["Hrishikesh Hirway","Sun","11:10pm -- 11:50pm","Central Presbyterian","Pastorale","","","https://images.sxsw.com/QijoZ_ZqlhtYuIGFTO2GHG8rdTE=/450x450/images.sxsw.com/195/231b3f72-0e64-020a-d8e7-a8e1faea4b94/artist-76392","https://schedule.sxsw.com/2026/events/MS64373"],
+["Jaxs","Sun","11:10pm -- 11:25pm","Wanderlust Wine","CareFreeBlackGirl","Hip-Hop / Rap","Freestyle","https://images.sxsw.com/lwsWW9rk8GG4LhJycyV9_2NfziI=/450x450/images.sxsw.com/195/65357a74-aee3-0ce0-4abb-e9d6fab5e7d2/artist-72945","https://schedule.sxsw.com/2026/events/MS63478"],
+["Redzed","Sun","11:10pm -- 11:40pm","Downright Global Stage","","Hip-Hop / Rap","Metal","https://images.sxsw.com/4ZNrsZFu4hBbKEsR53r-GYdPDxw=/450x450/images.sxsw.com/195/2a1769ff-2edf-2d4b-dd6c-c1df09896402/artist-75404","https://schedule.sxsw.com/2026/events/MS63964"],
+["Vickeelo","Sun","11:10pm -- 11:25pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","","","https://images.sxsw.com/3Ti83TixuwEFHY3ZFG3xD3q7AvQ=/450x450/images.sxsw.com/195/98d387c2-56d0-92c9-1903-150fe3f86260/artist-76496","https://schedule.sxsw.com/2026/events/MS65062"],
+["Adult DVD","Sun","11:20pm -- 11:50pm","BME @ Palm Door Patio","BBC Introducing","Dance","Rock","https://images.sxsw.com/QXFOYvWGn59xLTpHhxsYK5SnAtY=/450x450/images.sxsw.com/195/3e6389ce-6bb5-e34d-99d3-494b9e9e6322/artist-74562","https://schedule.sxsw.com/2026/events/MS63749"],
+["Hana Lili","Sun","11:20pm -- 11:50pm","Swan Dive","FOCUS Wales","Pop","Rock","https://images.sxsw.com/7PP5FLgrJvQPNmsgdcazA7b9VaI=/450x450/images.sxsw.com/195/d8f79e4f-ca70-f017-0276-bc1d090c20df/artist-75762","https://schedule.sxsw.com/2026/events/MS63371"],
+["Devy Stonez","Sun","11:25pm -- 11:40pm","Taco n Maiz","Future of Indie Showcase","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/vPQTVtxqs_W0Re1j5QcLTthlRDE=/450x450/images.sxsw.com/195/df0557d1-4315-9658-0f81-a2941f051f8d/artist-76234","https://schedule.sxsw.com/2026/events/MS64039"],
+["DJ X.O.","Sun","11:30pm -- 11:45pm","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","R & B","Hip-Hop / Rap","https://images.sxsw.com/CbdEje9P4OEGIj23dc81XbnWiXI=/450x450/images.sxsw.com/195/144331fb-e8ea-12c9-e94f-ea66b9ef94f4/artist-76251","https://schedule.sxsw.com/2026/events/MS64044"],
+["Mobeethicc","Sun","11:30pm -- 12:00am","Wanderlust Wine","CareFreeBlackGirl","DJ","Hip-Hop / Rap","https://images.sxsw.com/_xw-q0kf4qbwzECgdJX9bNVmhyA=/450x450/images.sxsw.com/195/db242abe-4e4b-9326-918b-26132ff963ac/artist-76022","https://schedule.sxsw.com/2026/events/MS64756"],
+["Sam Scherdel","Sun","11:30pm -- 12:10am","Swan Dive Patio","","","","https://images.sxsw.com/ZUgPlAouW1dVuZDyCIxWmna6TWs=/450x450/images.sxsw.com/195/d56d0062-c84e-1b9d-ebb3-b1be589caedd/artist-76362","https://schedule.sxsw.com/2026/events/MS64939"],
+["Zae France","Sun","11:30pm -- 11:55pm","Marlow","RnB Forever","","","https://images.sxsw.com/wxODNGc3IJnL70EePIXzrdjaV24=/450x450/images.sxsw.com/195/b0d4b2b1-19c6-4497-e717-c8bcb0b159e9/artist-76333","https://schedule.sxsw.com/2026/events/MS64171"],
+["Liam St. John","Sun","11:35pm -- 12:05am","Stubb's","Big Loud Presents","Americana","Rock","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64191"],
+["The Game Shop","Sun","11:40pm -- 12:20am","Elysium","Japan Vibes powered by TuneCore Japan","","","https://images.sxsw.com/2KJ0koXBKP-f-dU1uike3LjILds=/450x450/images.sxsw.com/195/66018ff7-53b0-533f-02ca-39ac75a3f630/artist-74636","https://schedule.sxsw.com/2026/events/MS64423"],
+["indie tribe","Sun","Time TBA","Seven Spirits","HOT TAKES","","","https://images.sxsw.com/FI_xOEqkQ8U1gTyqu_8PeHm0ZDE=/450x450/images.sxsw.com/195/5c748840-dd50-2b85-29a4-df459d3dfc1e/artist-76379","https://schedule.sxsw.com/2026/events/MS64311"],
+["I-SKY","Sun","11:45pm -- 12:45am","Las Perlas","Made in Malaysia","DJ","Dance","https://images.sxsw.com/0JR7hrY_wNP02EJi7UrM6cfoYh8=/450x450/images.sxsw.com/195/999e9085-08ae-183b-2115-abc74937bbb9/artist-75929","https://schedule.sxsw.com/2026/events/MS63755"],
+["Dice Soho & Trill Sammy","Sun","11:50pm -- 12:05am","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","","","https://images.sxsw.com/uyMON9THd8Ko6Md9bUPhFUx6goc=/450x450/images.sxsw.com/195/222939a1-e54c-26dd-8717-2c23a1468c5d/artist-76321","https://schedule.sxsw.com/2026/events/MS64153"],
+["Jon Langford (Mekons)","Sun","11:50pm -- 12:30am","Hotel Vegas","Fire Records x Songbird x Anniversary","Punk","Post-Punk","https://images.sxsw.com/5q46fXJLwneYd-YDXtJkgzk3eFA=/450x450/images.sxsw.com/195/da01a1df-0d55-cfc2-bc5a-8d0f67f93785/artist-76016","https://schedule.sxsw.com/2026/events/MS63660"],
+["Bryan-Michael Cox","Mon","12:00am -- 1:00am","Venue 6","RnB Block Party","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64911"],
+["CHALK","Mon","12:00am -- 12:40am","BME @ Palm Door","BBC Introducing","Rock","Electronic","https://images.sxsw.com/tWYRlZB_sAKiH3b6eP1yBjM9jZw=/450x450/images.sxsw.com/195/378a74de-bd18-ddb6-1596-1a8c98760242/artist-73135","https://schedule.sxsw.com/2026/events/MS63156"],
+["Disko Cowboy","Mon","12:00am -- 1:00am","Coconut Club / Coconut Club Rooftop","Take A Break","","","https://images.sxsw.com/gIGFnEp1kzTaSe3H84-kD8U7bBI=/450x450/images.sxsw.com/195/5a1aed3b-919c-5dda-7f12-e3c8a46c541e/artist-76331","https://schedule.sxsw.com/2026/events/MS64169"],
+["DJ Dan","Mon","12:00am -- 1:00am","Coconut Club","Take A Break","DJ","House / Techno","https://images.sxsw.com/4CwYBAXkPLSYpbAQ3N2aFl3YcX4=/450x450/images.sxsw.com/195/682b9b07-bda0-c10b-fe08-bfed7de1acae/artist-76307","https://schedule.sxsw.com/2026/events/MS64161"],
+["Hermanos Espinoza","Mon","12:00am -- 12:50am","Mala Fama Rooftop","De Los","Latin","Pop","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64214"],
+["JayDon","Mon","12:00am -- 12:20am","Venue 6","RnB Block Party","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64898"],
+["KELS","Mon","12:00am -- 12:30am","Marlow","RnB Forever","","","https://images.sxsw.com/FxhKYGnf1o7v1VmR6H2Lwdl7ieI=/450x450/images.sxsw.com/195/5a8b9754-7553-6d78-1506-a25139c6d2eb/artist-76145","https://schedule.sxsw.com/2026/events/MS63851"],
+["Mackwood","Mon","12:00am -- 12:40am","Flamingo Cantina","Jazz re:freshed Outernational","Jazz","Fusion","https://images.sxsw.com/DDUsd6tuyyS6nLHBRTYJfuzuahE=/450x450/images.sxsw.com/195/2761bd97-649c-8fd9-47c2-98ac521d6824/artist-75044","https://schedule.sxsw.com/2026/events/MS63253"],
+["QUENTIN","Mon","12:00am -- 12:40am","Continental Club","Traffic Music Group","Rock","Pop","https://images.sxsw.com/240btpPbLLwg76CBnE5EUDcG6Uk=/450x450/images.sxsw.com/195/af1a16ca-02f6-0bd2-410b-24152e820fab/artist-75953","https://schedule.sxsw.com/2026/events/MS63591"],
+["The Red Eye Gamblers","Mon","12:00am -- 12:40am","Valhalla","Armadillo World Headquarters","Rock","Americana","https://images.sxsw.com/tzrjWXQ6DHTL7w8s6uUdi8OS7rE=/450x450/images.sxsw.com/195/d31546e4-77bb-d0ee-e544-f002e32ca913/artist-74853","https://schedule.sxsw.com/2026/events/MS65093"],
+["Swapmeet","Mon","12:00am -- 12:40am","Seven Grand","BIGSOUND Festival","Rock","Grunge","https://images.sxsw.com/aRqg8hK0RJuVMW4GgFEqRb34u-c=/450x450/images.sxsw.com/195/000be849-18d2-33d6-b428-ab2a5d2bcab1/artist-74347","https://schedule.sxsw.com/2026/events/MS64853"],
+["Thelonious Love","Mon","12:00am -- 12:40am","Low Down Lounge","","Hip-Hop / Rap","Soul","https://images.sxsw.com/d9lRMuIzmhAxz-8jQRkT6SnJn44=/450x450/images.sxsw.com/195/a1910d78-40cd-b97c-306d-5ecaba2a0531/artist-75984","https://schedule.sxsw.com/2026/events/MS63630"],
+["Whitelands","Mon","12:00am -- 12:40am","The 13th Floor","Beyond The Music","Rock","Shoegaze","https://images.sxsw.com/1kzuy7e813txaHAKQx8_j2LqPI0=/450x450/images.sxsw.com/195/dedb1ab9-a9d1-acdd-9034-e11509d53a46/artist-75085","https://schedule.sxsw.com/2026/events/MS64807"],
+["SAMWOY","Mon","12:10am -- 12:40am","Swan Dive","FOCUS Wales","Punk","Alternative","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64817"],
+["DJ Kay Cali","Mon","12:30am -- 1:30am","Marlow","RnB Forever","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64689"],
+["Dr Dak","Mon","12:30am -- 2:00am","Neon Grotto Rooftop","Floppy Disko","Electronic","House / Techno","https://images.sxsw.com/ADuOydbrkpzLnSUOXKrkbUK7HsU=/450x450/images.sxsw.com/195/d8e178b9-c6af-47a6-598a-40c19131b114/artist-76143","https://schedule.sxsw.com/2026/events/MS63853"],
+["Wreckshop Family","Mon","12:30am -- 12:50am","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","Hip-Hop / Rap","None","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64048"],
+["ISCREAM NEVER GROUND","Mon","12:40am -- 1:20am","Elysium","Japan Vibes powered by TuneCore Japan","Rock","Nu Metal","https://images.sxsw.com/rS9aBCjSbHlZRkAlmZjI17xEu-w=/450x450/images.sxsw.com/195/a3156a3d-08c2-1457-c630-e9519506ceff/artist-76102","https://schedule.sxsw.com/2026/events/MS64229"],
+["Spoon Benders","Mon","12:50am -- 1:50am","Hotel Vegas","Fire Records x Songbird x Anniversary","Rock","Punk","https://images.sxsw.com/LnlLyIPZvgDVXL_T7TJaBXlJ-pM=/450x450/images.sxsw.com/195/52ce3515-8da2-7f25-def6-c849de1f916b/artist-75270","https://schedule.sxsw.com/2026/events/MS63996"],
+["Propain","Mon","12:55am -- 1:15am","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/Ge4AMvpu5HtooVajzZSPe4KEriE=/450x450/images.sxsw.com/195/74001348-7a4f-d919-9673-553abab942ce/artist-76257","https://schedule.sxsw.com/2026/events/MS64049"],
+["2charm","Mon","1:00am -- 1:30am","Seven Grand","BIGSOUND Festival","Pop","House / Techno","https://images.sxsw.com/wOxMyyjx3AGPkEEiuV3nQ2aE2hM=/450x450/images.sxsw.com/195/b90a61c3-99ac-974d-c952-4864210eb839/artist-75167","https://schedule.sxsw.com/2026/events/MS65063"],
+["Diles que no me maten","Mon","1:00am -- 1:50am","Chess Club","Norte Shida","Rock","Avant / Experimental","https://images.sxsw.com/ofL5Lg16mmNDzD_HTcM_TcDkW7M=/450x450/images.sxsw.com/195/94cc9c8e-2706-b597-1f1f-b98a76969226/artist-75262","https://schedule.sxsw.com/2026/events/MS63292"],
+["DJ BAD APPLE","Mon","1:00am -- 2:00am","Coconut Club","Take A Break","","","https://images.sxsw.com/jP-eWlIQyvKHnhPJwxNokijIcMA=/450x450/images.sxsw.com/195/65b563f3-a074-8547-b974-0121f1eb9b2a/artist-76658","https://schedule.sxsw.com/2026/events/MS65065"],
+["The Haunted Youth","Mon","1:00am -- 1:40am","The 13th Floor","Beyond The Music","Rock","Dream Pop","https://images.sxsw.com/EB-W4-sOn4FvfsOv1pkVnp384IU=/450x450/images.sxsw.com/195/7c35a4dc-1196-60dd-6acf-8689c3cd27c7/artist-76131","https://schedule.sxsw.com/2026/events/MS64779"],
+["Liz Cooper","Mon","1:00am -- 2:00am","Hotel Vegas Volstead","Fire Records x Songbird x Anniversary","Rock","Indie Pop","https://images.sxsw.com/KJ2IzG6NOKRaODcZ26wBAJj8FZQ=/450x450/images.sxsw.com/195/5b7f2106-14e4-3fa5-539e-6a76a17a3e13/artist-75012","https://schedule.sxsw.com/2026/events/MS64054"],
+["St.Augustine","Mon","1:00am -- 1:50am","Continental Club","Traffic Music Group","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64808"],
+["Werkha","Mon","1:00am -- 1:40am","Flamingo Cantina","Jazz re:freshed Outernational","Electronic","Jazz","https://images.sxsw.com/A93S3HhN6oxKAWxTgTQbQd4tf6I=/450x450/images.sxsw.com/195/78e4429a-2431-a857-71c0-6ba040cc7e60/artist-75353","https://schedule.sxsw.com/2026/events/MS63340"],
+["Z-Ro","Mon","1:20am -- 1:50am","Riviere","Propain x No Sleep MG: Made From Scratch #FOREVERTRILL","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/3TjWf-yFPsJGfvUX0_MlmjYkXEA=/450x450/images.sxsw.com/195/4f0a22c1-55ba-518f-d49d-fb47e27b576c/artist-76261","https://schedule.sxsw.com/2026/events/MS64055"],
+["Adrian Be","Sun","Time TBA","Mala Fama Nivel","Slowly","DJ","Alternative","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS63559"],
+["Apex Martin","Sun","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","Pop","Hip-Hop / Rap","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64800"],
+["Austin Ashtin","Sun","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","Pop","Hip-Hop / Rap","https://images.sxsw.com/9ZSaLJRgzPC5hMxdFHfQrt9YzR8=/450x450/images.sxsw.com/195/9c5911da-66c9-3fec-b9ae-7aa0408e000d/artist-76568","https://schedule.sxsw.com/2026/events/MS64894"],
+["DJ 4:12","Sun","Time TBA","The Pershing","Auntie's House","Hip-Hop / Rap","R & B","https://images.sxsw.com/N0sUdg43pXbeZHKxTfS_st1lJvs=/450x450/images.sxsw.com/195/a847cbf2-6d00-3545-1f06-ff74b8c38631/artist-76141","https://schedule.sxsw.com/2026/events/MS63830"],
+["Emi Angeles","Sun","Time TBA","Mala Fama Nivel","Slowly","Hip-Hop / Rap","Trap","https://images.sxsw.com/TQp6vfwc7-oSpZJRg5gqsoLrqrI=/450x450/images.sxsw.com/195/115daebe-c57b-a620-38a5-be0a10f3fcaa/artist-75888","https://schedule.sxsw.com/2026/events/MS63560"],
+["Emjay","Sun","Time TBA","Mala Vida","Warner Music Latina","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65296"],
+["Joaco Burgos","Sun","Time TBA","Mala Vida","Warner Music Latina","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65295"],
+["Juan Duque","Sun","Time TBA","Mala Vida","Warner Music Latina","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65294"],
+["Kenzzo","Sun","Time TBA","Mala Fama Nivel","Slowly","Pop","None","https://images.sxsw.com/2YEJclbc0EOn5ojTLO0G2zlnYE8=/450x450/images.sxsw.com/195/fea203fd-bba4-5a18-d655-2962f7082d33/artist-75892","https://schedule.sxsw.com/2026/events/MS63563"],
+["LA CRUZ","Sun","Time TBA","Mala Vida","Warner Music Latina","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65297"],
+["LU GOT THE TASTE","Sun","Time TBA","Mala Fama Nivel","Slowly","Hip-Hop / Rap","Pop","https://images.sxsw.com/DgRwSDJby-_QXlZfcJSBXYggq4U=/450x450/images.sxsw.com/195/086b50d8-e5fb-db66-4a1b-b6986ddbf052/artist-75885","https://schedule.sxsw.com/2026/events/MS63556"],
+["Mau P","Sun","Time TBA","Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Billboard Presents: The Stage at SXSW","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64554"],
+["Perdón Amor","Sun","Time TBA","Mala Fama Nivel","Slowly","Pop","","https://images.sxsw.com/Zaqw6ErgtDPutFzcQTn2aCFKiWY=/450x450/images.sxsw.com/195/35f59f29-f95d-919e-bc81-0f000a531b8f/artist-75890","https://schedule.sxsw.com/2026/events/MS63561"],
+["Raúl Hernández Jr.","Sun","Time TBA","Mala Vida","Warner Music Latina","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65298"],
+["TUMBAO","Sun","Time TBA","Mala Vida","Warner Music Latina","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65301"],
+["urboi.","Sun","Time TBA","Mala Fama Nivel","Slowly","DJ","Electronic","https://images.sxsw.com/jxgWMPqKcFwFC15Y9H5hEKxMwGc=/450x450/images.sxsw.com/195/84e4fec9-5580-af4c-1e0f-2a7b6010cd1c/artist-75891","https://schedule.sxsw.com/2026/events/MS63562"],
+["Ximena Soto","Sun","Time TBA","Mala Fama Nivel","Slowly","R & B","Alternative","https://images.sxsw.com/2zIvrneYemFqFrc7kK5a1j16pq8=/450x450/images.sxsw.com/195/d52a934e-6f1a-a070-0987-4c639f74028b/artist-75886","https://schedule.sxsw.com/2026/events/MS63557"],
+["Lucid Express","Mon","12:00pm -- 12:40pm","Downright Radio Stage","NPR Live Sessions","Rock","Shoegaze","https://images.sxsw.com/3yUEP3V24Sfec7CTu--Us7SgANU=/450x450/images.sxsw.com/195/2313ad53-664e-9837-d735-e4dcead77c9e/artist-75498","https://schedule.sxsw.com/2026/events/MS65129"],
+["Jamaica Moana","Mon","1:00pm -- 1:40pm","Downright Radio Stage","NPR Live Sessions","Hip-Hop / Rap","R & B","https://images.sxsw.com/8UnbUf51aNp-7QtfL6xzjD_IkXo=/450x450/images.sxsw.com/195/0375bb26-5cf3-08c8-fa20-773207cbc4de/artist-75921","https://schedule.sxsw.com/2026/events/MS65083"],
+["The Family Battenberg","Mon","2:00pm -- 2:30pm","BME @ Palm Door Patio","Northern Sound x DBT Wales","Rock","Alternative","https://images.sxsw.com/FtOo9gPEsayxGtTba_Pb_inWwNY=/450x450/images.sxsw.com/195/506d1adc-a8e1-60f1-449e-624b7a3ac137/artist-73584","https://schedule.sxsw.com/2026/events/MS64666"],
+["Hot Garbage","Mon","2:00pm -- 2:40pm","Downright Radio Stage","NPR Live Sessions","Rock","Psychedelic","https://images.sxsw.com/35YYJgtk9W5ahsXuLLJoUTz26qs=/450x450/images.sxsw.com/195/548bc903-4654-7a0e-56f9-aa7ae4a6cacd/artist-74247","https://schedule.sxsw.com/2026/events/MS65153"],
+["KOJ","Mon","2:40pm -- 3:10pm","BME @ Palm Door","Northern Sound x DBT Wales","Hip-Hop / Rap","Post-Punk","https://images.sxsw.com/YTSHadXUQ8AEll_rDk_xT2vVyxg=/450x450/images.sxsw.com/195/dac9364a-67a0-25c8-8b5b-7e59a3c41357/artist-75859","https://schedule.sxsw.com/2026/events/MS63490"],
+["Los Lobos","Mon","3:00pm -- 3:40pm","Downright Radio Stage","NPR Live Sessions","Rock","Alternative","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64770"],
+["Ben Ellis","Mon","3:20pm -- 3:50pm","BME @ Palm Door Patio","Northern Sound x DBT Wales","Singer-Songwriter","Indie Pop","https://images.sxsw.com/xxd39kl1tLkUqqngi3D57TytHx8=/450x450/images.sxsw.com/195/71402f14-2f52-caa8-5deb-7f64a313ac3e/artist-73676","https://schedule.sxsw.com/2026/events/MS64667"],
+["Andrew Cushin","Mon","4:00pm -- 4:30pm","BME @ Palm Door","Northern Sound x DBT Wales","Singer-Songwriter","Indie Pop","https://images.sxsw.com/FGwaVivxZAIRRrIoP6Ek4sQOwAY=/450x450/images.sxsw.com/195/21c76fa0-b5c9-cdb6-9e3b-091f0d688c0f/artist-75136","https://schedule.sxsw.com/2026/events/MS64665"],
+["MT Jones","Mon","4:00pm -- 4:40pm","Downright Radio Stage","NPR Live Sessions","Pop","Soul","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65070"],
+["Hana Lili","Mon","4:40pm -- 5:10pm","BME @ Palm Door Patio","Northern Sound x DBT Wales","Pop","Rock","https://images.sxsw.com/7PP5FLgrJvQPNmsgdcazA7b9VaI=/450x450/images.sxsw.com/195/d8f79e4f-ca70-f017-0276-bc1d090c20df/artist-75762","https://schedule.sxsw.com/2026/events/MS64668"],
+["Adult DVD","Mon","5:20pm -- 6:00pm","BME @ Palm Door","Northern Sound x DBT Wales","Dance","Rock","https://images.sxsw.com/QXFOYvWGn59xLTpHhxsYK5SnAtY=/450x450/images.sxsw.com/195/3e6389ce-6bb5-e34d-99d3-494b9e9e6322/artist-74562","https://schedule.sxsw.com/2026/events/MS64536"],
+["Carnival Dancers","Mon","7:00pm -- 1:30am","BME @ Palm Door","West LDN Carnival on 6th","Hip-Hop / Rap","Caribbean","https://images.sxsw.com/ftZGi3fxndxW9JeIBYsgRi_Iktw=/0x0:450x450/450x450/images.sxsw.com/196/e64ff5e2-b40f-448b-aaed-6ba7ae8b579a/all-15","https://schedule.sxsw.com/2026/events/MS64591"],
+["DJ AG","Mon","7:00pm -- 8:00pm","BME @ Palm Door","West LDN Carnival on 6th","DJ","None","https://images.sxsw.com/BwFjidFE7WgxylPDh9SBQUbW86M=/450x450/images.sxsw.com/195/248fe1be-abae-b63f-0829-0ba216ac5745/artist-75770","https://schedule.sxsw.com/2026/events/MS63916"],
+["DJ Jester the Filipino Fist","Mon","7:00pm -- 7:30pm","Shangri-La","Money Mark and Friends","DJ","None","https://images.sxsw.com/18U3N53CYNK4yZjq3V0fahMWDVc=/450x450/images.sxsw.com/195/541005a4-0fe7-70bf-d609-258fe5609738/artist-75961","https://schedule.sxsw.com/2026/events/MS64140"],
+["Ed O'Brien Listening Event + Conversation","Mon","7:00pm -- 8:00pm","Central Presbyterian","","","","https://images.sxsw.com/YiuuU6mE6o2vCqu89wQdfmF1_h4=/0x0:450x450/450x450/images.sxsw.com/196/93a0edad-5096-47ff-97b4-db5e6cc0f4f1/all-10","https://schedule.sxsw.com/2026/events/MS65290"],
+["Elijah Delgado","Mon","7:00pm -- 7:40pm","Lefty's Brick Bar","EQ Austin","Rock","Indie Pop","https://images.sxsw.com/VYVOdura-8_QdvnfjIw4x_BxHSY=/450x450/images.sxsw.com/195/667207f1-8c62-33d6-cf44-b4e4e9f733a0/artist-73698","https://schedule.sxsw.com/2026/events/MS63152"],
+["JLQ","Mon","7:00pm -- 7:30pm","Zilker Brewing","Flak Records","Americana","Pop","https://images.sxsw.com/GrE3H10rqkxENkA8uRszRISRgzg=/450x450/images.sxsw.com/195/64d469a2-410e-eaf6-81ec-9fec25ef18db/artist-76353","https://schedule.sxsw.com/2026/events/MS64231"],
+["Jordan Walsh","Mon","7:00pm -- 7:40pm","The Pershing","ATX Composers","Classical","Avant / Experimental","https://images.sxsw.com/Jul82OnGxjXCvsZUBgEguUW9Q5M=/450x450/images.sxsw.com/195/ccaaf235-1289-f811-f868-08066f675027/artist-76003","https://schedule.sxsw.com/2026/events/MS63670"],
+["Just Jim","Mon","7:00pm -- 8:10pm","Stubb's","Under Armour","DJ","Hip-Hop / Rap","https://images.sxsw.com/keFL27SHQG2PIu09T3YnkE7QuFU=/450x450/images.sxsw.com/195/c9aa7656-44c7-5ced-fe9f-44a16a880135/artist-72484","https://schedule.sxsw.com/2026/events/MS64862"],
+["Lucid Express","Mon","7:00pm -- 7:30pm","Downright Global Stage","","Rock","Shoegaze","https://images.sxsw.com/3yUEP3V24Sfec7CTu--Us7SgANU=/450x450/images.sxsw.com/195/2313ad53-664e-9837-d735-e4dcead77c9e/artist-75498","https://schedule.sxsw.com/2026/events/MS65006"],
+["Mai Anna","Mon","7:00pm -- 7:40pm","Wanderlust Wine","Audiofemme","","","https://images.sxsw.com/SnTGJWoudmbrC9ekna227JOSddM=/450x450/images.sxsw.com/195/9c500198-6f83-cec7-7b78-b4a7630002be/artist-76401","https://schedule.sxsw.com/2026/events/MS64970"],
+["Mika Häkki & Dark Yonder","Mon","7:00pm -- 7:40pm","Low Down Lounge","","Alt Country","Rock","https://images.sxsw.com/ww9e7uQK5iIXKXzFKuQgC9FWTZE=/450x450/images.sxsw.com/195/a48c29cd-6fde-7123-60ab-1c4ffaa27948/artist-73624","https://schedule.sxsw.com/2026/events/MS64352"],
+["MX LONELY","Mon","7:00pm -- 7:35pm","Hotel Vegas","rocknite","Rock","Shoegaze","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS63870"],
+["Talise","Mon","7:00pm -- 7:40pm","Lamberts","","Folk","Americana","https://images.sxsw.com/YL9HC95oPPkHUx6OCGJQ2lQlw8Q=/450x450/images.sxsw.com/195/679d9727-856a-d4d6-59d8-bb74f6fb67e2/artist-75532","https://schedule.sxsw.com/2026/events/MS63474"],
+["Annabelle Chairlegs","Mon","7:20pm -- 7:55pm","Hotel Vegas Patio","rocknite","Rock","Psychedelic","https://images.sxsw.com/xKfyyvaxSo-8rAUC1WPFlFxNKMY=/450x450/images.sxsw.com/195/696ea66a-d737-e0a7-b1a6-3f7de208dff9/artist-76073","https://schedule.sxsw.com/2026/events/MS63723"],
+["Wesley Wolffe","Mon","7:20pm -- 7:55pm","Hotel Vegas Volstead","rocknite","Rock","Post-Punk","https://images.sxsw.com/UHRwiw0nDB2-hhXvM1RffOtyiRQ=/450x450/images.sxsw.com/195/7b1fa885-f862-f3fd-11da-0283a6f15a0c/artist-76076","https://schedule.sxsw.com/2026/events/MS64578"],
+["Amor Vincit Omnia","Mon","7:30pm -- 8:00pm","Swan Dive Patio","The Line of Best Fit","Pop","Electronic","https://images.sxsw.com/M1_lIEC1BPvwwzwU0l97BceekFE=/450x450/images.sxsw.com/195/498ffe3f-4f5f-3e38-7f58-542c249692e3/artist-75950","https://schedule.sxsw.com/2026/events/MS64936"],
+["Sage Bava","Mon","7:30pm -- 8:10pm","Marlow","","","","https://images.sxsw.com/kITi6PitvU8Fj1FpSKE1oFWvf8U=/450x450/images.sxsw.com/195/c6cc3ca3-4a85-c25d-d9dc-584e9ddf21cb/artist-74537","https://schedule.sxsw.com/2026/events/MS64621"],
+["wilter","Mon","7:30pm -- 8:00pm","Las Perlas","Deloyd Elze x Make Out Music","Folk","Electronic","https://images.sxsw.com/5nEn8zSAkfmqy72xlNyKpYu8jSc=/450x450/images.sxsw.com/195/cd576c9f-8f7a-1f53-adba-c903f640ee16/artist-76128","https://schedule.sxsw.com/2026/events/MS63826"],
+["Jenna Cole","Mon","7:35pm -- 7:45pm","BME @ Palm Door","West LDN Carnival on 6th","R & B","Afrobeat","https://images.sxsw.com/1pCrGeLVHc2n9lr6OQale5LTdYA=/450x450/images.sxsw.com/195/0c7f4805-2671-4011-28c0-8501ef075041/artist-75879","https://schedule.sxsw.com/2026/events/MS63482"],
+["Larry Seaman","Mon","7:45pm -- 8:15pm","Zilker Brewing","Flak Records","Rock","Indie Rock","https://images.sxsw.com/3LGxwJOJo00Wrbbrya4nUMJnrxM=/450x450/images.sxsw.com/195/63ba1e44-70ec-3639-4a1d-ff0a38c2b269/artist-76008","https://schedule.sxsw.com/2026/events/MS63650"],
+["Jasmine Jethwa","Mon","7:50pm -- 8:20pm","Downright Global Stage","","Folk","Pop","https://images.sxsw.com/SvdLgWGM7U25gvzA7Es-L7ujPBk=/450x450/images.sxsw.com/195/111df6c9-a7bc-b30a-b882-04838cf1a6a2/artist-75723","https://schedule.sxsw.com/2026/events/MS65069"],
+["RAKEL","Mon","7:50pm -- 8:30pm","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","","","https://images.sxsw.com/8aiZQKNua5hjUeBe36BRAourtEM=/450x450/images.sxsw.com/195/9dfb5a4b-8c4d-6eca-8921-f144f2afc474/artist-74560","https://schedule.sxsw.com/2026/events/MS64949"],
+["Wilby","Mon","7:50pm -- 8:20pm","Seven Grand","Deloyd Elze x Make Out Music","Rock","Indie Rock","https://images.sxsw.com/xs_lPaZmiCLRPIj5jIxKg48G6GU=/450x450/images.sxsw.com/195/fdf7d7ec-400e-0630-0b62-d8585b1635a0/artist-73236","https://schedule.sxsw.com/2026/events/MS64278"],
+["Chatterton","Mon","7:55pm -- 8:30pm","Hotel Vegas","rocknite","","","https://images.sxsw.com/udTL7IoenscFwNKTRT5k1zCh9sw=/450x450/images.sxsw.com/195/3924a757-e27f-a9ce-a70a-1beb29e944b5/artist-74544","https://schedule.sxsw.com/2026/events/MS64355"],
+["All Day Ray","Mon","8:00pm -- 8:30pm","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/AI-jRel1skwnqnr-A7cEfyEh5m4=/450x450/images.sxsw.com/195/5c9315a9-15c1-09f4-c8e2-3fd45a2516ff/artist-76554","https://schedule.sxsw.com/2026/events/MS64849"],
+["Babatunde Hip Hopera","Mon","8:00pm -- 8:30pm","Flamingo Cantina","Classical Unlocked","Classical","Hip-Hop / Rap","https://images.sxsw.com/qGiK_VY544xiQokjB8-2B5nnnX8=/450x450/images.sxsw.com/195/ce065e41-8f50-f304-95af-eff38e18a792/artist-73686","https://schedule.sxsw.com/2026/events/MS63392"],
+["Cardinal Bloom","Mon","8:00pm -- 8:30pm","Seven Spirits","","Rock","Indie Rock","https://images.sxsw.com/r4QAmV1ZFWHyJjii_zXasLlBsOk=/450x450/images.sxsw.com/195/fbdf1038-affb-0a81-a9c0-8dcdeffff2bc/artist-73099","https://schedule.sxsw.com/2026/events/MS65114"],
+["Creature Canyon","Mon","8:00pm -- 8:40pm","Low Down Lounge","","Rock","Indie Rock","https://images.sxsw.com/g2Z22lMyU8mv_sxxs9KW9p6457Q=/450x450/images.sxsw.com/195/d28a6d16-b9e2-7cfe-b8f5-919517955cc7/artist-73424","https://schedule.sxsw.com/2026/events/MS65176"],
+["Dj Beastie","Mon","8:00pm -- 8:30pm","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64805"],
+["Don Esco","Mon","8:00pm -- 9:00pm","Mala Vida","SoundOn Tiktok","","","https://images.sxsw.com/e4Gch854ds1uETsFt7PLIuJAqXs=/450x450/images.sxsw.com/195/da7ebd84-a921-4318-bca5-834226b20484/artist-76473","https://schedule.sxsw.com/2026/events/MS65302"],
+["DUUNES","Mon","8:00pm -- 8:40pm","Inn Cahoots Austin Garden","Take Action x SXSW","","","https://images.sxsw.com/UgwBdkPVaDAZMRtn8CIRlZTGxpk=/450x450/images.sxsw.com/195/0a0c9704-de6b-39ee-076f-9d07570f1f8d/artist-74969","https://schedule.sxsw.com/2026/events/MS64903"],
+["Hana Eid","Mon","8:00pm -- 8:40pm","Valhalla","Fuegostine Presents","","","https://images.sxsw.com/3ER_8IbuqFMbaT8q_en7ddN1tvU=/450x450/images.sxsw.com/195/8667e2c1-d70c-b375-9a1f-a2076c22e8ae/artist-74478","https://schedule.sxsw.com/2026/events/MS63215"],
+["Julie Nolen","Mon","8:00pm -- 8:40pm","Lefty's Brick Bar","EQ Austin","Americana","Alt Country","https://images.sxsw.com/IL6JJq3JtgwUxOzx4Hnqqm4shpw=/450x450/images.sxsw.com/195/22a38042-dbde-ecff-9e98-cec467f2b032/artist-73516","https://schedule.sxsw.com/2026/events/MS64292"],
+["Kozlow","Mon","8:00pm -- 10:00pm","Coconut Club","XYZ Films: A Case Of The Mondays","","","https://images.sxsw.com/y1I_50Oj-Y1F828O_OIUJJoFVu0=/450x450/images.sxsw.com/195/4326c9b3-15bb-f0a2-c79d-c2a3ec54d277/artist-76594","https://schedule.sxsw.com/2026/events/MS65064"],
+["KUOKO","Mon","8:00pm -- 8:45pm","Speakeasy","German Music Export by Initiative Musik","Electronic","Pop","https://images.sxsw.com/huPqs2AsRoeV3x8iwqr93deg1ig=/450x450/images.sxsw.com/195/124b9fe2-e8a1-7325-05ab-f7bfcb0e1be0/artist-75509","https://schedule.sxsw.com/2026/events/MS63577"],
+["Lucky","Mon","8:00pm -- 8:40pm","Chess Club","","Rock","Indie Rock","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64366"],
+["Mass Minor","Mon","8:00pm -- 8:40pm","Elysium","","Rock","Alternative","https://images.sxsw.com/_3QL1nNYsn3wB8IEYDox9Bq5ARU=/450x450/images.sxsw.com/195/279fa0b4-9451-500c-e47a-4774d5b62c7b/artist-75903","https://schedule.sxsw.com/2026/events/MS63629"],
+["Nikki Gold","Mon","8:00pm -- 8:10pm","Venue 6","Beer n Tacos","Country","Pop","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65219"],
+["Oya Noire","Mon","8:00pm -- 8:40pm","Wanderlust Wine","Audiofemme","R & B","Soul","https://images.sxsw.com/JXbnsf0zPpeBsC8V5jBsi2-diNs=/450x450/images.sxsw.com/195/de0c2183-dc92-a354-2d05-0c50d64589b4/artist-76005","https://schedule.sxsw.com/2026/events/MS63815"],
+["Paisley Fields","Mon","8:00pm -- 8:40pm","Continental Club","","Country","Americana","https://images.sxsw.com/rJFa9jf3QEgFh5j3cSQdQYvKNF8=/450x450/images.sxsw.com/195/0d0d3b33-259e-7566-b057-44aa5cec6d3d/artist-74081","https://schedule.sxsw.com/2026/events/MS64969"],
+["Panic Shack","Mon","8:00pm -- 8:30pm","Swan Dive","Rockaway Beach","Rock","Punk","https://images.sxsw.com/F_XGeon4SXBRBgoRry9-UHpNkNA=/450x450/images.sxsw.com/195/907b5655-23d4-b51f-ec2f-b49ced599a67/artist-75983","https://schedule.sxsw.com/2026/events/MS64348"],
+["Rampage Sound","Mon","8:00pm -- 9:00pm","BME @ Palm Door","West LDN Carnival on 6th","Hip-Hop / Rap","Caribbean","https://images.sxsw.com/D4-Z-Jvzz0Onmd0cjFvF1oWtfU8=/0x0:449x449/450x450/images.sxsw.com/196/52d46494-8957-44cb-8685-c7bb012fc05a/all-8","https://schedule.sxsw.com/2026/events/MS64360"],
+["Ruido Selecto","Mon","8:00pm -- 8:40pm","Taco n Maiz","","Electronic","Caribbean","https://images.sxsw.com/-Kp-9XaPxMQmvA7fte_rCAL2JUQ=/450x450/images.sxsw.com/195/85e59459-f08c-896b-d4a2-aa5a3b1d53df/artist-73581","https://schedule.sxsw.com/2026/events/MS64470"],
+["Special Guest(s)","Mon","8:00pm -- 8:40pm","Shangri-La","Money Mark and Friends","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65143"],
+["WifeKnife","Mon","8:00pm -- 8:40pm","The 13th Floor","Trash Casual + Our Wicked Lady","Metal","Hard Rock","https://images.sxsw.com/5O__YggLE2HQd4WmDPnasJxUPc0=/450x450/images.sxsw.com/195/e59480fb-f253-4015-7f1c-74b9519187a6/artist-76187","https://schedule.sxsw.com/2026/events/MS63946"],
+["Batry Powr (Nicole Miglis)","Mon","8:10pm -- 9:15pm","Central Presbyterian","PlantWave","Electronic","Ambient","https://images.sxsw.com/dJWSOoKzbeyO174fblBBkEZqFKs=/450x450/images.sxsw.com/195/c9f4f5f0-1307-e73e-cea3-4e337a8714af/artist-75962","https://schedule.sxsw.com/2026/events/MS63595"],
+["Grace Sorensen","Mon","8:10pm -- 8:40pm","Stubb's","Under Armour","R & B","Pop","https://images.sxsw.com/F16OPGFA5Zz7U5AzNvDYwo21b7Y=/450x450/images.sxsw.com/195/ba90410f-c9b4-0873-525a-218339eb5975/artist-74315","https://schedule.sxsw.com/2026/events/MS64864"],
+["Panoramic Voices","Mon","8:10pm -- 8:50pm","The Pershing","ATX Composers","Classical","Pop","https://images.sxsw.com/q5B1tRegvEGMrZTuQS2KnDeQsuI=/450x450/images.sxsw.com/195/ae7259c3-75e3-c82b-0447-54d2e8e2b125/artist-75125","https://schedule.sxsw.com/2026/events/MS63535"],
+["Joe Patitucci","Mon","8:15pm -- 9:15pm","Central Presbyterian","PlantWave","Electronic","Ambient","https://images.sxsw.com/Wu3HUspTrwUr2FH4j0cd_1LyuPI=/450x450/images.sxsw.com/195/29630f5f-617e-1b8a-4cd1-ecd021c00fd5/artist-75037","https://schedule.sxsw.com/2026/events/MS63278"],
+["Modern Cult","Mon","8:15pm -- 8:50pm","Hotel Vegas Volstead","rocknite","Rock","Indie Rock","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS63875"],
+["Camille Schmidt","Mon","8:20pm -- 8:50pm","Las Perlas","Deloyd Elze x Make Out Music","Singer-Songwriter","Indie Rock","https://images.sxsw.com/1y7H83Il2vqK_OT2iOIU8_oPP8w=/450x450/images.sxsw.com/195/cb9cac3e-2abf-6678-3829-de354fdf2b29/artist-76015","https://schedule.sxsw.com/2026/events/MS63667"],
+["amri","Mon","8:30pm -- 9:10pm","Marlow","","Jazz","Fusion","https://images.sxsw.com/Z2qSAtE4cKsXYEm_YI0S1-zB6Zg=/450x450/images.sxsw.com/195/6076fb1c-95ce-bfd0-c088-4c237c37227f/artist-74429","https://schedule.sxsw.com/2026/events/MS63926"],
+["D2BLEE","Mon","8:30pm -- 8:40pm","Venue 6","Beer n Tacos","Latin","Hip-Hop / Rap","https://images.sxsw.com/hWiBAnEr33449lcjrmz2jHoTENo=/450x450/images.sxsw.com/195/242813fd-9997-c7c2-2fe2-7e6bb055f65c/artist-76225","https://schedule.sxsw.com/2026/events/MS65220"],
+["The Eric Hisaw Band","Mon","8:30pm -- 9:00pm","Zilker Brewing","Flak Records","Rock","Americana","https://images.sxsw.com/IVdqzNJFdnCfJftVhePQ3GmbvNs=/450x450/images.sxsw.com/195/2d42707c-40cd-71ab-84c5-793c50a5d029/artist-76049","https://schedule.sxsw.com/2026/events/MS63979"],
+["Helios","Mon","8:30pm -- 9:00pm","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/bcOrO5_CD4PBffDYlbyUnbmLCb0=/450x450/images.sxsw.com/195/fa25672e-a492-7b33-8518-3e8a6bea4044/artist-76560","https://schedule.sxsw.com/2026/events/MS64859"],
+["Sarah Meth","Mon","8:30pm -- 9:00pm","Swan Dive Patio","The Line of Best Fit","Singer-Songwriter","Indie Pop","https://images.sxsw.com/E8_9r8_g_jjOv3dpSpVs9RbTH3E=/450x450/images.sxsw.com/195/47ae9a46-9415-47af-aa48-5260eaabe038/artist-75162","https://schedule.sxsw.com/2026/events/MS63296"],
+["South North SouthWest","Mon","8:30pm -- 8:45pm","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/8OikwGpGcGiDssszz98VWR4FFzw=/450x450/images.sxsw.com/195/b466694c-dcfb-cbe7-4285-a9a753cc0e58/artist-76596","https://schedule.sxsw.com/2026/events/MS64971"],
+["Ella Ion","Mon","8:40pm -- 9:10pm","Downright Global Stage","","Folk","Indie Rock","https://images.sxsw.com/XgGVJcmKUKG4fqZ0XL9xdimV-6U=/450x450/images.sxsw.com/195/70a1f85c-9b0c-9093-f636-8824287d6981/artist-74119","https://schedule.sxsw.com/2026/events/MS64336"],
+["Horsepower","Mon","8:40pm -- 9:10pm","Seven Grand","Deloyd Elze x Make Out Music","Rock","Indie Rock","https://images.sxsw.com/RoER5PTdFtdApVf7V8UvnAIqJKU=/450x450/images.sxsw.com/195/087fcd33-a054-73f8-cdf2-146f07794541/artist-75848","https://schedule.sxsw.com/2026/events/MS63406"],
+["Kembe X","Mon","8:40pm -- 9:00pm","Antone's","","Hip-Hop / Rap","None","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64093"],
+["bloodsports","Mon","8:50pm -- 9:25pm","Hotel Vegas","rocknite","Avant/Experimental","Alternative","https://images.sxsw.com/pvQ0ahwuEleXo82cOvfVn_xM4Ug=/450x450/images.sxsw.com/195/116397af-0e06-230d-0c63-398c3db8e3a4/artist-75101","https://schedule.sxsw.com/2026/events/MS63867"],
+["E.M.E","Mon","8:50pm -- 9:00pm","Venue 6","","R & B","Afrobeat","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64030"],
+["GoldenBoyNoel","Mon","8:50pm -- 9:05pm","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/SMujTLhNo_bJdEquWANZDFN7Zhc=/450x450/images.sxsw.com/195/3f296a19-2651-fe77-1130-52862af0aa5f/artist-76545","https://schedule.sxsw.com/2026/events/MS64813"],
+["Jamie Duffy","Mon","8:50pm -- 9:20pm","Flamingo Cantina","Classical Unlocked","Classical","Folk","https://images.sxsw.com/tXzsPKgY4AGQVJ_qPjoRLkokenE=/450x450/images.sxsw.com/195/47a23237-1cdb-4d43-f48a-d515d10d242a/artist-75743","https://schedule.sxsw.com/2026/events/MS63393"],
+["Spacestation","Mon","8:50pm -- 9:20pm","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","Rock","Indie Rock","https://images.sxsw.com/Cz8MgfDB6GzFnLA4PihXKTI-Poc=/450x450/images.sxsw.com/195/216fc43b-389b-d298-6544-423777a03818/artist-74067","https://schedule.sxsw.com/2026/events/MS64950"],
+["Stare Away","Mon","8:50pm -- 9:20pm","Seven Spirits","","Punk","Post-Punk","https://images.sxsw.com/DKGXNIVN3M2OcEBFofvMPuP1Q7U=/450x450/images.sxsw.com/195/c9b42fec-39c2-1eed-5c62-640dffeeabc8/artist-75959","https://schedule.sxsw.com/2026/events/MS65036"],
+["Bohemio","Mon","9:00pm -- 10:00pm","Mala Vida","SoundOn Tiktok","Latin","Regional Mexican","https://images.sxsw.com/EUwQ6EsZ2z2cjtMD0IECs-TSrj4=/450x450/images.sxsw.com/195/2493c8f0-9995-ce3a-3437-4bc7b1eb1823/artist-76264","https://schedule.sxsw.com/2026/events/MS64073"],
+["The Braymores","Mon","9:00pm -- 9:40pm","Valhalla","Fuegostine Presents","Rock","Indie Rock","https://images.sxsw.com/ht3AtPn0ifewiTuB662-2KewhOU=/450x450/images.sxsw.com/195/9ea49a05-3850-7142-3371-fae842764a67/artist-73685","https://schedule.sxsw.com/2026/events/MS64343"],
+["Bubba Lucky","Mon","9:00pm -- 9:40pm","Low Down Lounge","","Rock","Country","https://images.sxsw.com/cc_dvrmWc_t2uN-Vgci_SQ-1ZoU=/0x0:450x450/450x450/images.sxsw.com/196/b2aadb7c-e6ad-4632-b94c-7177ef77e213/all-14","https://schedule.sxsw.com/2026/events/MS64126"],
+["Buddy Red","Mon","9:00pm -- 9:30pm","Stubb's","Under Armour","Rock","Blues","https://images.sxsw.com/S3Cf2rglRHZ7hYi-jTFxtDI0s14=/450x450/images.sxsw.com/195/b7f1efb7-95ed-463b-7333-323cdedc4a9c/artist-74028","https://schedule.sxsw.com/2026/events/MS64863"],
+["CDSM","Mon","9:00pm -- 9:40pm","Elysium","","Punk","Post-Punk","https://images.sxsw.com/Jy1j8yzXJlnJuwXlJnf_zIPagwk=/450x450/images.sxsw.com/195/f605498d-459d-8060-fa1f-4e1bcb244663/artist-74249","https://schedule.sxsw.com/2026/events/MS63446"],
+["Devin Malik","Mon","9:00pm -- 9:25pm","Antone's","","Hip-Hop / Rap","None","https://images.sxsw.com/pGEL6IhdbJIbFNW3ugfhfN-Z5bM=/450x450/images.sxsw.com/195/61425e3a-ea8c-9e0d-373e-08282d10871b/artist-76279","https://schedule.sxsw.com/2026/events/MS64091"],
+["Dramos","Mon","9:00pm -- 10:00pm","Kingdom","SICKICK & Friends","DJ","House / Techno","https://images.sxsw.com/t3dX4cy2GCOemRxJ01rsYSvZ-Y0=/450x450/images.sxsw.com/195/83071c06-5605-ed77-6e5c-c356b6eddf01/artist-76081","https://schedule.sxsw.com/2026/events/MS64954"],
+["ilykimchi and oogie mane","Mon","9:00pm -- 9:45pm","Mohawk Outdoor","Pudgy Rodeo","","","https://images.sxsw.com/JPy2m0EwjGhppUZlR9KjGPRUdSY=/450x450/images.sxsw.com/195/bb35b493-b27a-b8b1-52f2-6324d46b4ff1/artist-76515","https://schedule.sxsw.com/2026/events/MS64739"],
+["Johnny Falloon","Mon","9:00pm -- 9:40pm","Chess Club","","Punk","Avant / Experimental","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64337"],
+["Joyeria","Mon","9:00pm -- 9:30pm","Swan Dive","Rockaway Beach","Rock","Indie Rock","https://images.sxsw.com/sodkUA-zwjVwpih3dC_8xuuXBrA=/450x450/images.sxsw.com/195/22dd1a4d-6dfa-30b1-91f9-b68eed970484/artist-76107","https://schedule.sxsw.com/2026/events/MS63782"],
+["lluvii","Mon","9:00pm -- 9:40pm","Taco n Maiz","","Latin","Indie Rock","https://images.sxsw.com/DWQRWWdkSqPIpei_LR7bCtuGC9A=/450x450/images.sxsw.com/195/1b120aaf-8436-4dda-bcf4-3d0163294d10/artist-76056","https://schedule.sxsw.com/2026/events/MS63960"],
+["Marley Hale","Mon","9:00pm -- 9:40pm","Lefty's Brick Bar","EQ Austin","Americana","Alt Country","https://images.sxsw.com/f1tSUsUhf0s6Vbv-iwv4_EH6R3w=/450x450/images.sxsw.com/195/b15eb8c9-b4ee-caa9-8416-55c8a4eb1712/artist-74438","https://schedule.sxsw.com/2026/events/MS64130"],
+["Morgan Munroe","Mon","9:00pm -- 9:40pm","Wanderlust Wine","Audiofemme","","","https://images.sxsw.com/4ZNO05LAi87J5ZO53KsdJWLMmKc=/450x450/images.sxsw.com/195/f53f07c4-bf0b-4012-0554-c9e954876a34/artist-72646","https://schedule.sxsw.com/2026/events/MS64832"],
+["mypilotis","Mon","9:00pm -- 9:45pm","Shangri-La","Money Mark and Friends","Rock","Indie Rock","https://images.sxsw.com/qbhI1pN33CtoDH1uvXLbYVYIvSM=/450x450/images.sxsw.com/195/ba518f75-95b4-bd14-ff41-6a530e594b98/artist-74470","https://schedule.sxsw.com/2026/events/MS64110"],
+["Orión García","Mon","9:00pm -- 9:40pm","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/m9R0T8z3J5wDFx8NhZnQ_PH_EVk=/450x450/images.sxsw.com/195/a49a7233-9b9a-2cbd-d898-074cc960a33b/artist-76612","https://schedule.sxsw.com/2026/events/MS65077"],
+["P.H.0","Mon","9:00pm -- 9:40pm","The 13th Floor","Trash Casual + Our Wicked Lady","Metal","Electronic","https://images.sxsw.com/a7OHIAnX9K2NFgfPbLwcmr4zSs8=/450x450/images.sxsw.com/195/8cd2a7e0-b477-0247-fa90-6940427cfd40/artist-76282","https://schedule.sxsw.com/2026/events/MS64119"],
+["The Pink Stones","Mon","9:00pm -- 9:40pm","Lamberts","","Country","Americana","https://images.sxsw.com/Zr52wC3CjeHo8pKOdjlLYE-f7wk=/450x450/images.sxsw.com/195/c39aed1c-6e54-2f30-754a-e0d892f2985c/artist-75904","https://schedule.sxsw.com/2026/events/MS64555"],
+["Theo Lawrence","Mon","9:00pm -- 9:40pm","Continental Club","","Country","Americana","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS63256"],
+["MORGAN","Mon","9:05pm -- 9:25pm","BME @ Palm Door","West LDN Carnival on 6th","R & B","Pop","https://images.sxsw.com/6hsCPB7YrYEFYivEC0vcmrhU8fQ=/450x450/images.sxsw.com/195/17da2ca8-4e41-9826-fe61-dd3ac52a5b73/artist-74989","https://schedule.sxsw.com/2026/events/MS63300"],
+["Girl Tones","Mon","9:10pm -- 9:45pm","Hotel Vegas Patio","rocknite","Rock","Pop Punk","https://images.sxsw.com/5VVmaESiFRlfc_J_FmVcb4etoEg=/450x450/images.sxsw.com/195/5b97d831-e601-0591-3b53-3638bd68ae59/artist-75975","https://schedule.sxsw.com/2026/events/MS63607"],
+["Knox Write","Mon","9:10pm -- 9:35pm","Mohawk Indoor","Pudgy Rodeo","","","https://images.sxsw.com/WroHhi9eVNs_2KyKeXfI8bMFNdQ=/450x450/images.sxsw.com/195/f45a6096-02e0-79b0-caa6-23f5b131188b/artist-76507","https://schedule.sxsw.com/2026/events/MS64712"],
+["Luke Tyler Shelton","Mon","9:10pm -- 9:40pm","Las Perlas","Make Out Music","Americana","Rock","https://images.sxsw.com/AKXED-yq-gbmorf9LMBC73IOt-g=/450x450/images.sxsw.com/195/6f08134a-8481-0f7c-beb6-2aea56c78ed8/artist-75869","https://schedule.sxsw.com/2026/events/MS64172"],
+["Marni Ct.","Mon","9:10pm -- 9:45pm","Hotel Vegas Volstead","rocknite","Rock","Alternative","https://images.sxsw.com/r65vuPsiFVhNcLOOxz2xj4ydeMQ=/450x450/images.sxsw.com/195/5dc6f7e2-aa82-2af5-c0f3-6b9f5a6c4031/artist-73409","https://schedule.sxsw.com/2026/events/MS63479"],
+["Que the Boy","Mon","9:10pm -- 9:25pm","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/hoXzmQ6L7p_pkTjAfPW_Te_TL_o=/450x450/images.sxsw.com/195/be4f7116-7433-bf20-53a6-e171f98c543b/artist-76604","https://schedule.sxsw.com/2026/events/MS64977"],
+["AJTHEFLANNELGOD","Mon","9:15pm -- 9:30pm","Venue 6","Beer n Tacos","","","https://images.sxsw.com/-B99b1gfrvQmMfAEcZdymxd47cA=/450x450/images.sxsw.com/195/1fb15586-d741-33a3-d9e7-1a16313b42d9/artist-76437","https://schedule.sxsw.com/2026/events/MS64544"],
+["Parker Woodland","Mon","9:15pm -- 9:45pm","Zilker Brewing","Flak Records","Rock","Pop","https://images.sxsw.com/aEWMRMb_-Ex7dk56KyfFNP205l0=/450x450/images.sxsw.com/195/8d001fc8-a14d-7193-216f-36fae6669f4a/artist-73142","https://schedule.sxsw.com/2026/events/MS63541"],
+["Rosa Anschuetz","Mon","9:15pm -- 10:00pm","Speakeasy","German Music Export by Initiative Musik","Pop","Post-Punk","https://images.sxsw.com/V8mgyomqB3IYdeEBsCUK8I4HiDk=/450x450/images.sxsw.com/195/de9a155e-c519-28ad-29e0-554480c6c293/artist-74474","https://schedule.sxsw.com/2026/events/MS63576"],
+["Graham Reynolds","Mon","9:20pm -- 10:00pm","The Pershing","ATX Composers","Classical","Avant / Experimental","https://images.sxsw.com/G2-aKmjxFeOYGVSHCzzA773mqiQ=/450x450/images.sxsw.com/195/cc101629-f42a-aa45-3416-368536e54fb0/artist-75965","https://schedule.sxsw.com/2026/events/MS63612"],
+["Jamie Dred","Mon","9:25pm -- 11:20pm","BME @ Palm Door Patio","West LDN Carnival on 6th","Caribbean","African","https://images.sxsw.com/3wmipIkxTuBUB7KMgjWJd6Lt6Cg=/450x450/images.sxsw.com/195/72199f50-3596-0620-86d1-388fbdf4c06e/artist-76268","https://schedule.sxsw.com/2026/events/MS64357"],
+["Yakiyn","Mon","9:25pm -- 9:55pm","Antone's","","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64092"],
+["Attalie","Mon","9:30pm -- 10:10pm","Marlow","","R & B","Alternative","https://images.sxsw.com/a3HWMjQWjKTVsS2_TmKwGF7DJo8=/450x450/images.sxsw.com/195/dba83a5e-fadd-b672-0725-d050aa1548de/artist-76214","https://schedule.sxsw.com/2026/events/MS64108"],
+["Deloyd Elze","Mon","9:30pm -- 10:00pm","Seven Grand","Deloyd Elze x Make Out Music","Alt Country","Ambient","https://images.sxsw.com/rXMMrpT0kq67xuXFlalZ2bxQ5fI=/450x450/images.sxsw.com/195/cfbc314b-a6a2-5600-5289-eadf891f5a7c/artist-74182","https://schedule.sxsw.com/2026/events/MS63326"],
+["Hemi Hemingway","Mon","9:30pm -- 10:00pm","Swan Dive Patio","The Line of Best Fit","Pop","Indie Pop","https://images.sxsw.com/BVI_I6QLdTX6wmbOrORp2RM3Ouc=/450x450/images.sxsw.com/195/9cde5c9e-e804-2f03-ba45-cf12e83c0e9a/artist-74161","https://schedule.sxsw.com/2026/events/MS63937"],
+["Lightbath","Mon","9:30pm -- 10:30pm","Central Presbyterian","PlantWave","Avant / Experimental","Ambient","https://images.sxsw.com/yklK2cERJHRzVqBJbZA7eTLiPZQ=/450x450/images.sxsw.com/195/1b053f5d-e7a2-a72c-9e63-1257a649ddc5/artist-76132","https://schedule.sxsw.com/2026/events/MS63822"],
+["Magnolian","Mon","9:30pm -- 10:00pm","Downright Global Stage","","Folk","Indie Rock","https://images.sxsw.com/Iz6FdyD4fMe5meflnhv9ZJy4fmo=/450x450/images.sxsw.com/195/196ca150-ee86-fb93-e886-c791d5bc3dde/artist-73339","https://schedule.sxsw.com/2026/events/MS65075"],
+["Big Zeeks","Mon","9:35pm -- 9:45pm","BME @ Palm Door","West LDN Carnival on 6th","Reggae","Dub / Dancehall","https://images.sxsw.com/cNGFCi6a0jbbh4sYOSfAdaqdtLg=/450x450/images.sxsw.com/195/f4f3e5c2-6bd8-537a-16bd-5c0952ebb53f/artist-76105","https://schedule.sxsw.com/2026/events/MS64597"],
+["Louie Lee","Mon","9:35pm -- 9:55pm","Riviere","Detroit 313 Selects","Country","Pop","https://images.sxsw.com/fOcFlZFgmyEZ0bIOrTPuUIwjJzE=/450x450/images.sxsw.com/195/c09993df-a131-d117-7018-2873d1c39723/artist-76162","https://schedule.sxsw.com/2026/events/MS64831"],
+["SHO","Mon","9:35pm -- 9:50pm","Venue 6","Beer n Tacos","","","https://images.sxsw.com/fdYNcbifYRhojzxf1UDduJ7-Rn8=/450x450/images.sxsw.com/195/e5be80bc-6e5c-5b97-92e7-0aa2d20bf75f/artist-76522","https://schedule.sxsw.com/2026/events/MS64747"],
+["Les Itinérantes","Mon","9:40pm -- 10:10pm","Flamingo Cantina","Classical Unlocked","Classical","None","https://images.sxsw.com/TqQ4rDygre-ToZzJ7_qRMumg3M8=/450x450/images.sxsw.com/195/571531d6-7f4a-a061-12b7-a3a3cced546c/artist-75753","https://schedule.sxsw.com/2026/events/MS63374"],
+["The Ramona Flowers","Mon","9:40pm -- 10:10pm","Seven Spirits","","Pop","Indie Pop","https://images.sxsw.com/ztWnr1u-wdxqFs72i5WDYNK1ekk=/450x450/images.sxsw.com/195/caf13a7f-c794-1ed3-d765-124aac5b127a/artist-74180","https://schedule.sxsw.com/2026/events/MS64884"],
+["Zae France","Mon","9:40pm -- 10:10pm","Stubb's","Under Armour","","","https://images.sxsw.com/wxODNGc3IJnL70EePIXzrdjaV24=/450x450/images.sxsw.com/195/b0d4b2b1-19c6-4497-e717-c8bcb0b159e9/artist-76333","https://schedule.sxsw.com/2026/events/MS64861"],
+["Victoryland","Mon","9:45pm -- 10:20pm","Hotel Vegas","rocknite","Rock","Indie Pop","https://images.sxsw.com/2aNrvFNU5lfj4xOiUMgQybFlzBI=/450x450/images.sxsw.com/195/a9337a9d-8e0b-e27d-0d98-3e56efe77c0c/artist-74549","https://schedule.sxsw.com/2026/events/MS64285"],
+["The Dumes","Mon","9:50pm -- 10:30pm","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","Rock","Indie Rock","https://images.sxsw.com/NOXjmw6ZKsjHs3SWSt6QB1eLZ28=/450x450/images.sxsw.com/195/0b772ed4-9d60-bd4f-e2df-80662f01aa78/artist-74968","https://schedule.sxsw.com/2026/events/MS63536"],
+["RickFromTexas","Mon","9:55pm -- 10:10pm","Mohawk Indoor","Pudgy Rodeo","","","https://images.sxsw.com/eOoSdTktEhJgG6JvW4nSJfyDVMY=/450x450/images.sxsw.com/195/c707fff1-5cfd-9afe-ede7-635d9981ea12/artist-76524","https://schedule.sxsw.com/2026/events/MS64755"],
+["2ar","Mon","10:00pm -- 11:00pm","Kingdom","SICKICK & Friends","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65088"],
+["Alien Chicks","Mon","10:00pm -- 10:30pm","Swan Dive","Rockaway Beach","Punk","Hip-Hop / Rap","https://images.sxsw.com/gu8iXmbd2WRqF0xhlqPIG7Iv8ZE=/450x450/images.sxsw.com/195/e76e50a7-67e4-75c1-ff49-6a588fdb65e7/artist-72896","https://schedule.sxsw.com/2026/events/MS63783"],
+["Angela Autumn","Mon","10:00pm -- 10:30pm","Las Perlas","Deloyd Elze x Make Out Music","Alt Country","Indie Rock","https://images.sxsw.com/_vcDb5zsdQ-sZICJfhZrrEzjXLE=/450x450/images.sxsw.com/195/336e4d34-5a10-aadd-9ab7-36a1eeb2817d/artist-72993","https://schedule.sxsw.com/2026/events/MS63143"],
+["The Band Loula","Mon","10:00pm -- 10:40pm","Valhalla","Fuegostine Presents","Country","Americana","https://images.sxsw.com/uaSdHqGbROK8TpFPcT9_CAgeuhA=/450x450/images.sxsw.com/195/808c7f1d-f201-b16a-0de1-e72f779d29a7/artist-73788","https://schedule.sxsw.com/2026/events/MS64298"],
+["DeMaciiio","Mon","10:00pm -- 10:20pm","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/PEya0O-UpbGccYDGB31L76ZIDwU=/450x450/images.sxsw.com/195/9bf2506f-ff7d-0e31-a961-1d27bf4ec90f/artist-76521","https://schedule.sxsw.com/2026/events/MS64748"],
+["DJ Cortez","Mon","10:00pm -- 10:30pm","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/PnHlAhsiX6gsqtlsTNceE7YQqmE=/450x450/images.sxsw.com/195/c076f931-f531-b8a7-395d-355131fe7a1e/artist-76614","https://schedule.sxsw.com/2026/events/MS65004"],
+["eydrey","Mon","10:00pm -- 10:40pm","Wanderlust Wine","Audiofemme","Latin","Regional Mexican","https://images.sxsw.com/nLLicLlxrc50PtibDZyX04LfUws=/450x450/images.sxsw.com/195/c81521bc-a336-2aed-1afc-9187e60dd927/artist-76033","https://schedule.sxsw.com/2026/events/MS64960"],
+["Five For Fighting","Mon","10:00pm -- 10:40pm","Inn Cahoots Austin Garden","Take Action x SXSW","","","https://images.sxsw.com/H51dMEUltkj8nSfa60JtBhXzC-w=/450x450/images.sxsw.com/195/4a8b4c1d-5d49-34da-6718-93e7d79375a4/artist-76381","https://schedule.sxsw.com/2026/events/MS64326"],
+["Franki Chan","Mon","10:00pm -- 12:00am","Coconut Club / Coconut Club Rooftop","XYZ Films: A Case Of The Mondays","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64367"],
+["Greyson Turner","Mon","10:00pm -- 10:40pm","Continental Club","","","","https://images.sxsw.com/iA29orBAL-1p3b03oomEaWMfOiA=/450x450/images.sxsw.com/195/8465ba0d-77b8-581c-8e62-6612b3de0374/artist-74153","https://schedule.sxsw.com/2026/events/MS64433"],
+["haha Laughing","Mon","10:00pm -- 10:40pm","Chess Club","","Avant / Experimental","Hip-Hop / Rap","https://images.sxsw.com/-_yMfadQU611WVJGwkgQ9vTBA8E=/450x450/images.sxsw.com/195/67df6375-f570-692e-1938-c7b37f72e59c/artist-76012","https://schedule.sxsw.com/2026/events/MS63652"],
+["Haylee Wood","Mon","10:00pm -- 11:00pm","Kingdom","SICKICK & Friends","","","https://images.sxsw.com/BpUOTkMbIV800deFDU4k7E3Us1w=/450x450/images.sxsw.com/195/8f59d327-a262-56f4-6d22-89977b8e9369/artist-76184","https://schedule.sxsw.com/2026/events/MS65089"],
+["JOPLYN","Mon","10:00pm -- 12:00am","Coconut Club","XYZ Films: A Case Of The Mondays","Electronic","House / Techno","https://images.sxsw.com/Sa-cA-M6R4f0ZSIVc0dPB7wHVAA=/450x450/images.sxsw.com/195/0d448ce6-95c5-5b86-eb85-7e8dff2a4b89/artist-75881","https://schedule.sxsw.com/2026/events/MS65245"],
+["Jovi Greene","Mon","10:00pm -- 10:40pm","Lamberts","","Country","Pop","https://images.sxsw.com/cyawwQQpfpnHOqwCu8petfsX0Ro=/450x450/images.sxsw.com/195/e19ea363-41ac-a420-e237-8bc9c2d362f2/artist-73861","https://schedule.sxsw.com/2026/events/MS64551"],
+["Lena Dardelet","Mon","10:00pm -- 10:40pm","Taco n Maiz","","Latin","Pop","https://images.sxsw.com/RpqakHG-U4mqJx--n2FyPQxxHBE=/450x450/images.sxsw.com/195/ba026fff-bf44-5ab9-20a8-6314baacefe9/artist-73098","https://schedule.sxsw.com/2026/events/MS63458"],
+["Liquid Hips","Mon","10:00pm -- 10:40pm","Low Down Lounge","","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65187"],
+["Little Wilderness","Mon","10:00pm -- 10:30pm","Zilker Brewing","Flak Records","Rock","Indie Rock","https://images.sxsw.com/O4SW2BLQyAzNjBJQx569Qtwc74k=/450x450/images.sxsw.com/195/fab5bd62-69ca-bd58-62dc-7d91b74dd3b8/artist-76028","https://schedule.sxsw.com/2026/events/MS63978"],
+["Montclair","Mon","10:00pm -- 10:50pm","Lefty's Brick Bar","EQ Austin","Americana","Indie Rock","https://images.sxsw.com/u5ncxfFVmWjoYknHsDnl6lbjW0E=/450x450/images.sxsw.com/195/63ed7595-586d-b616-f240-6787155e1f6d/artist-73749","https://schedule.sxsw.com/2026/events/MS63182"],
+["Ray Vaughn","Mon","10:00pm -- 10:30pm","Antone's","","Hip-Hop / Rap","None","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64089"],
+["Stevie Bill","Mon","10:00pm -- 10:30pm","Mohawk Outdoor","Pudgy Rodeo","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65174"],
+["Two-Man Giant Squid","Mon","10:00pm -- 10:40pm","The 13th Floor","Trash Casual + Our Wicked Lady","Punk","Post-Punk","https://images.sxsw.com/Sp8x6FdehzeRzCCcB8C5xYJkgnY=/450x450/images.sxsw.com/195/cb4bb7f3-b17a-bf44-4beb-0c2fe6d019fa/artist-73381","https://schedule.sxsw.com/2026/events/MS63883"],
+["Unsafe Space Garden","Mon","10:00pm -- 10:40pm","Elysium","","Rock","Progressive","https://images.sxsw.com/qa9Oe8RclTQdMcxex_CgFmVSzYM=/450x450/images.sxsw.com/195/a680cb0f-138f-f43a-73ae-afe3769fb12c/artist-73768","https://schedule.sxsw.com/2026/events/MS63140"],
+["very nice person","Mon","10:00pm -- 10:35pm","Shangri-La","Money Mark and Friends","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64248"],
+["Edgehill","Mon","10:05pm -- 10:40pm","Hotel Vegas Patio","rocknite","Rock","Indie Rock","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS63606"],
+["Swapmeet","Mon","10:05pm -- 10:40pm","Hotel Vegas Volstead","rocknite","Rock","Grunge","https://images.sxsw.com/aRqg8hK0RJuVMW4GgFEqRb34u-c=/450x450/images.sxsw.com/195/000be849-18d2-33d6-b428-ab2a5d2bcab1/artist-74347","https://schedule.sxsw.com/2026/events/MS63999"],
+["JayDon","Mon","10:10pm -- 10:40pm","Stubb's","Under Armour","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64897"],
+["MC Nito","Mon","10:15pm -- 10:45pm","Mala Vida","SoundOn Tiktok","Latin","Funk","https://images.sxsw.com/mdp3jiHDLilxjnSmC7ehHh4Z0Qw=/450x450/images.sxsw.com/195/0d2f50cd-21d0-5a2f-d593-a70690d363f5/artist-76284","https://schedule.sxsw.com/2026/events/MS64095"],
+["Brodie Fresh","Mon","10:20pm -- 10:40pm","Venue 6","Beer n Tacos","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65255"],
+["Planeta No","Mon","10:20pm -- 10:50pm","Downright Global Stage","","Pop","Indie Pop","https://images.sxsw.com/TYl_7vGDQiNqXV0s-4NBnGR77gA=/450x450/images.sxsw.com/195/63dbed85-7974-6ed6-2a19-b8f32d69e11f/artist-73315","https://schedule.sxsw.com/2026/events/MS65172"],
+["Shallowater","Mon","10:20pm -- 10:50pm","Seven Grand","Deloyd Elze x Make Out Music","Alt Country","Alternative","https://images.sxsw.com/mAjnNAkkQ7IZI1rpmdiXn992pRw=/450x450/images.sxsw.com/195/978066bd-7d95-3c81-33f2-bd8723f456ba/artist-76338","https://schedule.sxsw.com/2026/events/MS64184"],
+["2Down","Mon","10:25pm -- 10:45pm","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/H6jak1Zfw42dOD2N_2gWSmVwgeg=/450x450/images.sxsw.com/195/d453880d-0dc2-6810-8bb6-33211785d89d/artist-76583","https://schedule.sxsw.com/2026/events/MS64935"],
+["Max Evasion","Mon","10:25pm -- 10:55pm","Mohawk Indoor","Pudgy Rodeo","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65196"],
+["Adult Leisure","Mon","10:30pm -- 11:00pm","Seven Spirits","","Pop","Indie Pop","https://images.sxsw.com/TaRL9rUd2oZVmQzRblrJ1lsitFs=/450x450/images.sxsw.com/195/b5dca4e4-0f77-7e8e-4060-2d323358855d/artist-72806","https://schedule.sxsw.com/2026/events/MS64866"],
+["Azamiah","Mon","10:30pm -- 11:10pm","Marlow","","Jazz","R & B","https://images.sxsw.com/Z_0cH4YQneyHg5KtKG3XNNgvbiE=/450x450/images.sxsw.com/195/c8d05803-7830-f44e-5995-4d3eea173132/artist-75082","https://schedule.sxsw.com/2026/events/MS63928"],
+["cootie catcher","Mon","10:30pm -- 11:00pm","Swan Dive Patio","The Line of Best Fit","Rock","Indie Rock","https://images.sxsw.com/4LhcsfyTw-hO3cC5vQ5lVhfYXFk=/450x450/images.sxsw.com/195/aeef92d2-1bf7-df51-9ff3-86ffc64b1d57/artist-74357","https://schedule.sxsw.com/2026/events/MS63933"],
+["Daniel Fears","Mon","10:30pm -- 11:10pm","The Pershing","ATX Composers","R & B","Singer-Songwriter","https://images.sxsw.com/vdW4RShBCcSkGFa44VIOf51vV4Q=/450x450/images.sxsw.com/195/60645860-09e9-1e49-7295-1c1b220647c1/artist-76009","https://schedule.sxsw.com/2026/events/MS63669"],
+["Ella Ella","Mon","10:30pm -- 11:00pm","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/ZR58yttqRQo4c8mAHSLLKoOd1UY=/450x450/images.sxsw.com/195/bf61b915-e1a3-2a53-8e6e-84016cbed6b9/artist-76576","https://schedule.sxsw.com/2026/events/MS64931"],
+["Modeselektor","Mon","10:30pm -- 12:00am","Speakeasy","German Music Export by Initiative Musik","DJ","Electronic","https://images.sxsw.com/iGoP5ZOb2usThc2n45DrJa87-uI=/450x450/images.sxsw.com/195/ac136bf0-a2d9-15cf-b11c-3daf4d148adb/artist-75920","https://schedule.sxsw.com/2026/events/MS63539"],
+["SUUVI","Mon","10:30pm -- 11:00pm","Flamingo Cantina","Classical Unlocked","Electronic","Instrumental","https://images.sxsw.com/uX1IKGDs8p2aaoyT9JV1mQ7P318=/450x450/images.sxsw.com/195/6b30d2a2-00f3-b1ce-c5f6-edd663896b28/artist-75862","https://schedule.sxsw.com/2026/events/MS63489"],
+["Trophy Wife","Mon","10:40pm -- 11:15pm","Hotel Vegas","rocknite","Rock","Alternative","https://images.sxsw.com/KCx3fsrzWknWcHGwWK9tzf01s34=/450x450/images.sxsw.com/195/9efea666-c3b5-6c48-603b-77053dab1423/artist-75124","https://schedule.sxsw.com/2026/events/MS63420"],
+["Propain","Mon","10:45pm -- 11:05pm","Venue 6","Beer n Tacos","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/Ge4AMvpu5HtooVajzZSPe4KEriE=/450x450/images.sxsw.com/195/74001348-7a4f-d919-9673-553abab942ce/artist-76257","https://schedule.sxsw.com/2026/events/MS65197"],
+["sosocamo","Mon","10:45pm -- 11:15pm","Mohawk Outdoor","Pudgy Rodeo","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/PBF93ayTMMNtoD0fKKt2hatQIbQ=/450x450/images.sxsw.com/195/05bce4d1-16b8-f5d4-53d3-02c8973506a3/artist-76074","https://schedule.sxsw.com/2026/events/MS63721"],
+["Special Guest","Mon","10:45pm -- 11:05pm","BME @ Palm Door Patio","West LDN Carnival on 6th","Hip-Hop / Rap","Caribbean","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64592"],
+["B Free","Mon","10:50pm -- 11:10pm","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/dOt4Pi6Owjcxy9SLpMTGHYylQtk=/450x450/images.sxsw.com/195/ea42df34-7842-b8dd-e635-a7cc87a49b93/artist-76553","https://schedule.sxsw.com/2026/events/MS64846"],
+["His Lordship","Mon","10:50pm -- 11:30pm","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","Rock","Punk","https://images.sxsw.com/nlrVfac-ETbOF6XMt-1nlKWT-rA=/450x450/images.sxsw.com/195/c7dfd472-f476-f743-f3db-5bf40d7f1bfc/artist-75542","https://schedule.sxsw.com/2026/events/MS64482"],
+["Victoryland","Mon","10:50pm -- 11:20pm","Las Perlas","Deloyd Elze x Make Out Music","Rock","Indie Pop","https://images.sxsw.com/2aNrvFNU5lfj4xOiUMgQybFlzBI=/450x450/images.sxsw.com/195/a9337a9d-8e0b-e27d-0d98-3e56efe77c0c/artist-74549","https://schedule.sxsw.com/2026/events/MS65110"],
+["2charm","Mon","11:00pm -- 11:30pm","Elysium","","Pop","House / Techno","https://images.sxsw.com/wOxMyyjx3AGPkEEiuV3nQ2aE2hM=/450x450/images.sxsw.com/195/b90a61c3-99ac-974d-c952-4864210eb839/artist-75167","https://schedule.sxsw.com/2026/events/MS64250"],
+["AKA BK","Mon","11:00pm -- 11:35pm","Hotel Vegas Volstead","rocknite","Rock","Alternative","https://images.sxsw.com/R2o3t3hyIt1332qqywvlDiB92Tg=/450x450/images.sxsw.com/195/1d5e32f7-b8df-501a-8cf4-a35278a06b1d/artist-76019","https://schedule.sxsw.com/2026/events/MS63866"],
+["Casmalia","Mon","11:00pm -- 12:00am","Kingdom","SICKICK & Friends","Electronic","House / Techno","https://images.sxsw.com/0qQPHUrn9urLjHFsErNx7odLWFo=/450x450/images.sxsw.com/195/73feb155-d958-c9b9-dd2a-962dfe49fe10/artist-76166","https://schedule.sxsw.com/2026/events/MS64927"],
+["Casper Allen","Mon","11:00pm -- 11:40pm","Continental Club","","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64436"],
+["Diego The Fuego","Mon","11:00pm -- 11:30pm","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/g2De30U0e4SIFkf73xdJ8bCKJY8=/450x450/images.sxsw.com/195/585cb5b6-2c3d-684f-136f-87b9c3fd4daa/artist-76557","https://schedule.sxsw.com/2026/events/MS64958"],
+["Dizzy Fae","Mon","11:00pm -- 11:40pm","Wanderlust Wine","Audiofemme","","","https://images.sxsw.com/BDM4zP1kRoF2WteXerp6HVbJdLI=/450x450/images.sxsw.com/195/b81bb3d6-fff4-084f-d53f-62a676d9fecc/artist-76357","https://schedule.sxsw.com/2026/events/MS64328"],
+["Home Counties","Mon","11:00pm -- 11:30pm","Swan Dive","Rockaway Beach","Rock","Alternative","https://images.sxsw.com/_Q2uTnlfvg2JOc7WLoCmz-z8_Y4=/450x450/images.sxsw.com/195/f1098752-5698-4787-ee7c-6cc03ba8a1b5/artist-75905","https://schedule.sxsw.com/2026/events/MS63520"],
+["Joudy","Mon","11:00pm -- 11:40pm","The 13th Floor","Trash Casual + Our Wicked Lady","Rock","Garage","https://images.sxsw.com/PU1ExwixuVneBwtXTYXUTd4d_DA=/450x450/images.sxsw.com/195/8a8e4be1-1599-5bff-7bfe-90adf8cbc7b9/artist-76108","https://schedule.sxsw.com/2026/events/MS63882"],
+["Kali Horse","Mon","11:00pm -- 11:40pm","Chess Club","","Rock","Avant / Experimental","https://images.sxsw.com/A3Tr_3dW9djVELbUBAl667qpNoY=/450x450/images.sxsw.com/195/5822f2cf-97fa-106e-c582-f07fb9a0a019/artist-75364","https://schedule.sxsw.com/2026/events/MS64339"],
+["Money Mark","Mon","11:00pm -- 11:55pm","Shangri-La","Money Mark and Friends","Singer-Songwriter","None","https://images.sxsw.com/KLaYqe1pD367op-mR_f5obkrNyg=/450x450/images.sxsw.com/195/a1250e5c-5e1a-7d86-2660-a80cb033be4e/artist-76300","https://schedule.sxsw.com/2026/events/MS64134"],
+["MT Jones","Mon","11:00pm -- 11:45pm","Lamberts","","Pop","Soul","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64420"],
+["Passion Pit","Mon","11:00pm -- 11:40pm","Inn Cahoots Austin Garden","Take Action x SXSW","Pop","Alternative","https://images.sxsw.com/EwTEw81b_hZHNi2RnTWWyVjPnno=/450x450/images.sxsw.com/195/85eb331d-d641-a70e-03e7-1ccd546eb870/artist-76342","https://schedule.sxsw.com/2026/events/MS64199"],
+["Pretty Jane","Mon","11:00pm -- 11:40pm","Valhalla","Fuegostine Presents","Rock","Indie Rock","https://images.sxsw.com/bPgn9au1lcnQACiLzMmOxL6aXMg=/450x450/images.sxsw.com/195/864866b6-7527-00f4-0f13-5309970dbfcd/artist-73306","https://schedule.sxsw.com/2026/events/MS64012"],
+["Rafa Parra","Mon","11:00pm -- 11:40pm","Taco n Maiz","","Latin","Pop","https://images.sxsw.com/txrwW3KovMH3OjTcYji5TXBImN4=/450x450/images.sxsw.com/195/677c994d-9a78-4cac-fa05-5ec8a211fe0e/artist-76236","https://schedule.sxsw.com/2026/events/MS64020"],
+["The Red Eye Gamblers","Mon","11:00pm -- 12:30am","Low Down Lounge","","Rock","Americana","https://images.sxsw.com/tzrjWXQ6DHTL7w8s6uUdi8OS7rE=/450x450/images.sxsw.com/195/d31546e4-77bb-d0ee-e544-f002e32ca913/artist-74853","https://schedule.sxsw.com/2026/events/MS64125"],
+["Rehash","Mon","11:00pm -- 11:35pm","Hotel Vegas Patio","rocknite","","","https://images.sxsw.com/jOGilwuCcA4ytJkWSkMQE9WZ7mg=/450x450/images.sxsw.com/195/cab904d7-5e30-d3ff-9cfd-52076f1ecbbe/artist-76329","https://schedule.sxsw.com/2026/events/MS64188"],
+["TY DOLLA $IGN","Mon","11:00pm -- 12:00am","Stubb's","Under Armour","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64868"],
+["B6","Mon","11:10pm -- 11:30pm","Venue 6","Beer n Tacos","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65051"],
+["Cashier","Mon","11:10pm -- 11:40pm","Seven Grand","Deloyd Elze x Make Out Music","Rock","Alternative","https://images.sxsw.com/0UHrqH8Bd_naLg-H1MOIBEJxZJA=/450x450/images.sxsw.com/195/62193194-24a9-80ae-73af-e6af2253e554/artist-75488","https://schedule.sxsw.com/2026/events/MS63786"],
+["The Irrepressibles","Mon","11:10pm -- 11:40pm","Downright Global Stage","","Rock","Indie Rock","https://images.sxsw.com/ImOBU-vmmD4YvwJDrb7UlrWXGOE=/450x450/images.sxsw.com/195/6dfc54f1-bb97-4adf-b7fb-4eb2e54a75b3/artist-75368","https://schedule.sxsw.com/2026/events/MS65072"],
+["Asaka The Renegade","Mon","11:15pm -- 11:35pm","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/Zo0EsEdkaO799_mv-Sg38kqE7oo=/450x450/images.sxsw.com/195/c0262b4b-b643-31ff-abc0-ad63cbd1476b/artist-76523","https://schedule.sxsw.com/2026/events/MS64753"],
+["DJ CZ","Mon","11:15pm -- 11:45pm","Mala Vida","SoundOn Tiktok","Latin","Funk","https://images.sxsw.com/JvBfL8rPCD83sKiVhTjT0WisxlY=/450x450/images.sxsw.com/195/65432974-0bc7-6538-4b94-f29ed6a57a00/artist-76222","https://schedule.sxsw.com/2026/events/MS64650"],
+["Hania Derej","Mon","11:20pm -- 11:50pm","Flamingo Cantina","Classical Unlocked","Classical","Jazz","https://images.sxsw.com/Sykuclm0v8Iva3jzzmzWLEJtNEk=/450x450/images.sxsw.com/195/45eb4434-bdda-f824-3cd6-3cbe7b6bc446/artist-73182","https://schedule.sxsw.com/2026/events/MS63907"],
+["Kofi Stone","Mon","11:20pm -- 11:30pm","BME @ Palm Door Patio","West LDN Carnival on 6th","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/xpTZaZ0mvqy5RhYmQK4nI-rP22c=/450x450/images.sxsw.com/195/0f199c13-40e0-e1ae-c137-34a242113f22/artist-75722","https://schedule.sxsw.com/2026/events/MS64602"],
+["Nightbus","Mon","11:20pm -- 11:50pm","Seven Spirits","","Electronic","Alternative","https://images.sxsw.com/ThD3bYGdshDTgAXYabTxBjL57Uc=/450x450/images.sxsw.com/195/c60de8d4-8a28-ccfb-09ec-13efa7af5bd1/artist-75742","https://schedule.sxsw.com/2026/events/MS64879"],
+["Hasta Bajo","Mon","11:30pm -- 12:30am","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65299"],
+["The Paradox","Mon","11:30pm -- 12:10am","Mohawk Outdoor","Pudgy Rodeo","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64520"],
+["Rampage Sound","Mon","11:30pm -- 1:30am","BME @ Palm Door Patio","West LDN Carnival on 6th","Hip-Hop / Rap","Caribbean","https://images.sxsw.com/i08a9L_27mUc3orcbrnNPGiiVNI=/0x0:450x450/450x450/images.sxsw.com/196/4f295d50-eceb-43cc-ab77-09e1ba100eaa/all-11","https://schedule.sxsw.com/2026/events/MS64603"],
+["Sex Mask","Mon","11:30pm -- 12:00am","Swan Dive Patio","The Line of Best Fit","Punk","Indie Rock","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS63673"],
+["Steven Bamidele","Mon","11:30pm -- 12:10am","Marlow","","Jazz","Indie Pop","https://images.sxsw.com/S9K-r4ZctBFXAZDWCgu7fXWZnwQ=/450x450/images.sxsw.com/195/c3b4f1a2-d166-d101-3c1c-b8c8af629eb5/artist-74064","https://schedule.sxsw.com/2026/events/MS63925"],
+["FEET","Mon","11:35pm -- 12:10am","Hotel Vegas","rocknite","Rock","Indie Rock","https://images.sxsw.com/kwRgKAPK9TjZcVzD1fXiP-Z3Umo=/450x450/images.sxsw.com/195/51e6346e-c067-a3d5-2d2a-a96a87a494c8/artist-73643","https://schedule.sxsw.com/2026/events/MS64834"],
+["Raq Baby","Mon","11:35pm -- 12:00am","Venue 6","Beer n Tacos","Hip-Hop / Rap","None","https://images.sxsw.com/F3rUIcilgbl34k24yn2F60-4jWc=/450x450/images.sxsw.com/195/a446ed95-2fe5-9600-c5b9-bacaf25506b4/artist-75897","https://schedule.sxsw.com/2026/events/MS63522"],
+["Maru Haru","Mon","11:40pm -- 12:30am","The Pershing","ATX Composers","Rock","Orchestral","https://images.sxsw.com/UxeeYW6qysjjXPq2c-Lil1nkVwI=/450x450/images.sxsw.com/195/eb8bd1a9-6b5c-66b9-b27c-92facc92c9a7/artist-75491","https://schedule.sxsw.com/2026/events/MS63534"],
+["mer marcum","Mon","11:40pm -- 12:10am","Las Perlas","Make Out Music","Folk","Indie Rock","https://images.sxsw.com/yn7dSi4k91nuISWjjSnAkcpBJkA=/450x450/images.sxsw.com/195/2787d962-70c9-eb33-52b2-6eb3001a7d31/artist-73475","https://schedule.sxsw.com/2026/events/MS64198"],
+["Neisha Neshae","Mon","11:40pm -- 12:00am","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/nOgfu2ZjPgBYu4aTOzWlhp3o6ec=/450x450/images.sxsw.com/195/5e664a58-b348-f8e2-1a84-dbc97fc63574/artist-76550","https://schedule.sxsw.com/2026/events/MS64825"],
+["Buckets","Mon","11:50pm -- 12:30am","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","Punk","Indie Rock","https://images.sxsw.com/3dAqQBHtZolkJwheJc0_EhpHMyc=/450x450/images.sxsw.com/195/1801df9d-649c-1831-96ac-65a33f0a199e/artist-74280","https://schedule.sxsw.com/2026/events/MS64821"],
+["Kairo Keyz","Mon","11:50pm -- 12:10am","BME @ Palm Door Patio","West LDN Carnival on 6th","Hip-Hop / Rap","Caribbean","https://images.sxsw.com/It6d-4ZL8O3gTnNJ5Lxx71kNsRM=/450x450/images.sxsw.com/195/57a255fe-3975-16e7-3fe1-a64955bd722c/artist-76228","https://schedule.sxsw.com/2026/events/MS64585"],
+["Couch Dog","Mon","11:55pm -- 12:30am","Hotel Vegas Patio","rocknite","Rock","Indie Rock","https://images.sxsw.com/9Dy-BoaNcGEOiFzziJhsZ72YoaQ=/450x450/images.sxsw.com/195/bad60e40-b6a2-c32f-615c-2a2b09d251a5/artist-72716","https://schedule.sxsw.com/2026/events/MS63144"],
+["Glaze","Mon","11:55pm -- 12:30am","Hotel Vegas Volstead","rocknite","Rock","Shoegaze","https://images.sxsw.com/yWjNW_UsXXV5PqkYkJY99alOmUo=/450x450/images.sxsw.com/195/970334c2-81db-8804-d998-0a28f66b3e9b/artist-75329","https://schedule.sxsw.com/2026/events/MS64581"],
+["Arroba Nat","Tue","12:00am -- 12:40am","Valhalla","Fuegostine Presents","Folk","Pop","https://images.sxsw.com/sGWQomldRJSq0IWQdUMw_uB3s4k=/450x450/images.sxsw.com/195/d63c4a8d-a381-5d3c-f594-9edc7dcffff3/artist-73057","https://schedule.sxsw.com/2026/events/MS64016"],
+["Casket Cassette","Tue","12:00am -- 12:40am","Chess Club","","Rock","Post-Punk","https://images.sxsw.com/M_2b0YQYsKf2I-5SC5Sigdn55to=/450x450/images.sxsw.com/195/a25966a1-e5b7-4699-bf33-a842e329c1cd/artist-72565","https://schedule.sxsw.com/2026/events/MS63957"],
+["CRG","Tue","12:00am -- 2:00am","Coconut Club","XYZ Films: A Case Of The Mondays","","","https://images.sxsw.com/89urultHR0XZnNuPgWSjDJFFzYk=/450x450/images.sxsw.com/195/8d3d93a1-9b90-5539-bd42-4ee4efdeeb34/artist-76750","https://schedule.sxsw.com/2026/events/MS65283"],
+["Endearments","Tue","12:00am -- 12:40am","The 13th Floor","Trash Casual + Our Wicked Lady","Rock","Dream Pop","https://images.sxsw.com/ndMvWypXJr4XjItiLss-ERGNIbU=/450x450/images.sxsw.com/195/01d09584-7ad5-8694-2b55-07a52ba5da75/artist-76034","https://schedule.sxsw.com/2026/events/MS63780"],
+["Marley Hale","Tue","12:00am -- 12:40am","Continental Club","","Americana","Alt Country","https://images.sxsw.com/f1tSUsUhf0s6Vbv-iwv4_EH6R3w=/450x450/images.sxsw.com/195/b15eb8c9-b4ee-caa9-8416-55c8a4eb1712/artist-74438","https://schedule.sxsw.com/2026/events/MS64325"],
+["Sexpop","Tue","12:00am -- 12:40am","Inn Cahoots Austin Garden","Take Action x SXSW","Pop","Funk","https://images.sxsw.com/e3PAOoOOIlNjbpiWjVBThSreHVY=/450x450/images.sxsw.com/195/95990258-ebf5-8bdd-fb43-259296677523/artist-75765","https://schedule.sxsw.com/2026/events/MS63425"],
+["Sickick","Tue","12:00am -- 1:15am","Kingdom","SICKICK & Friends","","","https://images.sxsw.com/hMuk5ArhbbHsBzs27UPc4f2vrVM=/450x450/images.sxsw.com/195/7cd16d2a-49b8-ba06-7c1b-57a77e395957/artist-76511","https://schedule.sxsw.com/2026/events/MS64735"],
+["Soucream","Tue","12:00am -- 1:00am","Mala Vida","SoundOn Tiktok","Latin","Funk","https://images.sxsw.com/uCXH4QdqM_u35G0Ys2tGaDMnNdI=/450x450/images.sxsw.com/195/538fefce-8900-babc-5187-87536223bd3f/artist-76283","https://schedule.sxsw.com/2026/events/MS64094"],
+["Torture and the Desert Spiders","Tue","12:00am -- 12:40am","Elysium","","Rock","Post-Punk","https://images.sxsw.com/1umG-XcNX3JGY0bLbSugLFWyYkA=/450x450/images.sxsw.com/195/0507d9b6-7352-f929-9e88-6ba4a2032867/artist-74915","https://schedule.sxsw.com/2026/events/MS64917"],
+["Total Wife","Tue","12:00am -- 12:30am","Seven Grand","Deloyd Elze x Make Out Music","Rock","Alternative","https://images.sxsw.com/ke0V8LNr4MHTMT6rluV5GfNiqmQ=/450x450/images.sxsw.com/195/a7dcd4f1-7f83-feff-830d-0ca7653c98ff/artist-75490","https://schedule.sxsw.com/2026/events/MS63787"],
+["Whitelands","Tue","12:00am -- 12:30am","Swan Dive","Rockaway Beach","Rock","Shoegaze","https://images.sxsw.com/1kzuy7e813txaHAKQx8_j2LqPI0=/450x450/images.sxsw.com/195/dedb1ab9-a9d1-acdd-9034-e11509d53a46/artist-75085","https://schedule.sxsw.com/2026/events/MS63784"],
+["ZHU","Tue","12:00am -- 2:00am","Coconut Club / Coconut Club Rooftop","XYZ Films: A Case Of The Mondays","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64711"],
+["Vickeelo","Tue","12:05am -- 12:30am","Venue 6","Beer n Tacos","","","https://images.sxsw.com/3Ti83TixuwEFHY3ZFG3xD3q7AvQ=/450x450/images.sxsw.com/195/98d387c2-56d0-92c9-1903-150fe3f86260/artist-76496","https://schedule.sxsw.com/2026/events/MS65221"],
+["The Gringos","Tue","12:10am -- 12:40am","Seven Spirits","","Rock","Alternative","https://images.sxsw.com/Ax5nRDyfUp1EQ2s73aReuDUMEEY=/450x450/images.sxsw.com/195/e1cee9c2-7f7f-fa66-c747-968d4e39cfe8/artist-75019","https://schedule.sxsw.com/2026/events/MS64916"],
+["Kety Fusco","Tue","12:10am -- 12:40am","Flamingo Cantina","Classical Unlocked","Electronic","Alternative","https://images.sxsw.com/e0xVzjxAXlsXOM4hE4rvFBrrdl8=/450x450/images.sxsw.com/195/e1a7e9b5-1582-cb37-b6a8-3c598372ba7b/artist-73679","https://schedule.sxsw.com/2026/events/MS63464"],
+["NASAAN","Tue","12:10am -- 12:40am","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64991"],
+["BabyChiefDoIt","Tue","12:20am -- 1:00am","Mohawk Outdoor","Pudgy Rodeo","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65016"],
+["Radium Dolls","Tue","12:30am -- 1:05am","Hotel Vegas","rocknite","Rock","Punk","https://images.sxsw.com/n1Z_OcOc3YHxsAIgtX_frTupE4c=/450x450/images.sxsw.com/195/a1673e3f-68c2-2f48-18f1-6dfdd43d4313/artist-73335","https://schedule.sxsw.com/2026/events/MS63940"],
+["Riobamba","Tue","12:30am -- 1:25am","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64974"],
+["TTSSFU","Tue","12:30am -- 1:00am","Swan Dive Patio","The Line of Best Fit","Rock","Alternative","https://images.sxsw.com/Kp503ZcJUSARdM-2t5U6xmfEnUQ=/450x450/images.sxsw.com/195/dea1bae8-44ac-1617-6d73-a509ca162801/artist-74561","https://schedule.sxsw.com/2026/events/MS63672"],
+["Armanii","Tue","12:35am -- 1:00am","BME @ Palm Door Patio","West LDN Carnival on 6th","Hip-Hop / Rap","Caribbean","https://images.sxsw.com/irY-s8IP84T9O3c1kM6U1zWyZc0=/0x0:450x450/450x450/images.sxsw.com/196/a390f3bb-26a9-4967-aefa-521b0a19e60d/all-9","https://schedule.sxsw.com/2026/events/MS64345"],
+["Bruiser Wolf","Tue","12:45am -- 1:15am","Riviere","Detroit 313 Selects","","","https://images.sxsw.com/g8xQ3k7n0T0jPInxnTg-rnQGHfc=/450x450/images.sxsw.com/195/dbd3c717-ea8c-23e5-979c-41d22e6d4c1f/artist-76586","https://schedule.sxsw.com/2026/events/MS64943"],
+["Fime","Tue","12:50am -- 1:25am","Hotel Vegas Volstead","rocknite","Rock","Alternative","https://images.sxsw.com/nUqAHDHZwK0mQ-yD6mupiCdpt5g=/450x450/images.sxsw.com/195/3c9b294e-c578-e6f0-d07f-f3d8efc1eb27/artist-75175","https://schedule.sxsw.com/2026/events/MS63313"],
+["J'cuuzi","Tue","12:50am -- 1:25am","Hotel Vegas Patio","rocknite","","","https://images.sxsw.com/wmYn11YUhzMkKEVH5muZG0a5x9I=/450x450/images.sxsw.com/195/5300afaa-ccc6-2e71-52cb-11b13b1277e9/artist-75997","https://schedule.sxsw.com/2026/events/MS64227"],
+["OKAN","Tue","12:50am -- 1:30am","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","Latin","Afrobeats","https://images.sxsw.com/14E1DOxg7hn2niBHlw9Z4FZSoB8=/450x450/images.sxsw.com/195/135a1be0-0bb9-bfa0-54e1-3d94d883105c/artist-75764","https://schedule.sxsw.com/2026/events/MS64952"],
+["Adult DVD","Tue","1:00am -- 1:30am","Swan Dive","Rockaway Beach","Dance","Rock","https://images.sxsw.com/QXFOYvWGn59xLTpHhxsYK5SnAtY=/450x450/images.sxsw.com/195/3e6389ce-6bb5-e34d-99d3-494b9e9e6322/artist-74562","https://schedule.sxsw.com/2026/events/MS63222"],
+["The Animeros","Tue","1:00am -- 1:50am","Valhalla","Fuegostine Presents","Latin","Cumbia","https://images.sxsw.com/FmI5GaZf1qumXioHKouevJCMm_Q=/450x450/images.sxsw.com/195/e890b9ce-8a96-9807-d251-a9d4bc480078/artist-75338","https://schedule.sxsw.com/2026/events/MS65014"],
+["DAIISTAR","Tue","1:00am -- 1:30am","Seven Spirits","","Rock","Indie Rock","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64820"],
+["Don Esco","Tue","1:00am -- 2:00am","Mala Vida","SoundOn Tiktok","","","https://images.sxsw.com/e4Gch854ds1uETsFt7PLIuJAqXs=/450x450/images.sxsw.com/195/da7ebd84-a921-4318-bca5-834226b20484/artist-76473","https://schedule.sxsw.com/2026/events/MS65303"],
+["Glassio","Tue","1:00am -- 1:40am","Inn Cahoots Austin Garden","Take Action x SXSW","Electronic","Dream Pop","https://images.sxsw.com/d0p30edp_3GSe1xqxzdJxZQ61hI=/450x450/images.sxsw.com/195/317f7068-08e2-ea89-793e-421098e960a0/artist-74187","https://schedule.sxsw.com/2026/events/MS64947"],
+["Luna Luna","Tue","1:00am -- 1:50am","Taco n Maiz","","","","https://images.sxsw.com/_afb_nJegkHJmSMlF_bzTDXU5fw=/450x450/images.sxsw.com/195/74421e9a-6af5-7f73-bfa4-dc69ab114cdb/artist-76024","https://schedule.sxsw.com/2026/events/MS64508"],
+["The Sheila Divine","Tue","1:00am -- 1:50am","The 13th Floor","Trash Casual + Our Wicked Lady","Rock","Alternative","https://images.sxsw.com/542AJBZxonymLDbRvV0EY6zXzT0=/450x450/images.sxsw.com/195/691100a0-3e13-0223-2d7f-be68298e992d/artist-76247","https://schedule.sxsw.com/2026/events/MS64058"],
+["Kingdom DJs","Tue","1:15am -- 4:00am","Kingdom","SICKICK & Friends","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65030"],
+["CQ Wrestling","Tue","1:25am -- 2:00am","Hotel Vegas","rocknite","Rock","Grunge","https://images.sxsw.com/yEJcirOp19JpY-0R6faWJuJQrVc=/450x450/images.sxsw.com/195/daa5e6d1-d330-095c-b0ab-7728ddbcf657/artist-75849","https://schedule.sxsw.com/2026/events/MS64836"],
+["Flobama","Tue","1:25am -- 2:00am","Mala Fama Nivel","Hasta Bajo","","","https://images.sxsw.com/OLcx3pzqTMiDeBT__fMpyhR-62M=/450x450/images.sxsw.com/195/685b1130-21e8-0e46-9cb5-8569b965bec0/artist-76565","https://schedule.sxsw.com/2026/events/MS64957"],
+["Kozlow","Tue","2:00am -- 3:00am","Coconut Club","XYZ Films: A Case Of The Mondays","","","https://images.sxsw.com/y1I_50Oj-Y1F828O_OIUJJoFVu0=/450x450/images.sxsw.com/195/4326c9b3-15bb-f0a2-c79d-c2a3ec54d277/artist-76594","https://schedule.sxsw.com/2026/events/MS65244"],
+["Bu Cuaron","Mon","Time TBA","Mala Fama Rooftop","The New Sounds of Música Mexicana","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65054"],
+["Funky Caramelo","Mon","Time TBA","Mala Fama Rooftop","The New Sounds of Música Mexicana","","","https://images.sxsw.com/dyhvb8Vy62JnYx9w4ciW0DlMYjQ=/450x450/images.sxsw.com/195/d3d4bf24-4c82-42fb-3992-042054e60da8/artist-76360","https://schedule.sxsw.com/2026/events/MS64441"],
+["Ian Cordova","Mon","Time TBA","Mala Fama Rooftop","The New Sounds of Música Mexicana","","","https://images.sxsw.com/AcRVmcqeLxW_yVM0df2gA2TRVHs=/450x450/images.sxsw.com/195/22a423b9-5eeb-00e3-02b4-6702324b13dc/artist-76393","https://schedule.sxsw.com/2026/events/MS64347"],
+["Kodie Shane","Mon","Time TBA","Venue 6","Beer n Tacos","Hip-Hop / Rap","R & B","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64234"],
+["Mc Danny","Mon","Time TBA","Mala Vida","SoundOn Tiktok","Latin","Funk","https://images.sxsw.com/oOO3nZDJIQHBIx0H1bNMNLvk0Uk=/450x450/images.sxsw.com/195/7f24c7c2-cc59-ff70-64f6-f9564a1f1823/artist-76265","https://schedule.sxsw.com/2026/events/MS64072"],
+["MrWootay","Mon","Time TBA","Venue 6","","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64514"],
+["Oscar Ortiz","Mon","Time TBA","Mala Fama Rooftop","The New Sounds of Música Mexicana","Latin","Regional Mexican","https://images.sxsw.com/QFBPI4TrTHrlSLcf1vVyEzY38vo=/450x450/images.sxsw.com/195/f50d84a8-3c69-50fe-fe6b-fc3ff3008499/artist-75759","https://schedule.sxsw.com/2026/events/MS63357"],
+["Poe Leos","Mon","Time TBA","Mala Fama Rooftop","The New Sounds of Música Mexicana","","","https://images.sxsw.com/hoE2cqTn_aePOCnqHmNfgsz-e04=/450x450/images.sxsw.com/195/5b5dfcdf-4dfa-01b6-8b55-b7fe83015bd6/artist-76535","https://schedule.sxsw.com/2026/events/MS64810"],
+["DJ Albina (KEXP)","Tue","11:00am -- 11:40am","Downright Radio Stage","KEXP's El Sonido Live!","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64956"],
+["DJ Evelyn","Tue","11:05am -- 11:40am","Downright Radio Stage","KEXP's El Sonido Live!","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64955"],
+["OKAN","Tue","12:00pm -- 12:40pm","Downright Radio Stage","KEXP's El Sonido Live!","Latin","Afrobeats","https://images.sxsw.com/14E1DOxg7hn2niBHlw9Z4FZSoB8=/450x450/images.sxsw.com/195/135a1be0-0bb9-bfa0-54e1-3d94d883105c/artist-75764","https://schedule.sxsw.com/2026/events/MS63931"],
+["Sultanes del Yonke","Tue","1:00pm -- 1:40pm","Downright Radio Stage","KEXP's El Sonido Live!","Latin","Cumbia","https://images.sxsw.com/2NSHzRdKB8R8zU-XUAdYsM9xrdU=/450x450/images.sxsw.com/195/f452619d-8e45-d052-be6b-1a742b2bc81b/artist-75333","https://schedule.sxsw.com/2026/events/MS63817"],
+["Diles que no me maten","Tue","2:00pm -- 2:40pm","Downright Radio Stage","KEXP's El Sonido Live!","Rock","Avant / Experimental","https://images.sxsw.com/ofL5Lg16mmNDzD_HTcM_TcDkW7M=/450x450/images.sxsw.com/195/94cc9c8e-2706-b597-1f1f-b98a76969226/artist-75262","https://schedule.sxsw.com/2026/events/MS63897"],
+["Marilina Bertoldi","Tue","3:00pm -- 3:40pm","Downright Radio Stage","KEXP's El Sonido Live!","Rock","Alternative","https://images.sxsw.com/YiuuU6mE6o2vCqu89wQdfmF1_h4=/0x0:450x450/450x450/images.sxsw.com/196/93a0edad-5096-47ff-97b4-db5e6cc0f4f1/all-10","https://schedule.sxsw.com/2026/events/MS63898"],
+["Amy Gadiaga","Tue","3:45pm -- 4:15pm","BME @ Palm Door Patio","Future Arts and Culture","Jazz","Soul","https://images.sxsw.com/aFGPbpVGryxRIgmWGS1dIuVzxZE=/450x450/images.sxsw.com/195/80fce733-e333-a5ed-6554-ee8c280fdf5b/artist-75187","https://schedule.sxsw.com/2026/events/MS64669"],
+["La Texana","Tue","4:00pm -- 4:50pm","Downright Radio Stage","KEXP's El Sonido Live!","Rock","Alternative","https://images.sxsw.com/htGXIVrks-_QBsY5QEtC1UQhjr4=/450x450/images.sxsw.com/195/8bdceb63-a068-d193-2280-0dac04bb525d/artist-73779","https://schedule.sxsw.com/2026/events/MS63899"],
+["Ananto","Tue","7:00pm -- 7:40pm","Lefty's Brick Bar","EQ Austin","R & B","Jazz","https://images.sxsw.com/1KOErrSn6lya_GP00TJri-6Vp-A=/450x450/images.sxsw.com/195/0713014f-fef3-9d38-529c-f602fef0df59/artist-76316","https://schedule.sxsw.com/2026/events/MS64151"],
+["The Bures Band","Tue","7:00pm -- 7:30pm","Zilker Brewing","Penny Loafer PR","Americana","Rock","https://images.sxsw.com/L15CZuQ96FazYJkK_qJ96d0WwNo=/450x450/images.sxsw.com/195/06f32887-1e18-3817-6bb2-89d3446d9aff/artist-72652","https://schedule.sxsw.com/2026/events/MS63330"],
+["DJ DMoney","Tue","7:00pm -- 9:00pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","","https://images.sxsw.com/pt6xT-4WACK_XaWvPwKmfCvKKqI=/450x450/images.sxsw.com/195/f44c8457-65df-5a16-d330-45bd68462fa3/artist-76374","https://schedule.sxsw.com/2026/events/MS64648"],
+["DJ Twin","Tue","7:00pm -- 10:00pm","The Creek and the Cave","The Digilogue","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65206"],
+["J-Nice The Kingdom Builder","Tue","7:00pm -- 7:45pm","Victory Grill","Nourishing The Soul 2026","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/1gogcm-VWvY7Fyrv7z-YVC5ixL8=/450x450/images.sxsw.com/195/cc521ebb-970c-25c2-ecb5-9c23e516c6bf/artist-75899","https://schedule.sxsw.com/2026/events/MS63615"],
+["Junerise","Tue","7:00pm -- 7:40pm","Low Down Lounge","","Rock","Dream Pop","https://images.sxsw.com/n-kW7XwU5oMxAGx5ItRDiN9rAUY=/450x450/images.sxsw.com/195/e09cdbd8-def3-fc9d-f268-51c85cec6268/artist-75896","https://schedule.sxsw.com/2026/events/MS63744"],
+["Leslie Kirchoff","Tue","7:00pm -- 2:00am","Marlow","Jason Burczyk presents","DJ","Disco","https://images.sxsw.com/ocZHwmptKuqn4vuCWDCJHyxem2Y=/450x450/images.sxsw.com/195/46bca9a9-c8ef-c3ba-49fc-2609d12eecc7/artist-76026","https://schedule.sxsw.com/2026/events/MS63713"],
+["mer marcum","Tue","7:00pm -- 7:30pm","Central Presbyterian","","Folk","Indie Rock","https://images.sxsw.com/yn7dSi4k91nuISWjjSnAkcpBJkA=/450x450/images.sxsw.com/195/2787d962-70c9-eb33-52b2-6eb3001a7d31/artist-73475","https://schedule.sxsw.com/2026/events/MS64968"],
+["Ruido Selecto","Tue","7:00pm -- 7:40pm","Lamberts","","Electronic","Caribbean","https://images.sxsw.com/-Kp-9XaPxMQmvA7fte_rCAL2JUQ=/450x450/images.sxsw.com/195/85e59459-f08c-896b-d4a2-aa5a3b1d53df/artist-73581","https://schedule.sxsw.com/2026/events/MS63462"],
+["Spacestation","Tue","7:00pm -- 7:30pm","Downright Global Stage","","Rock","Indie Rock","https://images.sxsw.com/Cz8MgfDB6GzFnLA4PihXKTI-Poc=/450x450/images.sxsw.com/195/216fc43b-389b-d298-6544-423777a03818/artist-74067","https://schedule.sxsw.com/2026/events/MS65201"],
+["Supermcn4sty","Tue","7:00pm -- 7:25pm","Swan Dive","The Color Agent","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS65267"],
+["TJ THE DJ","Tue","7:00pm -- 10:00pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","","","https://images.sxsw.com/qBCOC4gnIuQ_geVDrwUnacI6o68=/450x450/images.sxsw.com/195/330e8db8-5aa6-8f8c-e6ba-cbf2d6263d23/artist-76710","https://schedule.sxsw.com/2026/events/MS65203"],
+["wyldflower","Tue","7:00pm -- 7:30pm","Riviere","DAWA x Venice: Vision: 8291 UNITY","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64959"],
+["Deloyd Elze","Tue","7:15pm -- 7:45pm","Wanderlust Wine","Make Out Music","Alt Country","Ambient","https://images.sxsw.com/rXMMrpT0kq67xuXFlalZ2bxQ5fI=/450x450/images.sxsw.com/195/cfbc314b-a6a2-5600-5289-eadf891f5a7c/artist-74182","https://schedule.sxsw.com/2026/events/MS63820"],
+["Radium Dolls","Tue","7:15pm -- 8:00pm","Brushy St Commons","Mint Talent Group","Rock","Punk","https://images.sxsw.com/n1Z_OcOc3YHxsAIgtX_frTupE4c=/450x450/images.sxsw.com/195/a1673e3f-68c2-2f48-18f1-6dfdd43d4313/artist-73335","https://schedule.sxsw.com/2026/events/MS63207"],
+["Sex Mask","Tue","7:20pm -- 7:50pm","Mohawk Outdoor","AS Colour + Monster Children","Punk","Indie Rock","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS63665"],
+["Jessica Cymone","Tue","7:25pm -- 7:30pm","Swan Dive","","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64809"],
+["Blakchyl","Tue","7:30pm -- 7:40pm","Shangri-La","Good Coughee Presented by Devin the Dude","Hip-Hop / Rap","R & B","https://images.sxsw.com/nmXehzVsiqp4U-2jVIN-m08tuxw=/450x450/images.sxsw.com/195/1f424129-a27b-b5e6-6963-f25583142012/artist-76319","https://schedule.sxsw.com/2026/events/MS64575"],
+["The Bul Bey","Tue","7:30pm -- 7:40pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","","","https://images.sxsw.com/VdwCEHPrsDs32gi9sIRphROYpP8=/450x450/images.sxsw.com/195/da741918-c6c8-2036-d225-50f3982ab14f/artist-76561","https://schedule.sxsw.com/2026/events/MS64875"],
+["JASNO","Tue","7:30pm -- 8:00pm","Marlow","Jason Burczyk presents","Rock","Post-Punk","https://images.sxsw.com/-5qjEAdugHGHDH1PYoBQQFTp59Q=/450x450/images.sxsw.com/195/534b5e15-31a8-e800-1920-f4207facc921/artist-75949","https://schedule.sxsw.com/2026/events/MS63613"],
+["Karima Santi","Tue","7:30pm -- 7:45pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/KDhE3Mih_gSVdrauPgA1OcSRIZE=/450x450/images.sxsw.com/195/d96d6ca2-5a22-b186-45be-a81cc5f04af2/artist-76601","https://schedule.sxsw.com/2026/events/MS65024"],
+["Ken Lorentz","Tue","7:30pm -- 7:40pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65048"],
+["Leo Von Sol","Tue","7:30pm -- 7:50pm","Swan Dive","The Color Agent","Pop","R & B","https://images.sxsw.com/giioxjCWHUAMAFCEhlWu86JRSF0=/450x450/images.sxsw.com/195/1d8593fa-fa30-fe68-ed53-c99909d629be/artist-75980","https://schedule.sxsw.com/2026/events/MS63625"],
+["Smooth Nature","Tue","7:30pm -- 8:00pm","Riviere","DAWA x Venice: Vision: 8291 UNITY","R & B","Rock","https://images.sxsw.com/8GXa9uPtWedWMx4mPQHPLRgDTsc=/450x450/images.sxsw.com/195/fd225592-d480-5faa-473f-741aca90db35/artist-74466","https://schedule.sxsw.com/2026/events/MS64791"],
+["Zoe Tan","Tue","7:30pm -- 7:45pm","The Creek and the Cave","The Digilogue","","","https://images.sxsw.com/QvsmJhdClJ51wkzJ76FrgL-ooQ0=/450x450/images.sxsw.com/195/61b6dfc4-e072-b549-6bbc-88d3f7b78c0e/artist-76348","https://schedule.sxsw.com/2026/events/MS64556"],
+["Rocky Banks","Tue","7:45pm -- 7:55pm","Venue 6","ilL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","","https://images.sxsw.com/9mRHavI-Xxf_EXXoUVZaNeoDHvI=/450x450/images.sxsw.com/195/25ef6bd8-67c5-d63e-85dd-7e6c4727219f/artist-76495","https://schedule.sxsw.com/2026/events/MS64677"],
+["Addie Addie Addie","Tue","7:50pm -- 8:30pm","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","","","https://images.sxsw.com/nnd9UW4rpWoZTj5_5P9Ei62Jpkk=/450x450/images.sxsw.com/195/81a5baea-fa21-fdf5-ed40-9003bf4474db/artist-76611","https://schedule.sxsw.com/2026/events/MS64997"],
+["Joe Harvey-Whyte","Tue","7:50pm -- 8:20pm","Central Presbyterian","","Avant / Experimental","Americana","https://images.sxsw.com/r9he47Kg9O1XJA_c1PEGgHoXydY=/450x450/images.sxsw.com/195/43ded434-4d5a-f0e2-3c8a-dbb6b5f22840/artist-75928","https://schedule.sxsw.com/2026/events/MS63705"],
+["Otis Wilkins","Tue","7:50pm -- 8:20pm","Zilker Brewing","Penny Loafer PR","Rock","Indie Rock","https://images.sxsw.com/ygAuDKj-LmbYhQUq2X1u5U8pbBk=/450x450/images.sxsw.com/195/c4deeb81-dd35-bfc6-55a5-22310bffc70a/artist-76215","https://schedule.sxsw.com/2026/events/MS63991"],
+["Sūn Byrd","Tue","7:50pm -- 8:20pm","Downright Global Stage","","Soul","Soul","https://images.sxsw.com/Or1jKohXO_pWRIeZ5mCqPqlvojE=/450x450/images.sxsw.com/195/2e7f5729-ccd7-fda4-baa1-143df3c85507/artist-74501","https://schedule.sxsw.com/2026/events/MS64503"],
+["QUANNA","Tue","7:55pm -- 8:10pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","Hip-Hop / Rap","Dance","https://images.sxsw.com/diZPOIO3HgaW0n0ndohbqfsmOKM=/450x450/images.sxsw.com/195/7f78890a-3fcc-e28d-eb57-3ce032af9ef3/artist-75964","https://schedule.sxsw.com/2026/events/MS64946"],
+["Ali Almighty","Tue","8:00pm -- 8:10pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/6Yu6Ir-1HmxOZSeWyJA84WBwD80=/450x450/images.sxsw.com/195/c79db35a-63ba-c20f-2b25-1c189dc7bf41/artist-76007","https://schedule.sxsw.com/2026/events/MS65047"],
+["Artie Tobia & Redtail Revival","Tue","8:00pm -- 8:40pm","Inn Cahoots Austin Garden","Take Action x SXSW","","","https://images.sxsw.com/5rm_Pke_xsQ7txWRqK_TfDYwIUg=/450x450/images.sxsw.com/195/f45354a7-1a99-de76-07ff-f3ba83af64a6/artist-76452","https://schedule.sxsw.com/2026/events/MS64550"],
+["Atsuko Chiba","Tue","8:00pm -- 8:30pm","The 13th Floor","Green Witch Recordings and Pop Sickle","Rock","Post-Rock","https://images.sxsw.com/ZRmsf8x_X71ZexhIorIOD6tmspM=/450x450/images.sxsw.com/195/2cf75818-7c20-4bad-e9b9-efcd4a246108/artist-74248","https://schedule.sxsw.com/2026/events/MS63355"],
+["Barb","Tue","8:00pm -- 8:40pm","Low Down Lounge","","Pop","Rock","https://images.sxsw.com/-kNDHe7ejNEoBL7A-KMqZcjclCw=/450x450/images.sxsw.com/195/40a3a1df-881e-1d73-a4b3-e537c0e16d7e/artist-73662","https://schedule.sxsw.com/2026/events/MS63748"],
+["Cure for Paranoia","Tue","8:00pm -- 8:50pm","Swan Dive","The Color Agent","Hip-Hop / Rap","Alternative","https://images.sxsw.com/QhyuJpR0Qn1x5hj1WgoPqdjHOm0=/450x450/images.sxsw.com/195/7d658466-936d-e86b-e327-8f087cfbcf0c/artist-74117","https://schedule.sxsw.com/2026/events/MS64507"],
+["Fuego Santo","Tue","8:00pm -- 8:40pm","Lamberts","","","","https://images.sxsw.com/qBULBGDCF3trwLVKVtq5OU3PnZk=/450x450/images.sxsw.com/195/0cb726f6-666d-24ca-49b5-f5802c91c260/artist-76407","https://schedule.sxsw.com/2026/events/MS64419"],
+["GILT","Tue","8:00pm -- 8:30pm","Hotel Vegas Patio","Smartpunk Records","Rock","Emo","https://images.sxsw.com/K3icIeOMxaHwtJh34fqZmOC0EdU=/450x450/images.sxsw.com/195/08102f4c-a5fc-5853-cb44-2d9d9d577573/artist-76345","https://schedule.sxsw.com/2026/events/MS64206"],
+["The Irrepressibles","Tue","8:00pm -- 8:30pm","Swan Dive Patio","Tuezgayz","Rock","Indie Rock","https://images.sxsw.com/ImOBU-vmmD4YvwJDrb7UlrWXGOE=/450x450/images.sxsw.com/195/6dfc54f1-bb97-4adf-b7fb-4eb2e54a75b3/artist-75368","https://schedule.sxsw.com/2026/events/MS63588"],
+["Jamie Dred","Tue","8:00pm -- 8:15pm","Flamingo Cantina","Afrobeats Worldwide","Caribbean","African","https://images.sxsw.com/3wmipIkxTuBUB7KMgjWJd6Lt6Cg=/450x450/images.sxsw.com/195/72199f50-3596-0620-86d1-388fbdf4c06e/artist-76268","https://schedule.sxsw.com/2026/events/MS64568"],
+["Jasmine Jethwa","Tue","8:00pm -- 8:30pm","BME @ Palm Door","SXSW London","Folk","Pop","https://images.sxsw.com/SvdLgWGM7U25gvzA7Es-L7ujPBk=/450x450/images.sxsw.com/195/111df6c9-a7bc-b30a-b882-04838cf1a6a2/artist-75723","https://schedule.sxsw.com/2026/events/MS64096"],
+["Jeff Akoh","Tue","8:00pm -- 8:40pm","Lefty's Brick Bar","EQ Austin","Singer-Songwriter","Afrobeats","https://images.sxsw.com/m1kjUKTqC7OgX66BCSi2VjqTHq4=/450x450/images.sxsw.com/195/1210aae7-7b51-ed7b-a055-037fe8c1b6f6/artist-76337","https://schedule.sxsw.com/2026/events/MS64185"],
+["Joyeria","Tue","8:00pm -- 8:30pm","Valhalla","","Rock","Indie Rock","https://images.sxsw.com/sodkUA-zwjVwpih3dC_8xuuXBrA=/450x450/images.sxsw.com/195/22dd1a4d-6dfa-30b1-91f9-b68eed970484/artist-76107","https://schedule.sxsw.com/2026/events/MS64489"],
+["LA ROSA NOIR","Tue","8:00pm -- 8:40pm","Seven Grand","Tropiclub","Rock","Alternative","https://images.sxsw.com/fcf96-ddh2CQa1grwI5CAavWimw=/450x450/images.sxsw.com/195/ab6675ed-c04c-e9fc-6995-ee40592a3c45/artist-76134","https://schedule.sxsw.com/2026/events/MS64040"],
+["Lil Asian Thiccie","Tue","8:00pm -- 8:45pm","Coconut Club / Coconut Club Rooftop","hiroko__yamamura","Electronic","Hyperpop","https://images.sxsw.com/OaFup-nucOOjBdv3IkLN7B3-GKw=/450x450/images.sxsw.com/195/04b9aaa9-a823-14f7-f04d-260528b87cd6/artist-75927","https://schedule.sxsw.com/2026/events/MS64392"],
+["Los Discorde","Tue","8:00pm -- 8:40pm","Las Perlas","MEXCENA!","Rock","Indie Pop","https://images.sxsw.com/UqZ_erYo4yqQ9_wa2xNo5TfF42k=/450x450/images.sxsw.com/195/ca651a99-0e3a-617a-7215-7c9ae5cd6f97/artist-73090","https://schedule.sxsw.com/2026/events/MS63212"],
+["Mega Ran","Tue","8:00pm -- 8:25pm","Seven Spirits","Nerdcore","","","https://images.sxsw.com/YeLMapBuXVbABanchMMRt_i7AVA=/450x450/images.sxsw.com/195/f0f6f288-47b3-0afb-0ce7-74447a51a7c4/artist-76475","https://schedule.sxsw.com/2026/events/MS64606"],
+["Nikki Gold","Tue","8:00pm -- 8:15pm","Taco n Maiz","Chopstars: Taco Tuesday","Country","Pop","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64032"],
+["Noella Grey","Tue","8:00pm -- 8:15pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/Zbo-28ln7vD8d5zAggyo-AGha8c=/450x450/images.sxsw.com/195/93abfae2-cde3-2326-cd2b-8a64b1ebfd49/artist-76677","https://schedule.sxsw.com/2026/events/MS65215"],
+["Saint Avangeline","Tue","8:00pm -- 8:40pm","Elysium","BLCKJEANS MGMT","Rock","Indie Rock","https://images.sxsw.com/Eqa4R1zjlRZGLgu9eUr1N2vzJoQ=/450x450/images.sxsw.com/195/2726237f-f624-81e1-f350-54d2c202101d/artist-76295","https://schedule.sxsw.com/2026/events/MS64118"],
+["Semisoft","Tue","8:00pm -- 8:40pm","Chess Club","","Rock","Garage","https://images.sxsw.com/9UV7Zn9_ZtBMrzwwzCiN1Jd7Ukk=/450x450/images.sxsw.com/195/8be29604-e74a-adcc-22d0-264e2dd6a11f/artist-75818","https://schedule.sxsw.com/2026/events/MS63604"],
+["Spencer Thomas","Tue","8:00pm -- 8:30pm","Continental Club","Athens in Austin","Singer-Songwriter","Alternative","https://images.sxsw.com/hWwtq1_6iCSMTKCsKQhxX0FA1sg=/450x450/images.sxsw.com/195/905b5145-7abc-3c51-c1d6-db2a7bafc300/artist-75841","https://schedule.sxsw.com/2026/events/MS63493"],
+["Whitney Mongé","Tue","8:00pm -- 8:40pm","Saxon Pub","","","","https://images.sxsw.com/uUMHXPbEgJQuNxzEiurSn_65Als=/450x450/images.sxsw.com/195/cd87cac0-8923-d091-ef8f-2563777fa91c/artist-74490","https://schedule.sxsw.com/2026/events/MS64622"],
+["Willy J Peso","Tue","8:00pm -- 8:10pm","Shangri-La","Good Coughee Presented by Devin the Dude","Hip-Hop / Rap","House / Techno","https://images.sxsw.com/avPz2Jd_Fhi2CsIyf0NxDtQlGtg=/450x450/images.sxsw.com/195/a5f3c45c-1019-4577-1669-72d61e1ceeb4/artist-76288","https://schedule.sxsw.com/2026/events/MS64105"],
+["feel trip.","Tue","8:05pm -- 8:35pm","Wanderlust Wine","Make Out Music","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS65210"],
+["Jovi Greene","Tue","8:05pm -- 8:30pm","The Creek and the Cave","The Digilogue","Country","Pop","https://images.sxsw.com/cyawwQQpfpnHOqwCu8petfsX0Ro=/450x450/images.sxsw.com/195/e19ea363-41ac-a420-e237-8bc9c2d362f2/artist-73861","https://schedule.sxsw.com/2026/events/MS63165"],
+["Zastava","Tue","8:10pm -- 9:40pm","Mohawk Outdoor","AS Colour + Monster Children","Rock","Post-Punk","https://images.sxsw.com/E9gjqAIFQykIT9Qsm2DlHJLxwBk=/450x450/images.sxsw.com/195/4f50d8fa-0e6e-1829-dcdd-fa8aeeef8973/artist-73392","https://schedule.sxsw.com/2026/events/MS64232"],
+["0 Miles Per Hour","Tue","8:15pm -- 8:50pm","Hotel Vegas Volstead","Smartpunk Records","Rock","Alternative","https://images.sxsw.com/1RFNZBwLGL3w6AOUy9UCJAZ6xNc=/450x450/images.sxsw.com/195/c771a4b9-0de0-b588-f07c-4678d9544bfb/artist-76294","https://schedule.sxsw.com/2026/events/MS64197"],
+["Andy Arthur Smith","Tue","8:15pm -- 9:00pm","Brushy St Commons","Mint Talent Group","Pop","Funk","https://images.sxsw.com/RmAChJfYhX1T-ANMtfzmkWeb-xo=/450x450/images.sxsw.com/195/3ac66ff4-3f37-7470-4f5a-d3bd8ffd24b6/artist-73970","https://schedule.sxsw.com/2026/events/MS63496"],
+["AXLFLY","Tue","8:15pm -- 8:25pm","Shangri-La","Good Coughee Presented by Devin the Dude","R & B","Soul","https://images.sxsw.com/VVY6md8i0x_kxqZHRSZ7JmYgzns=/450x450/images.sxsw.com/195/23dd9a79-21a9-48e5-1b3c-982c03d63ec6/artist-76703","https://schedule.sxsw.com/2026/events/MS65193"],
+["Dayonthetrack","Tue","8:15pm -- 8:45pm","Flamingo Cantina","Afrobeats Worldwide","Singer-Songwriter","Afrobeat","https://images.sxsw.com/WuFwOzqRHVfi4qURHtq63sMbdtc=/450x450/images.sxsw.com/195/f8140b93-a52b-4030-875a-0c9df89ee0ab/artist-73161","https://schedule.sxsw.com/2026/events/MS64079"],
+["sir eddie c","Tue","8:15pm -- 8:25pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","Alternative","https://images.sxsw.com/92BVJGuUC_Dn0u_ISxxp-nOmdcE=/450x450/images.sxsw.com/195/4df0974c-890d-a113-84e7-37fe68055783/artist-76197","https://schedule.sxsw.com/2026/events/MS63989"],
+["Mark Brown","Tue","8:20pm -- 8:30pm","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS64613"],
+["Torture and the Desert Spiders","Tue","8:20pm -- 8:50pm","Mohawk Indoor","AS Colour + Monster Children","Rock","Post-Punk","https://images.sxsw.com/1umG-XcNX3JGY0bLbSugLFWyYkA=/450x450/images.sxsw.com/195/0507d9b6-7352-f929-9e88-6ba4a2032867/artist-74915","https://schedule.sxsw.com/2026/events/MS65112"],
+["Vintage Jay","Tue","8:20pm -- 8:50pm","Riviere","DAWA x Venice: Vision: 8291 UNITY","Hip-Hop / Rap","Reggaeton","https://images.sxsw.com/0arlZh9U9iBmZY1cr_xxgu0JnjQ=/450x450/images.sxsw.com/195/2776ab2d-4b64-dd37-267c-c8ae65ccc2a9/artist-76272","https://schedule.sxsw.com/2026/events/MS64790"],
+["Wave Chapelle & NilexNile","Tue","8:20pm -- 8:50pm","Marlow","Jason Burczyk presents","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/-WahePM7vQrM_T_VebD07_JIaxc=/450x450/images.sxsw.com/195/531fd557-4645-d1c8-a573-e0b57bf7075a/artist-75858","https://schedule.sxsw.com/2026/events/MS63491"],
+["Pierce Washington","Tue","8:25pm -- 8:45pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","Hip-Hop / Rap","Jazz","https://images.sxsw.com/PYASnTEymBxPmWU_ci2V_9hyrmM=/450x450/images.sxsw.com/195/4caa930c-a6b3-9a85-2c74-51e0cf0cf260/artist-74205","https://schedule.sxsw.com/2026/events/MS64995"],
+["Ras Mundi","Tue","8:25pm -- 9:10pm","Victory Grill","Nourishing The Soul 2026","Reggae","Hip-Hop / Rap","https://images.sxsw.com/ljxvKjTWas5qDCZw0hoCjurapzw=/450x450/images.sxsw.com/195/718be42c-cb7e-b91f-1477-f1b456011789/artist-75860","https://schedule.sxsw.com/2026/events/MS63617"],
+["Kiki Ambrose","Tue","8:30pm -- 8:45pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/RM6Iet1NDpjMr31jlOHylFNC_NU=/450x450/images.sxsw.com/195/fbea6701-35ab-9071-bf8b-eadd77c907db/artist-76510","https://schedule.sxsw.com/2026/events/MS65214"],
+["MC Frontalot","Tue","8:30pm -- 8:55pm","Seven Spirits","Nerdcore","Hip-Hop / Rap","Nerdcore","https://images.sxsw.com/AfmQQvo_ghIOfssgMEDXqH2jMXY=/450x450/images.sxsw.com/195/6ba4ce1d-8fa1-56d2-dde7-89819bd6691b/artist-74491","https://schedule.sxsw.com/2026/events/MS63216"],
+["Negüs Fresh","Tue","8:30pm -- 8:45pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","","https://images.sxsw.com/-UN3y9_z2uZ9nH3YhCEG8wnl26Q=/450x450/images.sxsw.com/195/45998770-764e-de7d-7043-6e85782f3681/artist-74210","https://schedule.sxsw.com/2026/events/MS64660"],
+["Mike Checc","Tue","8:35pm -- 8:45pm","Taco n Maiz","Chopstars: Taco Tuesday","Hip-Hop / Rap","Grime","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64238"],
+["Rich Garvey","Tue","8:35pm -- 8:45pm","Shangri-La","Good Coughee Presented by Devin the Dude","R & B","Soul","https://images.sxsw.com/LK_An-Lf8pWEEd_TknLz1Ms6SE8=/450x450/images.sxsw.com/195/07f38fab-a35e-4488-0c54-cd949ebe8060/artist-76233","https://schedule.sxsw.com/2026/events/MS64027"],
+["KOJ","Tue","8:40pm -- 9:10pm","BME @ Palm Door Patio","SXSW London","Hip-Hop / Rap","Post-Punk","https://images.sxsw.com/YTSHadXUQ8AEll_rDk_xT2vVyxg=/450x450/images.sxsw.com/195/dac9364a-67a0-25c8-8b5b-7e59a3c41357/artist-75859","https://schedule.sxsw.com/2026/events/MS64652"],
+["Les Itinérantes","Tue","8:40pm -- 9:10pm","Central Presbyterian","","Classical","None","https://images.sxsw.com/TqQ4rDygre-ToZzJ7_qRMumg3M8=/450x450/images.sxsw.com/195/571531d6-7f4a-a061-12b7-a3a3cced546c/artist-75753","https://schedule.sxsw.com/2026/events/MS64890"],
+["Mackwood","Tue","8:40pm -- 9:10pm","Downright Global Stage","","Jazz","Fusion","https://images.sxsw.com/DDUsd6tuyyS6nLHBRTYJfuzuahE=/450x450/images.sxsw.com/195/2761bd97-649c-8fd9-47c2-98ac521d6824/artist-75044","https://schedule.sxsw.com/2026/events/MS64414"],
+["Mariae Cassandra","Tue","8:40pm -- 9:20pm","Zilker Brewing","Penny Loafer PR","Pop","Indie Pop","https://images.sxsw.com/P7aK6-6lT4ZO6L6vu9PZWkegYDo=/450x450/images.sxsw.com/195/b2f804aa-8993-93f7-1538-a53c35aa1c6c/artist-73836","https://schedule.sxsw.com/2026/events/MS64019"],
+["Bea Porges","Tue","8:45pm -- 9:15pm","Continental Club","Athens in Austin","Folk","Pop","https://images.sxsw.com/aSRz5yDXJ9ZraAM-JSPf2r-wGwM=/450x450/images.sxsw.com/195/d0ddd20e-b236-34d1-2bb1-2825b1d5db69/artist-75947","https://schedule.sxsw.com/2026/events/MS63567"],
+["DJ Kimblee","Tue","8:45pm -- 9:30pm","Coconut Club / Coconut Club Rooftop","hiroko__yamamura","","","https://images.sxsw.com/EiblO9FjrAUY7pf6rU3N0g6Pmas=/450x450/images.sxsw.com/195/24770f4f-fc1f-16c6-9982-c80e979eed32/artist-76492","https://schedule.sxsw.com/2026/events/MS64679"],
+["PONS","Tue","8:45pm -- 9:15pm","The 13th Floor","Green Witch Recordings and Pop Sickle","Avant / Experimental","Post-Punk","https://images.sxsw.com/d_roZQ6A82RZDp37Ho42SS489MU=/450x450/images.sxsw.com/195/28369173-75fc-7713-651a-d35982c11c4c/artist-74181","https://schedule.sxsw.com/2026/events/MS64167"],
+["Suck Brick Kid","Tue","8:45pm -- 9:15pm","Hotel Vegas Patio","Smartpunk Records","","","https://images.sxsw.com/aoNZecLD09_K8Z7L9CmvknTloio=/450x450/images.sxsw.com/195/8a5dc8f5-e150-f3e6-3280-5a7bebc41647/artist-76418","https://schedule.sxsw.com/2026/events/MS64465"],
+["Fime","Tue","8:50pm -- 9:20pm","Valhalla","","Rock","Alternative","https://images.sxsw.com/nUqAHDHZwK0mQ-yD6mupiCdpt5g=/450x450/images.sxsw.com/195/3c9b294e-c578-e6f0-d07f-f3d8efc1eb27/artist-75175","https://schedule.sxsw.com/2026/events/MS64686"],
+["Keira Vana","Tue","8:50pm -- 9:05pm","The Creek and the Cave","The Digilogue","Pop","Pop","https://images.sxsw.com/jTVfgBREwElrB0SkLZATKnMF5fY=/450x450/images.sxsw.com/195/c4f83888-3ef3-8bf9-57cb-345d010dd2b9/artist-76223","https://schedule.sxsw.com/2026/events/MS64014"],
+["Loren Heat","Tue","8:50pm -- 9:20pm","Swan Dive Patio","Tuezgayz","Pop","Pop","https://images.sxsw.com/MaOgWnoeqKOznjvB6D5AadIwTxM=/450x450/images.sxsw.com/195/a186adf8-b5f7-e6ac-c796-fb08a9ad41e7/artist-75118","https://schedule.sxsw.com/2026/events/MS64664"],
+["Manny Phesto","Tue","8:50pm -- 9:00pm","Shangri-La","Good Coughee Presented by Devin the Dude","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/I97yyYnNMU3jIfmzL_9FEq30lwQ=/450x450/images.sxsw.com/195/44715b1e-4533-3922-9901-6a333f94288a/artist-76231","https://schedule.sxsw.com/2026/events/MS64026"],
+["Micah Edwards","Tue","8:50pm -- 9:30pm","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","","","https://images.sxsw.com/zyHFSwMphopCgcexGl7OUnaZRoc=/450x450/images.sxsw.com/195/2685c98c-1833-9df4-56f4-55e9b043323e/artist-76572","https://schedule.sxsw.com/2026/events/MS64905"],
+["MISTA KLEEN","Tue","8:50pm -- 9:05pm","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64513"],
+["AKA BK","Tue","8:55pm -- 9:25pm","Wanderlust Wine","Make Out Music","Rock","Alternative","https://images.sxsw.com/R2o3t3hyIt1332qqywvlDiB92Tg=/450x450/images.sxsw.com/195/1d5e32f7-b8df-501a-8cf4-a35278a06b1d/artist-76019","https://schedule.sxsw.com/2026/events/MS63666"],
+["Q Tha Hero","Tue","8:55pm -- 9:05pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/q-2JjaMsvC17RIe9bXWvS0Fp238=/450x450/images.sxsw.com/195/e9f5d530-e614-95eb-2b06-ff21e37af9c9/artist-75180","https://schedule.sxsw.com/2026/events/MS63431"],
+["Arroba Nat","Tue","9:00pm -- 9:40pm","Las Perlas","MEXCENA!","Folk","Pop","https://images.sxsw.com/sGWQomldRJSq0IWQdUMw_uB3s4k=/450x450/images.sxsw.com/195/d63c4a8d-a381-5d3c-f594-9edc7dcffff3/artist-73057","https://schedule.sxsw.com/2026/events/MS63221"],
+["Chuck Prophet and His Cumbia Shoes","Tue","9:00pm -- 9:40pm","Lamberts","","Americana","Cumbia","https://images.sxsw.com/VRcXxOMVcIkW4oWb15IF6TA7sYc=/450x450/images.sxsw.com/195/16a71125-054c-2673-a4bb-33ff5a87adea/artist-75918","https://schedule.sxsw.com/2026/events/MS63890"],
+["Commercial Breaks","Tue","9:00pm -- 9:40pm","Chess Club","","Rock","Power Pop","https://images.sxsw.com/Av-PoIHcwzFOgoAZdgAmOejNGyk=/450x450/images.sxsw.com/195/24355f9a-2fd7-a443-54ec-3ed602ee12a3/artist-74115","https://schedule.sxsw.com/2026/events/MS63189"],
+["congratulations","Tue","9:00pm -- 9:40pm","Hotel Vegas","Smartpunk Records","Rock","Alternative","https://images.sxsw.com/TkivQBDJ-gYvZDGb4Z3_OO0Z_40=/450x450/images.sxsw.com/195/6340e6d5-774e-de12-73ea-e0b6807d0f77/artist-73421","https://schedule.sxsw.com/2026/events/MS64987"],
+["Differentchris","Tue","9:00pm -- 9:40pm","Low Down Lounge","","Pop","Indie Pop","https://images.sxsw.com/ZEfDqLSDzY_4G9NA8mevBy6GsJk=/450x450/images.sxsw.com/195/ffba363a-0b8b-21c5-5598-1b7ed9071d2d/artist-74939","https://schedule.sxsw.com/2026/events/MS63514"],
+["DJ Rosez","Tue","9:00pm -- 10:00pm","Mala Vida","","","","https://images.sxsw.com/D1qvdYoBe0kAL_s0vWOhvOAP0-A=/450x450/images.sxsw.com/195/e64ee005-4edd-68f0-5764-8a66e0613ab2/artist-76634","https://schedule.sxsw.com/2026/events/MS65038"],
+["Greyson Turner","Tue","9:00pm -- 9:40pm","Saxon Pub","","","","https://images.sxsw.com/iA29orBAL-1p3b03oomEaWMfOiA=/450x450/images.sxsw.com/195/8465ba0d-77b8-581c-8e62-6612b3de0374/artist-74153","https://schedule.sxsw.com/2026/events/MS64437"],
+["Jo Alice","Tue","9:00pm -- 9:40pm","Inn Cahoots Austin Garden","Take Action x SXSW","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64944"],
+["Lucaa","Tue","9:00pm -- 9:30pm","Swan Dive","The Color Agent","Pop","Indie Pop","https://images.sxsw.com/WlyHt6H8KPKo9VNUy9iYdg-mNh4=/450x450/images.sxsw.com/195/a4bdda28-6163-dd25-e6a1-7ef255d78440/artist-74761","https://schedule.sxsw.com/2026/events/MS63621"],
+["OKAN","Tue","9:00pm -- 9:40pm","Seven Grand","Tropiclub","Latin","Afrobeats","https://images.sxsw.com/14E1DOxg7hn2niBHlw9Z4FZSoB8=/450x450/images.sxsw.com/195/135a1be0-0bb9-bfa0-54e1-3d94d883105c/artist-75764","https://schedule.sxsw.com/2026/events/MS64473"],
+["promqueen","Tue","9:00pm -- 9:40pm","Lefty's Brick Bar","EQ Austin","Pop","Hip-Hop / Rap","https://images.sxsw.com/vbVPm0FUAs_jYjoYZ4LscZle0Tg=/450x450/images.sxsw.com/195/1b774dae-94dd-7023-3838-e5c452dc965f/artist-76346","https://schedule.sxsw.com/2026/events/MS64204"],
+["Prowess The Testament","Tue","9:00pm -- 9:25pm","Seven Spirits","Nerdcore","","","https://images.sxsw.com/eXVKonEf1pIqK85wOHULeXl_Hxs=/450x450/images.sxsw.com/195/089ae66a-a755-64e0-8aa7-92687ef156f1/artist-76328","https://schedule.sxsw.com/2026/events/MS64166"],
+["SRI","Tue","9:00pm -- 10:00pm","Coconut Club","","DJ","Electronic","https://images.sxsw.com/exjJLWkhanCDfM9hfbF2lzCWUBY=/450x450/images.sxsw.com/195/79c1942e-c4de-7848-f288-abbc2e6b461c/artist-75728","https://schedule.sxsw.com/2026/events/MS65001"],
+["Stare Away","Tue","9:00pm -- 9:40pm","Elysium","BLCKJEANS MGMT","Punk","Post-Punk","https://images.sxsw.com/DKGXNIVN3M2OcEBFofvMPuP1Q7U=/450x450/images.sxsw.com/195/c9b42fec-39c2-1eed-5c62-640dffeeabc8/artist-75959","https://schedule.sxsw.com/2026/events/MS63645"],
+["Swapmeet","Tue","9:00pm -- 9:30pm","Mohawk Outdoor","AS Colour + Monster Children","Rock","Grunge","https://images.sxsw.com/aRqg8hK0RJuVMW4GgFEqRb34u-c=/450x450/images.sxsw.com/195/000be849-18d2-33d6-b428-ab2a5d2bcab1/artist-74347","https://schedule.sxsw.com/2026/events/MS63819"],
+["Bijaan","Tue","9:05pm -- 9:25pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","","","https://images.sxsw.com/shlS2loHfceRexzWi7lBuuqDZZU=/450x450/images.sxsw.com/195/559a9c7e-ec7b-5647-e803-a833fc413d33/artist-75479","https://schedule.sxsw.com/2026/events/MS64883"],
+["DAMOYEE","Tue","9:10pm -- 9:40pm","Riviere","DAWA x Venice: Vision: 8291 UNITY","","","https://images.sxsw.com/Tvvks7wZrf5wRzg7exlDiew2CeA=/450x450/images.sxsw.com/195/c37e3405-1ce1-6b0d-caf6-2f007d682a2f/artist-76465","https://schedule.sxsw.com/2026/events/MS64579"],
+["Glaze","Tue","9:10pm -- 9:40pm","Mohawk Indoor","AS Colour + Monster Children","Rock","Shoegaze","https://images.sxsw.com/yWjNW_UsXXV5PqkYkJY99alOmUo=/450x450/images.sxsw.com/195/970334c2-81db-8804-d998-0a28f66b3e9b/artist-75329","https://schedule.sxsw.com/2026/events/MS64923"],
+["Thelma and The Sleaze","Tue","9:10pm -- 9:40pm","Marlow","Jason Burczyk presents","Rock","Punk","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63825"],
+["TRIM","Tue","9:10pm -- 9:20pm","Taco n Maiz","Chopstars: Taco Tuesday","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS63850"],
+["Bayonne","Tue","9:15pm -- 10:00pm","Brushy St Commons","Mint Talent Group","Electronic","Pop","https://images.sxsw.com/xiW1_aL6b36sRN_hi690B1fux_Q=/450x450/images.sxsw.com/195/a1f2f07b-bba3-5b50-19bb-ddb2256458c4/artist-73899","https://schedule.sxsw.com/2026/events/MS64154"],
+["Cashier","Tue","9:15pm -- 9:50pm","Hotel Vegas Volstead","Smartpunk Records","Rock","Alternative","https://images.sxsw.com/0UHrqH8Bd_naLg-H1MOIBEJxZJA=/450x450/images.sxsw.com/195/62193194-24a9-80ae-73af-e6af2253e554/artist-75488","https://schedule.sxsw.com/2026/events/MS64690"],
+["TTBBY","Tue","9:15pm -- 9:30pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","Trap","https://images.sxsw.com/NAUppNLE0463VSp-lr7boPmDrAs=/450x450/images.sxsw.com/195/6c231b07-a0bd-8fa1-803a-6d3feebaa8e5/artist-76097","https://schedule.sxsw.com/2026/events/MS63771"],
+["Twitch4Eva","Tue","9:15pm -- 9:45pm","Flamingo Cantina","Afrobeats Worldwide","Pop","Afrobeats","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63465"],
+["Azurah Vibez","Tue","9:20pm -- 9:35pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/VWlZEmsEaXRxVR7cCrDgdey8UaI=/450x450/images.sxsw.com/195/ae5b9348-70c7-bd40-fe17-10241ea8b6dd/artist-76595","https://schedule.sxsw.com/2026/events/MS65052"],
+["Jules Aurora","Tue","9:20pm -- 9:30pm","The Creek and the Cave","The Digilogue","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65178"],
+["Morgan Munroe","Tue","9:20pm -- 9:50pm","BME @ Palm Door","SXSW London","","","https://images.sxsw.com/4ZNO05LAi87J5ZO53KsdJWLMmKc=/450x450/images.sxsw.com/195/f53f07c4-bf0b-4012-0554-c9e954876a34/artist-72646","https://schedule.sxsw.com/2026/events/MS63270"],
+["Pat G","Tue","9:20pm -- 9:40pm","Victory Grill","Nourishing The Soul 2026","Hip-Hop / Rap","Southern Hip-Hop","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS63611"],
+["ASHMAR.","Tue","9:30pm -- 10:15pm","Coconut Club / Coconut Club Rooftop","hiroko__yamamura","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64388"],
+["Elijah Johnston","Tue","9:30pm -- 10:00pm","Continental Club","Athens in Austin","Rock","Indie Rock","https://images.sxsw.com/4ekSg8MtOxteZMPi-rcK0NgJFzQ=/450x450/images.sxsw.com/195/cb71cc5d-d5e1-0e94-716f-9b0d84a9b6cc/artist-74532","https://schedule.sxsw.com/2026/events/MS63234"],
+["Mark Cooper","Tue","9:30pm -- 9:55pm","Seven Spirits","Nerdcore","Hip-Hop / Rap","Nerdcore","https://images.sxsw.com/mVO88MmKBza8ywYMxDyyNtZDoDo=/450x450/images.sxsw.com/195/c395eba2-8d17-dcdd-80d6-4567fe44931e/artist-76045","https://schedule.sxsw.com/2026/events/MS63704"],
+["Marry Cherry","Tue","9:30pm -- 10:00pm","The 13th Floor","Green Witch Recordings and Pop Sickle","Rock","Alternative","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS63365"],
+["MORGAN","Tue","9:30pm -- 10:00pm","Downright Global Stage","","R & B","Pop","https://images.sxsw.com/6hsCPB7YrYEFYivEC0vcmrhU8fQ=/450x450/images.sxsw.com/195/17da2ca8-4e41-9826-fe61-dd3ac52a5b73/artist-74989","https://schedule.sxsw.com/2026/events/MS64656"],
+["PRINCE YODA YASQUIAT","Tue","9:30pm -- 9:40pm","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64333"],
+["RAKEL","Tue","9:30pm -- 10:00pm","Central Presbyterian","","","","https://images.sxsw.com/8aiZQKNua5hjUeBe36BRAourtEM=/450x450/images.sxsw.com/195/9dfb5a4b-8c4d-6eca-8921-f144f2afc474/artist-74560","https://schedule.sxsw.com/2026/events/MS65007"],
+["Stockz","Tue","9:30pm -- 9:45pm","Venue 6","iLL Manner x The Smoke Out ATX: A Phat A$$ Rap Show","Hip-Hop / Rap","R & B","https://images.sxsw.com/5b-6YZ3_S_mGa_6bnucDRC4sUuY=/450x450/images.sxsw.com/195/fc225d79-4cca-37e4-4a4d-4b7ed478841d/artist-76194","https://schedule.sxsw.com/2026/events/MS63992"],
+["The Tullamarines","Tue","9:30pm -- 10:00pm","Zilker Brewing","Penny Loafer PR","Pop","Indie Pop","https://images.sxsw.com/-U2pF0UWpIkPl7S8GbYbpMet5QM=/450x450/images.sxsw.com/195/3ec79d19-b6ea-8537-1e07-07d77c05581e/artist-73833","https://schedule.sxsw.com/2026/events/MS63945"],
+["Ways Away","Tue","9:30pm -- 10:15pm","Hotel Vegas Patio","Smartpunk Records","","","https://images.sxsw.com/H4wjBBaBz0ByeUyTSNW6T2sfXv0=/450x450/images.sxsw.com/195/7e032c11-d75c-1561-57ce-e1e11667865a/artist-76503","https://schedule.sxsw.com/2026/events/MS64719"],
+["DNA","Tue","9:35pm -- 9:45pm","Shangri-La","Good Coughee Presented by Devin the Dude","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/CWE_G46CizfUNKWbZTmsUKc4-Mk=/450x450/images.sxsw.com/195/022b3f3a-c4da-829a-f37a-dd918da3eb81/artist-76326","https://schedule.sxsw.com/2026/events/MS64163"],
+["Ashoka","Tue","9:40pm -- 10:00pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","","","https://images.sxsw.com/ltINQkg5ytzaIqXq3rKascrDP-k=/450x450/images.sxsw.com/195/0b873f94-3a34-26ed-52d7-25af18348e15/artist-75174","https://schedule.sxsw.com/2026/events/MS64878"],
+["Bikini Beach","Tue","9:40pm -- 10:10pm","Valhalla","","Rock","Garage","https://images.sxsw.com/q5L7pXsJe5Ihfs5BSLQhxqnUqq0=/450x450/images.sxsw.com/195/a8b423b1-1f5b-84d0-968b-f48f7b22517e/artist-74987","https://schedule.sxsw.com/2026/events/MS63301"],
+["In Phases","Tue","9:40pm -- 10:10pm","Swan Dive","The Color Agent","Rock","Alternative","https://images.sxsw.com/Z7sRss1AttpZ1BjELrdfwS9XdRM=/450x450/images.sxsw.com/195/edc5ecfd-0418-6e91-b756-14377ba52976/artist-76117","https://schedule.sxsw.com/2026/events/MS63968"],
+["Novul","Tue","9:40pm -- 10:10pm","Swan Dive Patio","Tuezgayz","","","https://images.sxsw.com/c542GWzPqZ_SQoOEoUBWF0nnvPM=/450x450/images.sxsw.com/195/c430d1de-95de-5d12-69ff-b990c0174b2b/artist-76285","https://schedule.sxsw.com/2026/events/MS64824"],
+["Cedric Brazle","Tue","9:45pm -- 10:05pm","The Creek and the Cave","The Digilogue","","","https://images.sxsw.com/g3FaXW0YvKqD7pxAqck5SXxGLq0=/450x450/images.sxsw.com/195/c96ceb08-9e30-59a7-9107-a6b693991a9e/artist-73862","https://schedule.sxsw.com/2026/events/MS64601"],
+["Morgan Janay","Tue","9:45pm -- 10:00pm","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS63972"],
+["Panic Shack","Tue","9:45pm -- 10:15pm","Wanderlust Wine","Make Out Music","Rock","Punk","https://images.sxsw.com/F_XGeon4SXBRBgoRry9-UHpNkNA=/450x450/images.sxsw.com/195/907b5655-23d4-b51f-ec2f-b49ced599a67/artist-75983","https://schedule.sxsw.com/2026/events/MS63746"],
+["YUNG D3MZ","Tue","9:45pm -- 10:15pm","Flamingo Cantina","Afrobeats Worldwide","Pop","Afrobeats","https://images.sxsw.com/GApwS65PPvnbMDXFtEXWPgUCDxA=/450x450/images.sxsw.com/195/1be88951-e799-1bcb-1da0-1b2f55e69d0d/artist-72760","https://schedule.sxsw.com/2026/events/MS63381"],
+["Bale","Tue","9:50pm -- 10:05pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS63839"],
+["Camila Rivers","Tue","9:50pm -- 10:05pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/IpIXJNDwLL5VoZJBr6CotDRVhFA=/450x450/images.sxsw.com/195/1c089c3a-182c-9ce2-469f-0c574ec544a8/artist-76382","https://schedule.sxsw.com/2026/events/MS65249"],
+["Ryan Star","Tue","9:50pm -- 10:30pm","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64600"],
+["Shai Gabriel","Tue","9:50pm -- 10:35pm","Victory Grill","Nourishing The Soul 2026","Country","Hip-Hop / Rap","https://images.sxsw.com/mO2mduoZnadQe2mZPh-AhVBh2r0=/450x450/images.sxsw.com/195/8671195c-f487-7682-79b9-26a8e9aeb072/artist-75872","https://schedule.sxsw.com/2026/events/MS63616"],
+["very nice person","Tue","9:50pm -- 10:20pm","Mohawk Outdoor","AS Colour + Monster Children","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64296"],
+["CAZAYOUX","Tue","10:00pm -- 10:50pm","Lefty's Brick Bar","EQ Austin","Funk","Afrobeat","https://images.sxsw.com/-G6uourCiogVafL9iELendl-thU=/450x450/images.sxsw.com/195/ea68a3d0-fa4b-f6d4-2e75-2fa8ffff93ab/artist-73434","https://schedule.sxsw.com/2026/events/MS64124"],
+["cootie catcher","Tue","10:00pm -- 10:40pm","Hotel Vegas","Smartpunk Records","Rock","Indie Rock","https://images.sxsw.com/4LhcsfyTw-hO3cC5vQ5lVhfYXFk=/450x450/images.sxsw.com/195/aeef92d2-1bf7-df51-9ff3-86ffc64b1d57/artist-74357","https://schedule.sxsw.com/2026/events/MS63328"],
+["DJ Anupi","Tue","10:00pm -- 11:00pm","Coconut Club","","DJ","Fusion","https://images.sxsw.com/sa8cB9ctewa6rEmaEhA9yD-j31M=/450x450/images.sxsw.com/195/619d6d10-eaba-c92e-6650-5edbe0edd1ab/artist-75900","https://schedule.sxsw.com/2026/events/MS64391"],
+["DJ Eriq Stylez","Tue","10:00pm -- 11:00pm","Mala Vida","","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS65152"],
+["DJ Napalm","Tue","10:00pm -- 1:00am","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","","https://images.sxsw.com/tu2z4gxNs8CaVwEFXWGdpZLLuRk=/450x450/images.sxsw.com/195/cc73d12a-8bef-2580-1238-b0976c5c722f/artist-76395","https://schedule.sxsw.com/2026/events/MS64461"],
+["The Droptines","Tue","10:00pm -- 10:40pm","Inn Cahoots Austin Garden","Take Action X SXSW","Alt Country","Rock","https://images.sxsw.com/JgXkYYxvVRVa6OTRk21j8yFkQRU=/450x450/images.sxsw.com/195/830c7314-5263-8299-977f-d449be13e502/artist-76250","https://schedule.sxsw.com/2026/events/MS64566"],
+["Foliage","Tue","10:00pm -- 10:40pm","Low Down Lounge","","Rock","Indie Rock","https://images.sxsw.com/e_thfsDoGPAHS8rz-qPU2SUXCRs=/450x450/images.sxsw.com/195/76b88250-7a82-d60d-965c-4dfbc5140fd8/artist-72761","https://schedule.sxsw.com/2026/events/MS63477"],
+["Future Nobodies","Tue","10:00pm -- 10:40pm","Elysium","BLCKJEANS MGMT","Rock","Post-Punk","https://images.sxsw.com/tBPpBWD-ZjgqTLEjzhc9p1jkbYM=/450x450/images.sxsw.com/195/3c6015a7-fdc0-72e5-d06c-739df83c71fd/artist-74689","https://schedule.sxsw.com/2026/events/MS63641"],
+["Karina Galicia","Tue","10:00pm -- 10:40pm","Las Perlas","MEXCENA!","Pop","Indie Pop","https://images.sxsw.com/iZZWW4OgDbhj3bjGz8HQXk4Hri4=/450x450/images.sxsw.com/195/44fb4320-cb2e-ebab-97f6-0a64fc087e9a/artist-72882","https://schedule.sxsw.com/2026/events/MS63213"],
+["Keetheweeb","Tue","10:00pm -- 10:25pm","Seven Spirits","Nerdcore","Pop","R & B","https://images.sxsw.com/IRydXzWDsdwKv7rMXRACEQHo3jc=/450x450/images.sxsw.com/195/40aeda38-3246-6315-512f-7785b055fbed/artist-76219","https://schedule.sxsw.com/2026/events/MS64005"],
+["Los Gatos 512","Tue","10:00pm -- 10:40pm","Lamberts","","Latin","Cumbia","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64071"],
+["Mae Muller","Tue","10:00pm -- 10:30pm","BME @ Palm Door Patio","SXSW London","Pop","Indie Pop","https://images.sxsw.com/QF_HDxIJ3VXvH2XAZfK0ONDvbj4=/450x450/images.sxsw.com/195/9a3b559b-f948-6ac0-1af1-f07fc31d6587/artist-75976","https://schedule.sxsw.com/2026/events/MS64221"],
+["Magic Rockers of Texas","Tue","10:00pm -- 10:40pm","Chess Club","","Rock","Power Pop","https://images.sxsw.com/aVTId-worSgVtAnh42hBIzRaYC4=/450x450/images.sxsw.com/195/59e9e752-f6b4-0a1b-26c6-75ec2643a9e6/artist-75851","https://schedule.sxsw.com/2026/events/MS63404"],
+["Melly","Tue","10:00pm -- 10:40pm","Seven Grand","Tropiclub","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64539"],
+["Nicotine","Tue","10:00pm -- 10:30pm","Riviere","DAWA x Venice: Vision: 8291 UNITY","","","https://images.sxsw.com/ch4R4RZqHlUy6retUsj_WRBu9nQ=/450x450/images.sxsw.com/195/0ddc4b8b-d330-5cd2-5f94-15d4133bbd04/artist-76585","https://schedule.sxsw.com/2026/events/MS64940"],
+["Pink Breath of Heaven","Tue","10:00pm -- 10:30pm","Mohawk Indoor","AS Colour + Monster Children","Rock","Shoegaze","https://images.sxsw.com/E5WAdwS7vDSI9RJDADp7ttbdG30=/450x450/images.sxsw.com/195/af013391-aa84-c835-4dd3-61f7fa7a9b83/artist-74258","https://schedule.sxsw.com/2026/events/MS65124"],
+["Social Cig","Tue","10:00pm -- 10:30pm","Marlow","Jason Burczyk presents","Rock","Surf","https://images.sxsw.com/5m0yRShNoByrHf8kxCGWVtVUU-s=/450x450/images.sxsw.com/195/92b02a34-356a-0e5b-a825-9c4275bbf98c/artist-72871","https://schedule.sxsw.com/2026/events/MS63400"],
+["softcheese","Tue","10:00pm -- 1:00am","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","","","https://images.sxsw.com/_VQtUBDboxBM5hFZUBaZQLYN_3Y=/450x450/images.sxsw.com/195/286b5b80-ae86-8f76-94d5-52a1e86704c7/artist-76582","https://schedule.sxsw.com/2026/events/MS64998"],
+["Texas String Assembly","Tue","10:00pm -- 10:40pm","Saxon Pub","","Americana","Bluegrass","https://images.sxsw.com/Dcd9OP8b4XnQ34qLiVcuQptbeKY=/450x450/images.sxsw.com/195/92053793-46a4-6a7b-2b06-5256f2c4289e/artist-75917","https://schedule.sxsw.com/2026/events/MS63743"],
+["DJ KICKIT","Tue","10:10pm -- 10:20pm","Swan Dive","The Color Agent","","","https://images.sxsw.com/kChjdcRshW8HBDw6H3KiHRX_sBQ=/450x450/images.sxsw.com/195/54f01188-a028-c52f-7aa8-3bd0669d62e8/artist-76541","https://schedule.sxsw.com/2026/events/MS64856"],
+["Villain Park","Tue","10:10pm -- 10:25pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","","https://images.sxsw.com/WOqAppakDAMH3m1zzKm3LhdyzQE=/450x450/images.sxsw.com/195/219bc2ae-3993-ee73-b75c-2c0f2f339b20/artist-76354","https://schedule.sxsw.com/2026/events/MS64321"],
+["CHALK","Tue","10:15pm -- 11:00pm","Brushy St Commons","Mint Talent Group","Rock","Electronic","https://images.sxsw.com/tWYRlZB_sAKiH3b6eP1yBjM9jZw=/450x450/images.sxsw.com/195/378a74de-bd18-ddb6-1596-1a8c98760242/artist-73135","https://schedule.sxsw.com/2026/events/MS63806"],
+["Hot Garbage","Tue","10:15pm -- 10:45pm","The 13th Floor","Green Witch Recordings and Pop Sickle","Rock","Psychedelic","https://images.sxsw.com/35YYJgtk9W5ahsXuLLJoUTz26qs=/450x450/images.sxsw.com/195/548bc903-4654-7a0e-56f9-aa7ae4a6cacd/artist-74247","https://schedule.sxsw.com/2026/events/MS63649"],
+["J'ray","Tue","10:15pm -- 11:00pm","Flamingo Cantina","Afrobeats Worldwide","Singer-Songwriter","Afrobeats","https://images.sxsw.com/KMFVYlPAfWApsibRhlXBXRRB-eA=/450x450/images.sxsw.com/195/917f4282-3cc1-1869-936e-821cd70174ef/artist-72547","https://schedule.sxsw.com/2026/events/MS63506"],
+["Just Jim","Tue","10:15pm -- 11:00pm","Coconut Club / Coconut Club Rooftop","hiroko__yamamura","DJ","Hip-Hop / Rap","https://images.sxsw.com/keFL27SHQG2PIu09T3YnkE7QuFU=/450x450/images.sxsw.com/195/c9aa7656-44c7-5ced-fe9f-44a16a880135/artist-72484","https://schedule.sxsw.com/2026/events/MS63172"],
+["MX LONELY","Tue","10:15pm -- 10:50pm","Hotel Vegas Volstead","Smartpunk Records","Rock","Shoegaze","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64688"],
+["Wim Tapley & The Cannons","Tue","10:15pm -- 10:55pm","Continental Club","Athens in Austin","Pop","Indie Pop","https://images.sxsw.com/Ff5xETUSWeANXMhzBQ9lRUsa8JI=/450x450/images.sxsw.com/195/172aca8e-ac56-41e9-65ca-441024730dc8/artist-74421","https://schedule.sxsw.com/2026/events/MS63264"],
+["Woes","Tue","10:15pm -- 10:35pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","","","https://images.sxsw.com/dgywG_1zMVgBngfscDnW1orVxSA=/450x450/images.sxsw.com/195/13731e27-4422-5022-a8fd-7d7854997f9a/artist-76086","https://schedule.sxsw.com/2026/events/MS64525"],
+["Avanti Patel","Tue","10:20pm -- 10:50pm","Downright Global Stage","","Classical","Folk","https://images.sxsw.com/CP8GNruO1yzFyi0F87-RxI71qNk=/450x450/images.sxsw.com/195/aede5075-a74d-c790-26b9-a80dffbe8924/artist-73702","https://schedule.sxsw.com/2026/events/MS63923"],
+["Grocery Bag","Tue","10:20pm -- 11:00pm","Zilker Brewing","Penny Loafer PR","Rock","Garage","https://images.sxsw.com/pfWbti9DZehIuxhbTCV-JpY6uOw=/450x450/images.sxsw.com/195/26d88111-dcd2-54ba-be32-5ad1d211be33/artist-74243","https://schedule.sxsw.com/2026/events/MS63876"],
+["Poiison","Tue","10:20pm -- 11:00pm","Swan Dive","The Color Agent","","","https://images.sxsw.com/g0WpkkCzDWO_hszS0QOpknVZxUU=/450x450/images.sxsw.com/195/3ea275c6-150f-3fb0-2032-04be87ffc92f/artist-76440","https://schedule.sxsw.com/2026/events/MS65259"],
+["Rosa Anschuetz","Tue","10:20pm -- 10:50pm","Central Presbyterian","","Pop","Post-Punk","https://images.sxsw.com/V8mgyomqB3IYdeEBsCUK8I4HiDk=/450x450/images.sxsw.com/195/de9a155e-c519-28ad-29e0-554480c6c293/artist-74474","https://schedule.sxsw.com/2026/events/MS63307"],
+["TREEGMUSIC","Tue","10:20pm -- 10:35pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/kByYj7Xq_IIDNI9ycQBd_biBbd4=/450x450/images.sxsw.com/195/1c6b795d-a2c5-9885-92c3-302de12c204a/artist-76657","https://schedule.sxsw.com/2026/events/MS65218"],
+["Anton The Artist","Tue","10:25pm -- 10:40pm","Taco n Maiz","Taco Tuesday","Hip-Hop / Rap","Pop","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63849"],
+["Jugg Mugg Da Jugganott","Tue","10:25pm -- 10:35pm","Shangri-La","Good Coughee Presented by Devin the Dude","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/ui5StBQZ3s7XE0rYn9uwfv83C1E=/450x450/images.sxsw.com/195/2d0ae2bf-60fa-be1a-f09c-fdf95449b8f6/artist-76306","https://schedule.sxsw.com/2026/events/MS64145"],
+["J'cuuzi","Tue","10:30pm -- 11:00pm","Swan Dive Patio","Tuezgayz","","","https://images.sxsw.com/wmYn11YUhzMkKEVH5muZG0a5x9I=/450x450/images.sxsw.com/195/5300afaa-ccc6-2e71-52cb-11b13b1277e9/artist-75997","https://schedule.sxsw.com/2026/events/MS63722"],
+["Jakeneutron","Tue","10:30pm -- 10:55pm","Seven Spirits","Nerdcore","","","https://images.sxsw.com/RZJ3P7IlPHpPIW9yebC4M-DfzuY=/450x450/images.sxsw.com/195/a7ef4107-fdfe-a32e-f705-99331fff8064/artist-76347","https://schedule.sxsw.com/2026/events/MS64212"],
+["Lynn","Tue","10:30pm -- 10:45pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Hip-Hop / Rap","R & B","https://images.sxsw.com/rj5J6mbMa39bglu0LDcmR1Kp4EY=/450x450/images.sxsw.com/195/e1f59211-68b8-c200-1c62-b9ca631acc38/artist-74337","https://schedule.sxsw.com/2026/events/MS63844"],
+["P.H.0","Tue","10:30pm -- 11:00pm","Valhalla","","Metal","Electronic","https://images.sxsw.com/a7OHIAnX9K2NFgfPbLwcmr4zSs8=/450x450/images.sxsw.com/195/8cd2a7e0-b477-0247-fa90-6940427cfd40/artist-76282","https://schedule.sxsw.com/2026/events/MS64491"],
+["Unwritten Law","Tue","10:30pm -- 11:30pm","Hotel Vegas Patio","Smartpunk Records","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64736"],
+["Trophy Wife","Tue","10:35pm -- 11:05pm","Wanderlust Wine","Make Out Music","Rock","Alternative","https://images.sxsw.com/KCx3fsrzWknWcHGwWK9tzf01s34=/450x450/images.sxsw.com/195/9efea666-c3b5-6c48-603b-77053dab1423/artist-75124","https://schedule.sxsw.com/2026/events/MS64068"],
+["CQ Wrestling","Tue","10:40pm -- 11:10pm","BME @ Palm Door","SXSW London","Rock","Grunge","https://images.sxsw.com/yEJcirOp19JpY-0R6faWJuJQrVc=/450x450/images.sxsw.com/195/daa5e6d1-d330-095c-b0ab-7728ddbcf657/artist-75849","https://schedule.sxsw.com/2026/events/MS63405"],
+["La Texana","Tue","10:40pm -- 11:10pm","Mohawk Outdoor","AS Colour + Monster Children","Rock","Alternative","https://images.sxsw.com/htGXIVrks-_QBsY5QEtC1UQhjr4=/450x450/images.sxsw.com/195/8bdceb63-a068-d193-2280-0dac04bb525d/artist-73779","https://schedule.sxsw.com/2026/events/MS64460"],
+["Quiet Money Dot","Tue","10:40pm -- 10:50pm","Shangri-La","Good Coughee Presented by Devin the Dude","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/8TKpJH6JU7Jh8oq5Duy9BMHuDVk=/450x450/images.sxsw.com/195/3dee6a36-7034-21ef-626a-b6840161f0f7/artist-75011","https://schedule.sxsw.com/2026/events/MS63845"],
+["Taija Kerr","Tue","10:40pm -- 10:55pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/jwr5YCYSPCfuBozHZ7c-ouef1-I=/450x450/images.sxsw.com/195/38f9aeec-e900-5c20-3a25-02ba4f57007c/artist-76632","https://schedule.sxsw.com/2026/events/MS65043"],
+["Dice Soho & Trill Sammy","Tue","10:45pm -- 11:00pm","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/uyMON9THd8Ko6Md9bUPhFUx6goc=/450x450/images.sxsw.com/195/222939a1-e54c-26dd-8717-2c23a1468c5d/artist-76321","https://schedule.sxsw.com/2026/events/MS64965"],
+["Odanga","Tue","10:45pm -- 11:05pm","Victory Grill","Nourishing The Soul 2026","Singer-Songwriter","Afrobeats","https://images.sxsw.com/gcxTHTuKEq2gvtWjAjbCrmib4RE=/450x450/images.sxsw.com/195/2a988ce7-09a0-8d9b-5805-fd4367de7a88/artist-76014","https://schedule.sxsw.com/2026/events/MS63668"],
+["Alumni Cloud","Tue","10:50pm -- 11:10pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","","","https://images.sxsw.com/a4kTTbzDLTear5VSTINbZh0nY5g=/450x450/images.sxsw.com/195/a4542f94-92ab-fa8e-3383-3a099d99f871/artist-76065","https://schedule.sxsw.com/2026/events/MS64449"],
+["Andrew Cashen","Tue","10:50pm -- 11:30pm","Marlow","Jason Burczyk presents","Soul","Classic Rock","https://images.sxsw.com/3MPks_0eC88vFjnhPn6cyzgkKHA=/450x450/images.sxsw.com/195/24b718f3-0197-2973-4d87-698c220f3c1a/artist-75884","https://schedule.sxsw.com/2026/events/MS63480"],
+["Shanay Morant","Tue","10:50pm -- 11:15pm","Riviere","DAWA x Venice: Vision: 8291 UNITY","","","https://images.sxsw.com/ViScxIjx2Ydx-eftWk7QaJClU_A=/450x450/images.sxsw.com/195/6c0a9f9c-af1f-192d-c715-cc54ea9ba0dd/artist-76713","https://schedule.sxsw.com/2026/events/MS65195"],
+["Summer Brennan","Tue","10:50pm -- 11:30pm","Inn Cahoots / Inn Cahoots Studio","Take Action X SXSW","","","https://images.sxsw.com/dfMV6Rehyz8sFmgY4Ld4DHViO3I=/450x450/images.sxsw.com/195/a8d97b0a-3ad2-14d8-d43d-d2808488a8b7/artist-76694","https://schedule.sxsw.com/2026/events/MS65198"],
+["Lil' Flip","Tue","10:55pm -- 11:10pm","Shangri-La","Good Coughee Presented by Devin the Dude","R & B","Soul","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64762"],
+["Bubba Lucky","Tue","11:00pm -- 11:40pm","Chess Club","","Rock","Country","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS63187"],
+["DJ Rosez","Tue","11:00pm -- 12:00am","Mala Vida","","","","https://images.sxsw.com/D1qvdYoBe0kAL_s0vWOhvOAP0-A=/450x450/images.sxsw.com/195/e64ee005-4edd-68f0-5764-8a66e0613ab2/artist-76634","https://schedule.sxsw.com/2026/events/MS65270"],
+["FrivolousShara","Tue","11:00pm -- 11:25pm","Seven Spirits","Nerdcore","Hip-Hop / Rap","Nerdcore","https://images.sxsw.com/woQXSK242kSyjmvmMDUUiiAFTS8=/450x450/images.sxsw.com/195/77781782-0a18-acd0-cba2-2e23731bf883/artist-76221","https://schedule.sxsw.com/2026/events/MS64007"],
+["The Haunted Youth","Tue","11:00pm -- 11:40pm","Hotel Vegas","Smartpunk Records","Rock","Dream Pop","https://images.sxsw.com/EB-W4-sOn4FvfsOv1pkVnp384IU=/450x450/images.sxsw.com/195/7c35a4dc-1196-60dd-6acf-8689c3cd27c7/artist-76131","https://schedule.sxsw.com/2026/events/MS64900"],
+["Jai Bliss","Tue","11:00pm -- 11:15pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65017"],
+["John Popper of Blues Traveler","Tue","11:00pm -- 11:40pm","Inn Cahoots Austin Garden","Take Action x SXSW","","","https://images.sxsw.com/pfy-kQhUC3WqbazEDViwNY0Na2s=/450x450/images.sxsw.com/195/28fe0c2c-26ac-4c70-694b-1a979b1d0825/artist-76610","https://schedule.sxsw.com/2026/events/MS64993"],
+["Kozlow","Tue","11:00pm -- 11:45pm","Coconut Club / Coconut Club Rooftop","hiroko__yamamura","","","https://images.sxsw.com/y1I_50Oj-Y1F828O_OIUJJoFVu0=/450x450/images.sxsw.com/195/4326c9b3-15bb-f0a2-c79d-c2a3ec54d277/artist-76594","https://schedule.sxsw.com/2026/events/MS64966"],
+["Los Gran Reyes","Tue","11:00pm -- 11:40pm","Lamberts","","Latin","Cumbia","https://images.sxsw.com/Oh_zvxPFYOyqnXKdvaqmcI31ahs=/450x450/images.sxsw.com/195/a06a8e8d-17e2-ea06-5e3f-f2db92f47422/artist-72907","https://schedule.sxsw.com/2026/events/MS63461"],
+["Melanie Dyer","Tue","11:00pm -- 11:40pm","Saxon Pub","","Country","Singer-Songwriter","https://images.sxsw.com/eVkDc2hoB4T5HUL4ZjUgmV_3ytc=/450x450/images.sxsw.com/195/f30f9fc5-e034-7615-6bf3-afd0ee838812/artist-73150","https://schedule.sxsw.com/2026/events/MS63332"],
+["Mobeethicc","Tue","11:00pm -- 12:00am","Coconut Club","","DJ","Hip-Hop / Rap","https://images.sxsw.com/_xw-q0kf4qbwzECgdJX9bNVmhyA=/450x450/images.sxsw.com/195/db242abe-4e4b-9326-918b-26132ff963ac/artist-76022","https://schedule.sxsw.com/2026/events/MS64390"],
+["Neptune XXI","Tue","11:00pm -- 11:20pm","The Creek and the Cave","The Digilogue","","","https://images.sxsw.com/Wg3XZD5mQTJo1ttZRr0TJOX8MFE=/450x450/images.sxsw.com/195/d604c9e9-489a-d6c5-b73e-02c44f55ec4b/artist-76286","https://schedule.sxsw.com/2026/events/MS64448"],
+["Night Ritualz","Tue","11:00pm -- 11:45pm","The 13th Floor","Green Witch Recordings and Pop Sickle","Latin","Post-Punk","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS63792"],
+["Rafa Parra","Tue","11:00pm -- 11:40pm","Seven Grand","Tropiclub","Latin","Pop","https://images.sxsw.com/txrwW3KovMH3OjTcYji5TXBImN4=/450x450/images.sxsw.com/195/677c994d-9a78-4cac-fa05-5ec8a211fe0e/artist-76236","https://schedule.sxsw.com/2026/events/MS64078"],
+["Social Order","Tue","11:00pm -- 11:40pm","Elysium","BLCKJEANS MGMT","Electronic","Post-Punk","https://images.sxsw.com/ZBRGk65ooyZnWkKfuAetPgi04dg=/450x450/images.sxsw.com/195/aa3e61a2-b19d-6f16-5c6d-be97cd6698bd/artist-74983","https://schedule.sxsw.com/2026/events/MS63643"],
+["Sofish","Tue","11:00pm -- 11:40pm","Las Perlas","MEXCENA!","Pop","Alternative","https://images.sxsw.com/DNaO8RF8iwatjitxW2AFiHX3D-o=/450x450/images.sxsw.com/195/f8abf914-7e3d-e0ef-6820-4fe708b41874/artist-73981","https://schedule.sxsw.com/2026/events/MS63211"],
+["Tyla Yaweh","Tue","11:00pm -- 11:20pm","Venue 6","iLL Manner x The Smoke Out ATX: FAT A$$ Rap Show","Pop","Pop","https://images.sxsw.com/KCld5dkXL0hkeF0ZlqQJyhhu2gE=/450x450/images.sxsw.com/195/428f94fb-08a6-a2e0-e5ca-1445c0ce24aa/artist-76137","https://schedule.sxsw.com/2026/events/MS63831"],
+["whisper","Tue","11:00pm -- 11:40pm","Low Down Lounge","","Rock","Shoegaze","https://images.sxsw.com/LySHTL9zTBGdnl7OpDCCpJk6Ksg=/450x450/images.sxsw.com/195/2670b98b-5b10-870b-083c-90309d5ca982/artist-75603","https://schedule.sxsw.com/2026/events/MS64141"],
+["DJ Candlestick","Tue","11:05pm -- 11:25pm","Taco n Maiz","Chopstars: Taco Tuesday","Hip-Hop / Rap","R & B","https://images.sxsw.com/RIcGQam8Ny6gvWnePauXcZ7mlew=/450x450/images.sxsw.com/195/f158697b-7d61-7c98-096b-074529c47ab7/artist-75942","https://schedule.sxsw.com/2026/events/MS63548"],
+["LÉA THE LEOX","Tue","11:10pm -- 11:50pm","Swan Dive","The Color Agent","R & B","Soul","https://images.sxsw.com/nxGHu_C8tL951UZmM9D17IRYaQ4=/450x450/images.sxsw.com/195/a03c8096-cdd4-6385-0d48-6b1336925a78/artist-76080","https://schedule.sxsw.com/2026/events/MS63767"],
+["The Pink Stones","Tue","11:10pm -- 11:50pm","Continental Club","Athens in Austin","Country","Americana","https://images.sxsw.com/Zr52wC3CjeHo8pKOdjlLYE-f7wk=/450x450/images.sxsw.com/195/c39aed1c-6e54-2f30-754a-e0d892f2985c/artist-75904","https://schedule.sxsw.com/2026/events/MS63540"],
+["Unsafe Space Garden","Tue","11:10pm -- 11:40pm","Downright Global Stage","","Rock","Progressive","https://images.sxsw.com/qa9Oe8RclTQdMcxex_CgFmVSzYM=/450x450/images.sxsw.com/195/a680cb0f-138f-f43a-73ae-afe3769fb12c/artist-73768","https://schedule.sxsw.com/2026/events/MS64252"],
+["MILHD","Tue","11:15pm -- 12:00am","Victory Grill","Nourishing The Soul 2026","Pop","Indie Rock","https://images.sxsw.com/5z3o5hSiHCwoWYMIaL17TdRYi8Y=/450x450/images.sxsw.com/195/bee8f919-8143-97e8-5319-f28eb401d0a5/artist-75901","https://schedule.sxsw.com/2026/events/MS63614"],
+["Pretty Jane","Tue","11:15pm -- 12:00am","Brushy St Commons","Mint Talent Group","Rock","Indie Rock","https://images.sxsw.com/bPgn9au1lcnQACiLzMmOxL6aXMg=/450x450/images.sxsw.com/195/864866b6-7527-00f4-0f13-5309970dbfcd/artist-73306","https://schedule.sxsw.com/2026/events/MS63168"],
+["Worlds Worst","Tue","11:15pm -- 11:50pm","Hotel Vegas Volstead","Smartpunk Records","Rock","Alternative","https://images.sxsw.com/6aYTv0-Z7VsBjcCV-GTcDKtYdTI=/450x450/images.sxsw.com/195/9a0d46e8-04af-ab8b-3047-3c3b1f74438b/artist-75934","https://schedule.sxsw.com/2026/events/MS63574"],
+["Devin the Dude","Tue","11:20pm -- 12:00am","Shangri-La","Good Coughee Presented by Devin the Dude","Hip-Hop / Rap","Stoner","https://images.sxsw.com/_tms43AhU4Iblhosp1lezrhzUBo=/450x450/images.sxsw.com/195/463da461-c4e2-29b5-85cd-25c0b845c684/artist-75142","https://schedule.sxsw.com/2026/events/MS63297"],
+["Jamaica Moana","Tue","11:20pm -- 11:50pm","Swan Dive Patio","Tuezgayz","Hip-Hop / Rap","R & B","https://images.sxsw.com/8UnbUf51aNp-7QtfL6xzjD_IkXo=/450x450/images.sxsw.com/195/0375bb26-5cf3-08c8-fa20-773207cbc4de/artist-75921","https://schedule.sxsw.com/2026/events/MS63538"],
+["Jaxs","Tue","11:25pm -- 11:45pm","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","Hip-Hop / Rap","Freestyle","https://images.sxsw.com/lwsWW9rk8GG4LhJycyV9_2NfziI=/450x450/images.sxsw.com/195/65357a74-aee3-0ce0-4abb-e9d6fab5e7d2/artist-72945","https://schedule.sxsw.com/2026/events/MS64451"],
+["Reaper","Tue","11:25pm -- 11:55pm","Wanderlust Wine","Make Out Music","Pop","Alternative","https://images.sxsw.com/nAIOQlnqAlpc8DkXTmx0OOcO1Kw=/450x450/images.sxsw.com/195/99df5599-9c56-28e0-40b2-0f95488d6b0c/artist-76317","https://schedule.sxsw.com/2026/events/MS64192"],
+["Cure for Paranoia","Tue","11:30pm -- 12:15am","Riviere","DAWA x Venice: Vision: 8291 UNITY","Hip-Hop / Rap","Alternative","https://images.sxsw.com/QhyuJpR0Qn1x5hj1WgoPqdjHOm0=/450x450/images.sxsw.com/195/7d658466-936d-e86b-e327-8f087cfbcf0c/artist-74117","https://schedule.sxsw.com/2026/events/MS64548"],
+["East Nasa","Tue","11:30pm -- 11:40pm","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/iYiQlxboUFRfw7_MymPpeyFAgfs=/450x450/images.sxsw.com/195/3202e6d9-6e83-1886-8b5d-4ab02e3516e7/artist-76584","https://schedule.sxsw.com/2026/events/MS64937"],
+["Rocket","Tue","11:30pm -- 12:00am","Mohawk Outdoor","AS Colour + Monster Children","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64978"],
+["Shao Dow","Tue","11:30pm -- 11:55pm","Seven Spirits","Nerdcore","Hip-Hop / Rap","Nerdcore","https://images.sxsw.com/LtpftzIbp1f7krvJmDNEItuNNQI=/450x450/images.sxsw.com/195/1c45ed75-ca95-bb50-4b8f-588a7dd5d2b0/artist-74500","https://schedule.sxsw.com/2026/events/MS63306"],
+["Cha'Keeta B","Tue","11:40pm -- 11:55pm","The Pershing","Kinky,Curly,Coily Showcase","","","https://images.sxsw.com/2GZ5Efs21Oqlofis0lH4mxtbR54=/450x450/images.sxsw.com/195/6bc5be80-66a8-9922-8eb7-1f27abbdeaf7/artist-76497","https://schedule.sxsw.com/2026/events/MS65216"],
+["Victor Jones","Tue","11:40pm -- 12:10am","Mohawk Indoor","AS Colour + Monster Children","Rock","Dance","https://images.sxsw.com/fO-8mPmeFw5b1s9VmPfzxezkYhc=/450x450/images.sxsw.com/195/8bb79605-d867-7f3d-24cc-b4b8bf195885/artist-74060","https://schedule.sxsw.com/2026/events/MS65111"],
+["Baby Sam","Tue","11:45pm -- 12:00am","Taco n Maiz","Taco Tuesday","Hip-Hop / Rap","Soul","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS63811"],
+["Hiroko Yamamura","Tue","11:45pm -- 2:00am","Coconut Club / Coconut Club Rooftop","hiroko__yamamura","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64785"],
+["Riverboat Gamblers","Tue","11:45pm -- 12:45am","Hotel Vegas Patio","Smartpunk Records","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS64806"],
+["Horsepower","Tue","11:50pm -- 12:20am","Mohawk Indoor","AS Colour + Monster Children","Rock","Indie Rock","https://images.sxsw.com/RoER5PTdFtdApVf7V8UvnAIqJKU=/450x450/images.sxsw.com/195/087fcd33-a054-73f8-cdf2-146f07794541/artist-75848","https://schedule.sxsw.com/2026/events/MS65113"],
+["Marijuana Deathsquads","Tue","11:50pm -- 1:00am","Marlow","Jason Burczyk presents","Electronic","Psychedelic","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS63410"],
+["Silvertone","Tue","11:50pm -- 12:30am","Inn Cahoots / Inn Cahoots Studio","Take Action x SXSW","Rock","Alternative","https://images.sxsw.com/bIc-QoGQD-J22C9CYTDCwPMIZHo=/450x450/images.sxsw.com/195/af870ed0-9681-07a6-2a1a-8076b1566699/artist-75847","https://schedule.sxsw.com/2026/events/MS63407"],
+["Alto Moon","Wed","12:00am -- 12:50am","Swan Dive","The Color Agent","R & B","Pop","https://images.sxsw.com/Fodyf5SZZB4O5Q3oufMNnx6FWvE=/450x450/images.sxsw.com/195/79b39588-d195-0793-ad48-1c817d0d589f/artist-74981","https://schedule.sxsw.com/2026/events/MS63766"],
+["COYO","Wed","12:00am -- 1:00am","Coconut Club","","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64933"],
+["DARKOVIBES","Wed","12:00am -- 12:30am","Flamingo Cantina","Afrobeats Worldwide","Hip-Hop / Rap","Afrobeats","https://images.sxsw.com/8sCybqjYMGeTMMqI_8CBQ3ZvWMo=/450x450/images.sxsw.com/195/caa8e16f-172f-a19c-8768-fe6b0ea14468/artist-75400","https://schedule.sxsw.com/2026/events/MS63341"],
+["DJ Eriq Stylez","Wed","12:00am -- 1:00am","Mala Vida","","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS65269"],
+["Ella Ion","Wed","12:00am -- 12:40am","Saxon Pub","","Folk","Indie Rock","https://images.sxsw.com/XgGVJcmKUKG4fqZ0XL9xdimV-6U=/450x450/images.sxsw.com/195/70a1f85c-9b0c-9093-f636-8824287d6981/artist-74119","https://schedule.sxsw.com/2026/events/MS65235"],
+["Marni Ct.","Wed","12:00am -- 12:40am","Chess Club","","Rock","Alternative","https://images.sxsw.com/r65vuPsiFVhNcLOOxz2xj4ydeMQ=/450x450/images.sxsw.com/195/5dc6f7e2-aa82-2af5-c0f3-6b9f5a6c4031/artist-73409","https://schedule.sxsw.com/2026/events/MS64647"],
+["MEEK","Wed","12:00am -- 12:40am","BME @ Palm Door","SXSW London","Pop","None","https://images.sxsw.com/a4TwXrHNv1lVyiYLFi6fArupQAQ=/0x412:4452x4864/450x450/images.sxsw.com/179/6f2e5db3-685b-0c7a-3711-1851b2329a96/artist-75761","https://schedule.sxsw.com/2026/events/MS64270"],
+["The Microphone Misfitz","Wed","12:00am -- 12:25am","Seven Spirits","Nerdcore","Hip-Hop / Rap","Nerdcore","https://images.sxsw.com/FdsO0QKKdAH4ZPvXqRn1GojRu7k=/450x450/images.sxsw.com/195/b4145665-8c29-06e4-9656-58072caf3127/artist-74518","https://schedule.sxsw.com/2026/events/MS63305"],
+["Nonô","Wed","12:00am -- 12:40am","Seven Grand","Tropiclub","","","https://images.sxsw.com/rQv3VHVgdAWU_zi2iiWbbqKGBW0=/450x450/images.sxsw.com/195/f2cbc451-dd47-8dac-c0cc-092d04d47e93/artist-75445","https://schedule.sxsw.com/2026/events/MS64983"],
+["Patriarchy","Wed","12:00am -- 12:45am","The 13th Floor","Green Witch Recordings and Pop Sickle","Avant / Experimental","New Wave","https://images.sxsw.com/Ttf-NLXSbr4KLJsIZK-q02HngNE=/450x450/images.sxsw.com/195/b0ba2581-93c6-111e-aa17-3e28c7279c60/artist-76004","https://schedule.sxsw.com/2026/events/MS63765"],
+["Planeta No","Wed","12:00am -- 12:40am","Las Perlas","MEXCENA!","Pop","Indie Pop","https://images.sxsw.com/TYl_7vGDQiNqXV0s-4NBnGR77gA=/450x450/images.sxsw.com/195/63dbed85-7974-6ed6-2a19-b8f32d69e11f/artist-73315","https://schedule.sxsw.com/2026/events/MS63219"],
+["Rosegarden Funeral Party","Wed","12:00am -- 12:40am","Elysium","BLCKJEANS MGMT","Rock","Post-Punk","https://images.sxsw.com/m_W4DA56sT82Ecd6s1LhujRVMIU=/0x0:3882x3882/450x450/images.sxsw.com/195/8a60b12f-d441-3f96-a1fc-111135a1c988/artist-75168","https://schedule.sxsw.com/2026/events/MS63644"],
+["ZAMAERA","Wed","12:00am -- 12:20am","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","Hip-Hop / Rap","Electronic","https://images.sxsw.com/CDXVI9nYWk3VhC0MO5wfY3v5-0A=/450x450/images.sxsw.com/195/78fa2d38-d3fd-b3c2-2739-fa09e323fa3d/artist-75514","https://schedule.sxsw.com/2026/events/MS64456"],
+["BJ So Cole","Wed","12:05am -- 12:20am","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/NAfqnb0cGKTdWYbPDXQyk0hVGZ0=/450x450/images.sxsw.com/195/88037f1c-684d-8ace-5fe3-14457657d2dc/artist-76462","https://schedule.sxsw.com/2026/events/MS64611"],
+["Johnny Falloon","Wed","12:05am -- 12:45am","Continental Club","Athens in Austin","Punk","Avant / Experimental","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS63448"],
+["2charm","Wed","12:10am -- 12:40am","Swan Dive Patio","Tuezgayz","Pop","House / Techno","https://images.sxsw.com/wOxMyyjx3AGPkEEiuV3nQ2aE2hM=/450x450/images.sxsw.com/195/b90a61c3-99ac-974d-c952-4864210eb839/artist-75167","https://schedule.sxsw.com/2026/events/MS63295"],
+["Redzed","Wed","12:10am -- 12:40am","Valhalla","","Hip-Hop / Rap","Metal","https://images.sxsw.com/4ZNrsZFu4hBbKEsR53r-GYdPDxw=/450x450/images.sxsw.com/195/2a1769ff-2edf-2d4b-dd6c-c1df09896402/artist-75404","https://schedule.sxsw.com/2026/events/MS64174"],
+["Devin Malik","Wed","12:15am -- 12:35am","The Creek and the Cave","The Digilogue","Hip-Hop / Rap","None","https://images.sxsw.com/pGEL6IhdbJIbFNW3ugfhfN-Z5bM=/450x450/images.sxsw.com/195/61425e3a-ea8c-9e0d-373e-08282d10871b/artist-76279","https://schedule.sxsw.com/2026/events/MS65040"],
+["The Mainliners","Wed","12:20am -- 1:20am","Mohawk Outdoor","AS Colour + Monster Children","","","https://images.sxsw.com/XINnRQnr1-AUKf-3ctpPSBHjzso=/0x0:450x450/450x450/images.sxsw.com/196/418018d3-f5f6-4a78-b987-9f9023293872/music-4","https://schedule.sxsw.com/2026/events/MS64876"],
+["Onlyheaven","Wed","12:25am -- 12:40am","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/AFFfeCn2oMrJiDswHAh5ocXPj1I=/450x450/images.sxsw.com/195/58cf79e1-a2eb-3125-b1e0-822d2940a1a9/artist-76460","https://schedule.sxsw.com/2026/events/MS64612"],
+["EyeQ","Wed","12:30am -- 12:55am","Seven Spirits","Nerdcore","","","https://images.sxsw.com/bl8cA1trqIaepIk5wnNTEbU6NiM=/450x450/images.sxsw.com/195/5207f19d-6ae1-1f3e-73a3-680a00732395/artist-76482","https://schedule.sxsw.com/2026/events/MS64624"],
+["Jersey J","Wed","12:30am -- 1:00am","Riviere","DAWA x Venice: Vision: 8291 UNITY","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64934"],
+["KELVYNBOY","Wed","12:30am -- 1:00am","Flamingo Cantina","Afrobeats Worldwide","Singer-Songwriter","Afrobeats","https://images.sxsw.com/nv2Zjs1tdpkmOSbgoo1YeHINK7A=/450x450/images.sxsw.com/195/cea11755-9550-385b-a350-361f5054ec6d/artist-75693","https://schedule.sxsw.com/2026/events/MS63472"],
+["DJ Chose","Wed","12:35am -- 1:00am","The Creek and the Cave / The Creek and the Cave Backyard","The Digilogue","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64880"],
+["Vickeelo","Wed","12:45am -- 1:00am","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/3Ti83TixuwEFHY3ZFG3xD3q7AvQ=/450x450/images.sxsw.com/195/98d387c2-56d0-92c9-1903-150fe3f86260/artist-76496","https://schedule.sxsw.com/2026/events/MS64676"],
+["Jaylon Ashaun","Wed","12:50am -- 1:15am","The Creek and the Cave","The Digilogue","R & B","Pop","https://images.sxsw.com/UzPBWsFNAqTiNxUOYM8eYwqUSu8=/450x450/images.sxsw.com/195/f8226ed3-eb6d-c3c8-8df2-7ff9dcd568eb/artist-73864","https://schedule.sxsw.com/2026/events/MS63164"],
+["Agent 007\"","Wed","1:00am -- 1:55am","The 13th Floor","Green Witch Recordings and Pop Sickle","DJ","Punk","https://images.sxsw.com/hqlW4S0FIG6WfA_bWE3sWb_yZsI=/450x450/images.sxsw.com/195/d08a2f70-5625-93b8-2ba6-af992f0abdfb/artist-75737","https://schedule.sxsw.com/2026/events/MS63377"],
+["Alex Parker","Wed","1:00am -- 1:50am","Coconut Club","","","","https://images.sxsw.com/TK2YuPM_E1aI_UNfKHjwIiPq_N4=/450x450/images.sxsw.com/195/8d51d217-d298-da98-84ec-df02b697a74c/artist-76593","https://schedule.sxsw.com/2026/events/MS65120"],
+["Buddy Red","Wed","1:00am -- 1:40am","Inn Cahoots Austin Garden","Take Action x SXSW","Rock","Blues","https://images.sxsw.com/S3Cf2rglRHZ7hYi-jTFxtDI0s14=/450x450/images.sxsw.com/195/b7f1efb7-95ed-463b-7333-323cdedc4a9c/artist-74028","https://schedule.sxsw.com/2026/events/MS64951"],
+["Casket Cassette","Wed","1:00am -- 1:50am","Elysium","BLCKJEANS MGMT","Rock","Post-Punk","https://images.sxsw.com/M_2b0YQYsKf2I-5SC5Sigdn55to=/450x450/images.sxsw.com/195/a25966a1-e5b7-4699-bf33-a842e329c1cd/artist-72565","https://schedule.sxsw.com/2026/events/MS63157"],
+["DJ Rosez","Wed","1:00am -- 2:00am","Mala Vida","","","","https://images.sxsw.com/D1qvdYoBe0kAL_s0vWOhvOAP0-A=/450x450/images.sxsw.com/195/e64ee005-4edd-68f0-5764-8a66e0613ab2/artist-76634","https://schedule.sxsw.com/2026/events/MS65271"],
+["DJADE","Wed","1:00am -- 1:50am","Seven Grand","Tropiclub","","","https://images.sxsw.com/Wl1skhoWaAeGZM9d-qw_Xt9CTVg=/450x450/images.sxsw.com/195/3af7f997-dc47-a7c8-6dd1-02c143c0c73a/artist-76723","https://schedule.sxsw.com/2026/events/MS65223"],
+["DJames","Wed","1:00am -- 2:00am","Flamingo Cantina","Afrobeats Worldwide","","","https://images.sxsw.com/ifxitZMYMRA4S3s2tUj2xg0D1n4=/0x0:450x450/450x450/images.sxsw.com/196/5a874c09-17b8-422a-88e5-6925b28c32d0/music-1","https://schedule.sxsw.com/2026/events/MS64777"],
+["Dual Core","Wed","1:00am -- 1:25am","Seven Spirits","Nerdcore","","","https://images.sxsw.com/hF7Gkul3_UlvkuFCChCrDQV3y5M=/450x450/images.sxsw.com/195/d9c8053f-bc4d-661b-9a84-b5804af00302/artist-76468","https://schedule.sxsw.com/2026/events/MS64596"],
+["The Gringos","Wed","1:00am -- 1:50am","Continental Club","Athens in Austin","Rock","Alternative","https://images.sxsw.com/Ax5nRDyfUp1EQ2s73aReuDUMEEY=/450x450/images.sxsw.com/195/e1cee9c2-7f7f-fa66-c747-968d4e39cfe8/artist-75019","https://schedule.sxsw.com/2026/events/MS63552"],
+["Jack Powers","Wed","1:00am -- 1:30am","Swan Dive Patio","","Pop","Synthpop","https://images.sxsw.com/j2kmh7N11ZA7PuOmfo3VFvEQJIo=/450x450/images.sxsw.com/195/39e37708-947e-278b-688a-edc8ad937d79/artist-73343","https://schedule.sxsw.com/2026/events/MS63454"],
+["Mato Wayuhi","Wed","1:00am -- 1:50am","Swan Dive","The Color Agent","Pop","Hip-Hop / Rap","https://images.sxsw.com/D8TEJ-fl4JYwLvAFcZkMYUCEMwk=/450x450/images.sxsw.com/195/355df9d0-ed9a-c146-6c1c-4dc9e9e8c48d/artist-76320","https://schedule.sxsw.com/2026/events/MS64152"],
+["Valsian","Wed","1:00am -- 1:40am","Las Perlas","MEXCENA!","Pop","Alternative","https://images.sxsw.com/fQYURP2tu-9bASYYbcnbNGp-Yxg=/450x450/images.sxsw.com/195/898f09b7-1c3a-2e6d-ac18-201a730be7b6/artist-73058","https://schedule.sxsw.com/2026/events/MS63220"],
+["JhonnieDamnD","Wed","1:05am -- 1:25am","Taco n Maiz","Chopstars: Taco Tuesday","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65142"],
+["DJ Hollygrove","Wed","1:30am -- 2:00am","Taco n Maiz","Taco Tuesday","Hip-Hop / Rap","R & B","https://images.sxsw.com/OjdkfhTMdIkOsQs6FZqeVM9ZG-o=/0x0:450x450/450x450/images.sxsw.com/196/837977b0-c5ce-4d2e-ad17-e975fc87246a/music-5","https://schedule.sxsw.com/2026/events/MS63551"],
+["IYLA","Wed","1:30am -- 1:55am","The Creek and the Cave","The Digilogue","Pop","R & B","https://images.sxsw.com/ChtNVHaqF12nSICqoGnJNKMspBU=/450x450/images.sxsw.com/195/9f2dacdb-4474-7d9d-5b2a-665552a759bb/artist-73863","https://schedule.sxsw.com/2026/events/MS63190"],
+["Nerdcore Cypher","Wed","1:30am -- 2:00am","Seven Spirits","Nerdcore","","","https://images.sxsw.com/psRwXLf1LSWlQOzboj0CIN1mS8Y=/0x0:450x450/450x450/images.sxsw.com/196/520079b7-5eb6-443e-8d50-8fe8277d2fcf/music-2","https://schedule.sxsw.com/2026/events/MS64598"],
+["Alta Elegancia","Tue","Time TBA","Mala Fama Rooftop","More Than Corridos","Latin","Regional Mexican","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS64143"],
+["Ben Buck","Tue","Time TBA","Shangri-La","Good Coughee Presented by Devin the Dude","Hip-Hop / Rap","Hip-Hop / Rap","https://images.sxsw.com/F_Ab-w5m8_LwULe36tN7--g2fqs=/450x450/images.sxsw.com/195/af9fb22d-b066-234b-b8bf-631233390d7c/artist-76152","https://schedule.sxsw.com/2026/events/MS63868"],
+["Bruno Caleb","Tue","Time TBA","Mala Fama Rooftop","More Than Corridos","Latin","Regional Mexican","https://schedule.sxsw.com/vite/assets/thumbnail-square-4-DLbuj1.jpg","https://schedule.sxsw.com/2026/events/MS64158"],
+["Delilah","Tue","Time TBA","Mala Fama Rooftop","More Than Corridos","Latin","Regional Mexican","https://images.sxsw.com/47Kvzy3mGQyr34H-qbCGOyzTmTw=/450x450/images.sxsw.com/195/04bc506c-da2a-b1b6-d615-145fa81faddb/artist-76293","https://schedule.sxsw.com/2026/events/MS64116"],
+["EddyJae","Tue","Time TBA","Mala Fama Rooftop","More Than Corridos","Latin","Regional Mexican","https://images.sxsw.com/MNa2cifkceFq8djM2dC_pIDgBs0=/450x450/images.sxsw.com/195/af880815-4fee-9d38-fd0d-7954dcaf7aa4/artist-76020","https://schedule.sxsw.com/2026/events/MS63658"],
+["Eye Q","Tue","Time TBA","The Creek and the Cave","The Digilogue","","","https://images.sxsw.com/ZfVtBf5kRLA9Rl4mElF-9yrl288=/450x450/images.sxsw.com/195/32118b5f-51fd-8b4b-0e91-e3c3dba0af86/artist-76571","https://schedule.sxsw.com/2026/events/MS64908"],
+["Hunter Harrison","Tue","Time TBA","Mala Vida","","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS65280"],
+["Ilusión","Tue","Time TBA","Mala Fama Rooftop","More Than Corridos","Latin","Regional Mexican","https://images.sxsw.com/iHqm02XsNrSUKuYAeoZpTio1V7s=/450x450/images.sxsw.com/195/2a6e7fd1-5ceb-e19d-5cbb-4b4106e1e9ec/artist-76149","https://schedule.sxsw.com/2026/events/MS63847"],
+["KNDRX","Tue","Time TBA","Shangri-La","Good Coughee Presented by Devin the Dude","R & B","Soul","https://images.sxsw.com/GhbTocSA3DHKCn5Y9WeS1-hhMKE=/450x450/images.sxsw.com/195/70637966-461e-76e9-e223-dae6252d2251/artist-76624","https://schedule.sxsw.com/2026/events/MS65022"],
+["Mark Rose","Tue","Time TBA","Hotel Vegas","Smartpunk Records","","","https://images.sxsw.com/R158K4Zzwntz_4G5ego0rHMPr6U=/450x450/images.sxsw.com/195/e3ef82ed-974e-f1a6-5b21-68b0b45043e4/artist-76670","https://schedule.sxsw.com/2026/events/MS65119"],
+["selines","Tue","Time TBA","Mala Fama Rooftop","","Latin","Alternative","https://images.sxsw.com/wS1i_Ln5hWCXvXxh0Yh1ju8VYds=/450x450/images.sxsw.com/195/1df4780a-780d-d93a-6a9c-8bec38fab03b/artist-75982","https://schedule.sxsw.com/2026/events/MS63627"],
+["Yng Naz","Tue","Time TBA","Mala Fama Rooftop","More Than Corridos","Latin","Regional Mexican","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS63585"],
+["THUNDEROSA","Wed","12:00pm -- 12:30pm","Downright Radio Stage","KOOP Radio + KLKT","","","https://images.sxsw.com/KS62h2xNk-JKWzOEv3Qxt6KpkEM=/450x450/images.sxsw.com/195/8109b3a0-6577-e1f1-9665-c5681044d234/artist-76419","https://schedule.sxsw.com/2026/events/MS64546"],
+["The Point.","Wed","1:00pm -- 1:30pm","Downright Radio Stage","KOOP Radio + KLKT","","","https://images.sxsw.com/A_fecsqrWHmQ6bljP9HbJyoX62g=/450x450/images.sxsw.com/195/a3254702-3500-aa64-f645-72648e19c378/artist-76438","https://schedule.sxsw.com/2026/events/MS64543"],
+["Jillian Hudson","Wed","2:00pm -- 2:40pm","Downright Radio Stage","KOOP Radio + KLKT","","","https://images.sxsw.com/7lWppzyiyl5dtP7et4-l_NmqKWM=/450x450/images.sxsw.com/195/43e4f385-f8f3-fbb1-49c1-b13a77f37fc1/artist-76489","https://schedule.sxsw.com/2026/events/MS64681"],
+["Cure for Paranoia","Wed","3:00pm -- 3:30pm","Downright Radio Stage","KOOP Radio + KLKT","Hip-Hop / Rap","Alternative","https://images.sxsw.com/QhyuJpR0Qn1x5hj1WgoPqdjHOm0=/450x450/images.sxsw.com/195/7d658466-936d-e86b-e327-8f087cfbcf0c/artist-74117","https://schedule.sxsw.com/2026/events/MS64582"],
+["Lew Apollo","Wed","4:00pm -- 4:30pm","Downright Radio Stage","KOOP Radio + KLKT","R & B","Indie Pop","https://images.sxsw.com/A-yYaZU7tCKBSSmhUigMAXVZzWQ=/0x0:450x450/450x450/images.sxsw.com/196/14dd6709-ba10-4ded-81c9-a47140e0be76/all-13","https://schedule.sxsw.com/2026/events/MS64605"],
+["Gus Baldwin & The Sketch","Wed","5:00pm -- 5:30pm","Downright Radio Stage","KOOP Radio + KLKT","Rock","Power Pop","https://images.sxsw.com/hB_XI6eAfKTxQ-PBH3Vi2viHOnw=/450x450/images.sxsw.com/195/6fc5d63c-32bf-650d-f63e-dda07bd9b0ea/artist-74884","https://schedule.sxsw.com/2026/events/MS64583"],
+["Andrea Daniela","Wed","7:00pm -- 7:40pm","Hotel Vegas","","Latin","Regional Mexican","https://images.sxsw.com/PmdG5B0nOda_8ypCek-vBeV3EYw=/450x450/images.sxsw.com/195/050f6459-6c08-b06b-06d7-abeae361e258/artist-75033","https://schedule.sxsw.com/2026/events/MS63678"],
+["Bára Zmeková","Wed","7:00pm -- 7:40pm","Central Presbyterian","","Singer-Songwriter","Indie Pop","https://images.sxsw.com/ugczV6PS-6mkpBrSm1wb50jzNjQ=/450x450/images.sxsw.com/195/81270f07-d38a-bcc9-d1f8-06ebca4d0dbc/artist-75134","https://schedule.sxsw.com/2026/events/MS64672"],
+["Jacki Daniels","Wed","7:00pm -- 7:20pm","Lamberts","Austin Rhythm Revival","Country","Pop","https://images.sxsw.com/T6Pixlfv3nHxQUsW49hn_E_CUgw=/450x450/images.sxsw.com/195/15242be9-96e7-9cfc-da9f-b4ea9ea5f627/artist-76237","https://schedule.sxsw.com/2026/events/MS64024"],
+["Joel Loredo","Wed","7:00pm -- 7:40pm","Lefty's Brick Bar","EQ Austin","Latin","Regional Mexican","https://images.sxsw.com/12LBgofVt8ZJsXQO8sOBSu8C5Ks=/450x450/images.sxsw.com/195/12ceb362-2185-d6e1-1de1-4f241af43759/artist-75988","https://schedule.sxsw.com/2026/events/MS63632"],
+["KING NO-ONE","Wed","7:00pm -- 7:40pm","Low Down Lounge","","Rock","Indie Rock","https://images.sxsw.com/rFa7EEnI9hYha3oQIyBfRiP-AC4=/450x450/images.sxsw.com/195/54cf2400-b9d9-9061-30f8-bca1f02794c2/artist-74262","https://schedule.sxsw.com/2026/events/MS64472"],
+["The Point.","Wed","7:00pm -- 7:30pm","Stubb's","Luck Ram Jam","","","https://images.sxsw.com/A_fecsqrWHmQ6bljP9HbJyoX62g=/450x450/images.sxsw.com/195/a3254702-3500-aa64-f645-72648e19c378/artist-76438","https://schedule.sxsw.com/2026/events/MS64772"],
+["Popstar Benny","Wed","7:00pm -- 7:30pm","Mohawk Outdoor","Very Necessary - The World is Yours","Hip-Hop / Rap","Hyperpop","https://images.sxsw.com/Q7lOz_F3U3KcsG1wYvLoJglK-eU=/450x450/images.sxsw.com/195/b8aa37dd-72c6-782a-8a09-190e9786b7f5/artist-76256","https://schedule.sxsw.com/2026/events/MS64047"],
+["SATALiGHTS","Wed","7:00pm -- 7:40pm","Zilker Brewing","The Loyalty Firm","Rock","Alternative","https://images.sxsw.com/cc_dvrmWc_t2uN-Vgci_SQ-1ZoU=/0x0:450x450/450x450/images.sxsw.com/196/b2aadb7c-e6ad-4632-b94c-7177ef77e213/all-14","https://schedule.sxsw.com/2026/events/MS63934"],
+["Sonido Cachimbo","Wed","7:00pm -- 7:40pm","Hotel Vegas Patio","","Latin","Cumbia","https://images.sxsw.com/Vm5iTXpwPvn9qd1Tpg9WXh4kDU0=/450x450/images.sxsw.com/195/b3a979c7-681c-b1a3-092a-d6d79114454f/artist-75945","https://schedule.sxsw.com/2026/events/MS63573"],
+["willoh","Wed","7:00pm -- 7:40pm","Shangri-La","","R & B","Ambient","https://images.sxsw.com/1UuB_-kmdQ1eVZaq8GkvBqF3PEY=/450x450/images.sxsw.com/195/60cd29a8-992b-ec16-3f1f-dc61039f3081/artist-75754","https://schedule.sxsw.com/2026/events/MS64716"],
+["Jonathan Paige Brown Jr","Wed","7:25pm -- 7:45pm","Lamberts","Austin Rhythm Revival","","","https://images.sxsw.com/dwoMiwLOYDCuEceqt-p2z4e7rzo=/0x0:450x450/450x450/images.sxsw.com/196/41b690dd-a9fa-4b16-a321-2704587c63f4/music-0","https://schedule.sxsw.com/2026/events/MS63954"],
+["AKA BK","Wed","7:30pm -- 8:00pm","Seven Spirits","","Rock","Alternative","https://images.sxsw.com/R2o3t3hyIt1332qqywvlDiB92Tg=/450x450/images.sxsw.com/195/1d5e32f7-b8df-501a-8cf4-a35278a06b1d/artist-76019","https://schedule.sxsw.com/2026/events/MS64734"],
+["The Bio.","Wed","7:30pm -- 7:50pm","Swan Dive Patio","Sounds of Austin Presented by GRAV","","","https://images.sxsw.com/yXgZWUZfgWRZbZygXeJJjWQfQt0=/450x450/images.sxsw.com/195/dedd8da2-387b-bfb1-82f1-3dd63a4db4fc/artist-76609","https://schedule.sxsw.com/2026/events/MS65049"],
+["CJ CHENIER AND THE RED HOT LOUISIANA BAND","Wed","7:30pm -- 8:40pm","Antone's","Lafayette Sheauxkaze","Blues","Zydeco","https://images.sxsw.com/aCwBO1W63kpNK0i22PTDnD5dI0s=/450x450/images.sxsw.com/195/9cef8dbf-d895-e822-d738-02bb79e3f3cf/artist-75883","https://schedule.sxsw.com/2026/events/MS63481"],
+["Manu Manzo","Wed","7:30pm -- 8:00pm","Marlow","In The Room","","","https://images.sxsw.com/ZopvnT0N6i2Pk6b629Rmu8afyqw=/0x0:450x450/450x450/images.sxsw.com/196/e8d1f1d0-dfd8-4408-a731-1e7e327e418e/music-3","https://schedule.sxsw.com/2026/events/MS65037"],
+["mer marcum","Wed","7:30pm -- 8:00pm","Wanderlust Wine","","Folk","Indie Rock","https://images.sxsw.com/yn7dSi4k91nuISWjjSnAkcpBJkA=/450x450/images.sxsw.com/195/2787d962-70c9-eb33-52b2-6eb3001a7d31/artist-73475","https://schedule.sxsw.com/2026/events/MS64913"],
+["Ben Flournoy","Wed","7:40pm -- 8:00pm","The Creek and the Cave","Math Class Creative","Pop","Singer-Songwriter","https://images.sxsw.com/Nvi_ExOQj7tST3D_TcQh8-Y9cwc=/450x450/images.sxsw.com/195/95fb5636-90fa-d36d-f68a-b1f2e09db831/artist-72742","https://schedule.sxsw.com/2026/events/MS63582"],
+["OPR AVON","Wed","7:40pm -- 7:50pm","Mohawk Outdoor","Very Necessary - The World is Yours","","","https://images.sxsw.com/j2Jf3dVzo2jC4Z8H-1iiCie5wwE=/450x450/images.sxsw.com/195/fabd140e-5e77-a008-7410-98bf81acd84a/artist-74965","https://schedule.sxsw.com/2026/events/MS64320"],
+["Calder Allen","Wed","7:50pm -- 8:20pm","Stubb's","Luck Ram Jam","Country","Americana","https://images.sxsw.com/hSJ82qcZaGq3IbkN8a2jkgsUcTg=/450x450/images.sxsw.com/195/a41cfb19-8639-feff-8077-ba53329b79b6/artist-74484","https://schedule.sxsw.com/2026/events/MS64764"],
+["Maya Manuela","Wed","7:50pm -- 8:10pm","Lamberts","Austin Rhythm Revival","","","https://images.sxsw.com/6LdpmfI5Iq15o2ePNV-WzHREIQs=/450x450/images.sxsw.com/195/1fca7ce7-a316-3177-d82b-a7c28fb4662d/artist-73425","https://schedule.sxsw.com/2026/events/MS64022"],
+["Majestyofdivinity","Wed","7:55pm -- 8:15pm","Swan Dive Patio","Sounds of Austin Presented by GRAV","","","https://images.sxsw.com/gbyK3qC2IcFBznmqD1aIzRKvLbk=/450x450/images.sxsw.com/195/ed5f7c1d-2e96-3373-f817-744aad479ea5/artist-76339","https://schedule.sxsw.com/2026/events/MS64649"]
+];
+
+const G={
+  "Rock/Indie":"#E63946","Hip-Hop/Rap":"#FFB703","Electronic/DJ":"#8338EC",
+  "Country/Americana":"#F77F00","Latin/Cumbia":"#06D6A0","Pop":"#FF006E",
+  "Folk/Singer-Songwriter":"#118AB2","R&B/Soul":"#9B5DE5","Punk/Metal":"#2B2D42",
+  "Jazz/Classical":"#0077B6","Blues/Roots":"#BC6C25","Psych/Experimental":"#7209B7","Other":"#555"
+};
+
+function gc(p,s){
+  const a=(p||"").toLowerCase(),b=(s||"").toLowerCase();
+  if(!a&&!b) return "Other";
+  if(a.includes("hip-hop")||a.includes("rap")||b.includes("hip-hop")||b.includes("southern hip")) return "Hip-Hop/Rap";
+  if(a.includes("latin")||a.includes("cumbia")||a.includes("reggaeton")||a.includes("tejano")||a.includes("reggae")||b.includes("cumbia")||b.includes("regional mex")||b.includes("norteño")||b.includes("reggaeton")) return "Latin/Cumbia";
+  if(a.includes("dj")||a.includes("electronic")||a.includes("dance")||b.includes("house")||b.includes("techno")||b.includes("disco")||b.includes("dance")) return "Electronic/DJ";
+  if(a.includes("country")||a.includes("americana")||a.includes("alt country")||b.includes("americana")||b.includes("country")||b.includes("bluegrass")||b.includes("zydeco")) return "Country/Americana";
+  if(a.includes("punk")||a.includes("metal")||b.includes("punk")||b.includes("metal")||b.includes("hardcore")||b.includes("grunge")) return "Punk/Metal";
+  if(a.includes("folk")||a.includes("singer-song")||b.includes("folk")||b.includes("singer-song")) return "Folk/Singer-Songwriter";
+  if(a.includes("r & b")||a.includes("r&b")||a.includes("soul")||b.includes("soul")||b.includes("neo soul")) return "R&B/Soul";
+  if(a.includes("jazz")||a.includes("classical")||b.includes("jazz")||b.includes("classical")||b.includes("fusion")) return "Jazz/Classical";
+  if(a.includes("blues")||b.includes("blues")) return "Blues/Roots";
+  if(a.includes("avant")||a.includes("psyche")||b.includes("psyche")||b.includes("shoegaze")||b.includes("drone")||b.includes("ambient")||b.includes("experiment")) return "Psych/Experimental";
+  if(a.includes("caribbean")||b.includes("african")||b.includes("afro")) return "Other";
+  if(a.includes("pop")||b.includes("pop")||b.includes("synth")||b.includes("dream")||b.includes("hyper")||b.includes("j-pop")||b.includes("mando")) return "Pop";
+  if(a.includes("rock")||b.includes("rock")||b.includes("indie")||b.includes("garage")||b.includes("surf")||b.includes("power pop")||b.includes("emo")||b.includes("lo-fi")||b.includes("math")) return "Rock/Indie";
+  if(a.includes("funk")||b.includes("funk")) return "R&B/Soul";
+  return "Other";
+}
+
+function parseT(t){
+  t=t.toLowerCase().trim();
+  if(t.includes("tba")) return -1;
+  const p=t.split("--")[0].trim();
+  try{
+    let h=parseInt(p.split(":")[0]);
+    const m=parseInt(p.split(":")[1]);
+    if(p.includes("pm")&&h!==12) h+=12;
+    if(p.includes("am")&&h===12) h=0;
+    return h+m/60;
+  }catch(e){return -1;}
+}
+function parseEnd(t){
+  t=t.toLowerCase().trim();
+  if(t.includes("tba")) return -1;
+  const parts=t.split("--");
+  if(parts.length<2) return -1;
+  const p=parts[1].trim();
+  try{
+    let h=parseInt(p.split(":")[0]);
+    const m=parseInt(p.split(":")[1]);
+    if(p.includes("pm")&&h!==12) h+=12;
+    if(p.includes("am")&&h===12) h=0;
+    return h+m/60;
+  }catch(e){return -1;}
+}
+
+
+// Venue district groupings (walking proximity)
+const DISTRICTS=[
+  {id:"redriver",name:"Red River District",emoji:"🔴",color:"#E63946",desc:"Legendary live music strip · 2-min walk between venues",
+   venues:["Stubb's","Mohawk Indoor","Mohawk Outdoor","Valhalla","Elysium","Swan Dive","Swan Dive Patio","The 13th Floor","Chess Club","Flamingo Cantina","Kingdom","Marlow","Brushy St Commons","The Creek and the Cave","The Creek and the Cave / The Creek and the Cave Backyard","Victory Grill"]},
+  {id:"dirty6",name:"Dirty Sixth",emoji:"🟡",color:"#FFB703",desc:"Famous bar strip · Clubs & Latin nightlife",
+   venues:["BME @ Palm Door","BME @ Palm Door Patio","Mala Fama Rooftop","Mala Fama Nivel","Mala Vida","Neon Grotto","Neon Grotto Rooftop","Venue 6","Speakeasy","Low Down Lounge","The Pershing"]},
+  {id:"east6",name:"East Sixth",emoji:"🟢",color:"#06D6A0",desc:"East of I-35 · Indie & DIY · 10-min walk from Dirty 6th",
+   venues:["Hotel Vegas","Hotel Vegas Patio","Hotel Vegas Volstead","Shangri-La","Lefty's Brick Bar","Inn Cahoots / Inn Cahoots Studio","Inn Cahoots Austin Garden"]},
+  {id:"e7th",name:"E 7th & Warehouse",emoji:"🔵",color:"#118AB2",desc:"Just north of 6th · Cocktail bars & eclectic",
+   venues:["Seven Grand","Las Perlas","Riviere","Taco n Maiz","Antone's","Coconut Club","Coconut Club / Coconut Club Rooftop","Seven Spirits","Lamberts"]},
+  {id:"congress",name:"Congress & Downtown",emoji:"🟣",color:"#8338EC",desc:"Central SXSW hub · Major headliner venues",
+   venues:["ACL Live","Rivian Roadhouse","Hilton Ballroom","Flatstock @ Marriott","Wanderlust Wine","Auditorium Shores"]},
+  {id:"waterloo",name:"Waterloo & N Downtown",emoji:"🟠",color:"#F77F00",desc:"North of 11th · Big outdoor stages & conference",
+   venues:["Moody Amphitheater @ Waterloo Park / Billboard Presents The Stage","Downright Global Stage","Downright Radio Stage","Central Presbyterian"]},
+  {id:"south",name:"South Austin",emoji:"⚪",color:"#9B5DE5",desc:"Across Lady Bird Lake · Honky-tonks & breweries",
+   venues:["Continental Club","Saxon Pub","Zilker Brewing","Augustine"]},
+];
+const VENUE_DISTRICT={};
+DISTRICTS.forEach(d=>d.venues.forEach(v=>{VENUE_DISTRICT[v]=d;}));
+
+const EVENTS=RAW.map((r,i)=>({
+  id:i,name:r[0],day:r[1],time:r[2],venue:r[3],presenter:r[4],
+  gp:r[5],gs:r[6],img:r[7]||"",url:r[8]||"",genre:gc(r[5],r[6]),
+  startH:parseT(r[2]),endH:parseEnd(r[2])
+}));
+
+const DAYS=["Thu","Fri","Sat","Sun","Mon","Tue","Wed"];
+const TODAY_CODE=(()=>{const d=new Date();const m=d.getMonth()+1;const dd=d.getDate();if(m===3&&dd>=12&&dd<=18)return DAYS[dd-12];return null;})();
+const DAY_LABEL={Thu:"THU MAR 12",Fri:"FRI MAR 13",Sat:"SAT MAR 14",Sun:"SUN MAR 15",Mon:"MON MAR 16",Tue:"TUE MAR 17",Wed:"WED MAR 18"};
+
+
+const SPOTIFY={
+"0 miles per hour":"7lUAdOqmYKAK59QuGdvKK1",
+"2charm":"7HKUxdZeGZQHLE7vFG4Syr",
+"4ney":"4ney",
+"60 juno":"6BMp2cQhN9C3Vl8PLzLvw9",
+"a wordless orange":"2R9f16fD7Jb1XXnRmn7YdY",
+"adrian activo":"4Yx3U9aG06jweuVuaca2zR",
+"adrian be":"1cvIlWofyBJLLrxQfX6ZtF",
+"adult dvd":"1lT3vDbjqz299SxePec6ZG",
+"adult leisure":"1x8fyCiAVXjUlU0yfRSIP7",
+"agatha is dead!":"3t12sehooJP6lkLBy4h9R1",
+"aiko":"4rNUXX8pX47dfwyD6KL2zP",
+"ain themachine":"2ne9jEEKCUorO170r150Sc",
+"aj mcqueen":"5yQzq87Fu3ZTADxVWwWoj7",
+"aka bk":"0X4QGHQMh6BJOjveGen7b0",
+"akira galaxy":"7JZCkitZk0jBzOKOfV3LdC",
+"akshara":"7j6UTsx4e5HxsHMPXCYy7Z",
+"alex cano":"0xX7pOSSmezelxR9rEMfFW",
+"alex irish":"4U3CW2hbhxnmyMMCpAmNC3",
+"alex lambert":"6iQBhWmcQcl9s4w1hL5lnN",
+"ali almighty":"3C5dVMZ5lWRpqKsC4T7qBk",
+"alien chicks":"1V2a5Mkw4VP93kP1vrB4T4",
+"alina pash":"2rC7t19zOtFIcJvmi6lH1i",
+"alkyone":"0tHJO69AKpp9qz6a0Tg6Rt",
+"all american rejects":"3vAaWhdBR38Q02ohXqaNHT",
+"almost heaven":"25M75SztfGLmmWJK09R1dN",
+"alta elegancia":"7EOpIcFOVG2PedJgVbCHJ2",
+"alto moon":"2W4YmwLWetZICb80JxlNwS",
+"ama louise":"4Yzt77yPpz5hJkBwBPTQ73",
+"amber jaii":"45IN6pKK6oKMclTqClGwMK",
+"amie blu":"3WWvqxymB3Nypxej8XcQKC",
+"amor vincit omnia":"7p4MDUajb9Km9zN876z9RG",
+"amri":"0otmCDF5DZjqADtQT9aIkG",
+"amy gadiaga":"0dxlAHVTQOgD6ZRwSeit7x",
+"ananto":"3s3mKevRORFAN99dXiyqY1",
+"anaya kobe":"2HptydgEtobu4JiObaLXlK",
+"ancient greece":"5vxhVsTXYuvyDMcHwW7Wyf",
+"andrea daniela":"0wUMtw3bGFln9TtYExRZuM",
+"andrew cashen":"0PYEsKS7rWNBXS6KzbnLZ2",
+"andrew cushin":"0mUufv9jrIi9BPpN9VHduc",
+"andy arthur smith":"22zDMx4m8dx2adBM3MSWwl",
+"angela autumn":"2gyodrfLfK8xF0sSaxBZXQ",
+"anna shoemaker":"3STjhKc10jr3X60mDRpHV4",
+"annabelle chairlegs":"1Fr1a6j80ISD0UonvFM5V6",
+"armen paul":"1CwqAnNZyIYqC7SWpTUpwk",
+"arroba nat":"ArrobaNat",
+"arxx":"1pQ8qfxpuRJKEUFPGrf6Uc",
+"astrokeyy":"3q3Kbc2eFibSKoQDSwPaeD",
+"atsuko chiba":"5sztlFD2VHbf7vg13bt5eb",
+"attalie":"3jBgr3nXeyp2swZo26DSzi",
+"avanti patel":"4LPRI62WeBuYjw3MA4GTqf",
+"azamiah":"0q4P4opctE6mHRUnm9PHD8",
+"babatunde hip hopera":"6SJHJkzGkympRf9NxIONM7",
+"baker grace":"70RgxMmZhLLWxRlbUFQKR2",
+"balaclava":"7ySwjlIIhZRIzydurByhAI",
+"bale":"0aCVyvK8ZJp1c3nArx8Sy6",
+"bandana cheyenna":"6UfOX6eRX59CpEF8rQs3ZR",
+"barb":"2AKn3QitGXoKeodTlARfxe",
+"bartly":"7tUObrwBgZDmJOmZ0or6D2",
+"basht.":"0bIaFZHuLgWlw8UiE9qBAE",
+"batry powr (nicole miglis)":"1mmKns9q559kAZeHbKeAu2",
+"bayonne":"6BbqU3r1G2mwkRIfIbkCek",
+"bea porges":"2A9OT1JZY6CANoJYIW1KSw",
+"ben buck":"4jWdYkQ9oNSy68oZGy7lRt",
+"ben ellis":"3u0GaOtYxsIbwldWs8dgE8",
+"ben flournoy":"3kE3DN99GN4mFhEvp92ViB",
+"better joy":"4ERGM46KkPIw35YncC6PGL",
+"bettysoo":"1zyOUBRKVnM6VbtzYE4piR",
+"big bill":"2OHNP2i6axDsbpco3ZPL6L",
+"big fat head":"6sx8zZlUjsnQAbmpY5jLPY",
+"big soto":"2TQ4CGgxxCWHqa9yYIGDoU",
+"bikini beach":"1eMm4uIStcxmNAfqif8DSp",
+"blair davie":"3sDemA5FWaxfqPJFP2SK8x",
+"blakchyl":"0X6i0oerZ0pQrp78jlBhJA",
+"bloodsports":"6HqDHzNgjf9fIXCVlQzEGS",
+"bobby raps":"22g86cix6LCeLMbu3m91Wo",
+"bohemio":"2mtVUHNMxLAnBFD6wVmdEH",
+"boogietraxx":"2CMUIHJ41MQbfrEoG6Jsof",
+"boooka":"1ZIreMhsOL60VlD37OFy06",
+"boris and the joy":"5wnfhdPIgPXD6if2YbRKXq",
+"boutique feelings":"1wSkmk81jwCySSS51ZSBUI",
+"brainwasher":"5TkcPAuNlWwMaYEjw2BBK5",
+"braison cyrus":"6VBgMdUuX6QKDkK7pRLJx0",
+"bricknasty":"3BcbwxzJm5f0yppgo2Vatd",
+"brie stoner":"6rImFoofSYYORzQ597O5k4",
+"brionne":"6MvZZJWi9UAMsob2xyxV6K",
+"bruno caleb":"1p0oNUu5r3N34CvGfcOrge",
+"brunog":"4LDBZLf3EgeL87J9ZVSmRL",
+"bubba lucky":"70TXYfNJUUGAWRMeq3uwPD",
+"buckets":"2VAILUKur0keGIuFOb6Roi",
+"buddy red":"3rpx3cpG9YFQxEgbYjK2JX",
+"bulletballet":"6XehoLl45NzhRVPGT08ECh",
+"byron juane":"4UMCjCFEBDWVqw9tTrfxkb",
+"bára zmeková":"25kg48KQR5IPL7CHQO5QhC",
+"calder allen":"1XlVbGlQaBoESaJ43y2sCD",
+"caleb de casper":"0kWeZGYElhzsx3ezHSSfSP",
+"caleb lemons":"5LtjgXa7diIphauRKRSBAv",
+"caleb michael and the arrested":"639usPXP821TLLehLH71R6",
+"camille schmidt":"0XGV1FXgyGB0yg6lPcfQg1",
+"canon":"1dIjbaW9JTTQQ7ufrQnGsq",
+"cardinal bloom":"1kL35cnfsVSfKJ6xLk0K9f",
+"cari hutson":"4gPLq7TgN8EM7W0E1FAl5q",
+"cashier":"0LRkuyysiGMF74jPBa3yxf",
+"casket cassette":"7hpTA4ta9iSezFWhwfEbWK",
+"casmalia":"0FjiqQ7BLtYmZ7ONpS7cTT",
+"cazayoux":"5sRAaGdTzuhQkFYk6Uw8rS",
+"cdsm":"6FDIX7PXiEqda6UId9LQwD",
+"chalk":"3qa9pv6B0dmiBVETLQOCpi",
+"chase mcdaniel":"0pUnbqVHKfPPoaxh69Ekoz",
+"cheap perfume":"2vfwEEEv5PVpGMMnC5jajB",
+"chiara savasta":"5TVI6uAbPFru1azAVIaVZR",
+"chief cleopatra":"4JtoyhF0vrGEvOh0O6z2vK",
+"chuck prophet and his cumbia shoes":"3vidJsiALgVC5ZuweJgeDT",
+"clova":"0D7Yv1YSSYurSO4r5wNryZ",
+"college of hip hop knowledge":"0NAe5oOqhAV4HxwxpBqpWr",
+"congratulations":"3Zd0jI43rmogm8qVt2QAdq",
+"cootie catcher":"46ufOtURSipSKdxoz8KZzu",
+"cormae":"4D5AqxIGoCoCHMB0IfAkWx",
+"couch dog":"62HP0MjTAtQD1PSvhulYFY",
+"cq wrestling":"5S4qUw22ZF7gTPUEx61SyC",
+"creature canyon":"2dNInv9DAqXZhseHpSHbV6",
+"cure for paranoia":"4YRwYMJHtjOnfqkDd8EJbk",
+"d2blee":"1kp6lXXmFAAyOFXrE9Ao3z",
+"daiistar":"6To6Fv1xkHuZxSncHEyJu8",
+"dallas tetnus":"6Up7B192J5bfasoRTuwrSC",
+"daniel fears":"4sews56ROyNqLQWVjGFnVO",
+"danny felix":"51pVYU9oIKHUb72Y0v8iVV",
+"danxgerous":"0Gt3wzw2zPVUVVAhGkeLuT",
+"darkovibes":"5a3kizlLAxR0P6qZEti8T8",
+"david huckfelt":"3LT3ChbVJI2rE6jAFfkGWZ",
+"dayonthetrack":"7vsaQwuPAG2PSWPVitnXrc",
+"dd island":"5uTjgJJCMC26fiKIJzDpx5",
+"decasa":"4ltEljtxKWvxHxU5aZ1EGg",
+"deer park avenue":"5Dgq1qHMpSVLUJJpnhStF4",
+"delilah":"5O2rJN2gJncIfM5iNSNiYR",
+"deloyd elze":"74ERN7iYMRTDYfWz2BspQo",
+"derek minor":"3fn8lZLy7Q61AXCWWPYC4B",
+"deshaunjay":"7iIikaxI6BfShyEzCbZ2H6",
+"devin malik":"3mhGKo6sIMtVoPUu3t9p16",
+"devin the dude":"0OMJR0LjjKv21qNvICTgbi",
+"devon gabriella":"1rfIKfqoygAsxTWBdzVO2i",
+"devotchka":"0hk8VgR64voU5ueK96W2DI",
+"dice soho":"4gIRkExQ9L5kAPKiqYJk4R",
+"die slo":"4yvSAiFfqZ1xiUKpeWxUBN",
+"differentchris":"7s7xynO0XGSKjE7Oyq7GVK",
+"diles que no me maten":"22Gr8D6d3DlHfUYjbqtIev",
+"dj bones":"4qcQb5LL79mipmdlSSgVIH",
+"dj candlestick":"0Ld26D4Ya5Od7ZZpLanfQJ",
+"dj cz":"52xstrfqEahsQREdysdsgr",
+"dj exile":"5IPK9zq0zLYbMDJsRw2t32",
+"dj hollygrove":"3g5nle5fWY2R2GWQAet2WK",
+"dj trendsetter sense + trendsetter cypher":"2zcu7rparMOCBU7ZaBMb4N",
+"dj x.o.":"3ix09kkqd9kYVXqzqWWJFf",
+"dj_dave":"78ZgfyDjF59qBIWrGHRdme",
+"don glori":"1CAzM4msiLBgUGxFkIroYo",
+"dossey":"1TIulCMT2Eb4QDL59RcRYi",
+"dr. greco":"22uGhIsOwooTmZ5uPXOeSb",
+"dramos":"7CGVCEx27ejm3TTfC7S5uD",
+"drew landry":"4fFbEsc4jGGL4ERaBblNaL",
+"dustin dale gaspard":"5sB5dnlPVi0XDdm4NM3KFT",
+"dylan leblanc":"60rNO7ymhlxcYxrdkDYq1k",
+"easy honey":"5fKAYiCIzDsV8OqQDl8Erj",
+"eddie chacon":"7MSoMSIgrEtwDJ0iUCJwSD",
+"eddyjae":"4Y3PiJvvVpPTauaS9Bzpfp",
+"edgehill":"0lzGqksyREdfUObGjLYLcT",
+"el dusty":"746tySZWCr6nqgEjmQyKyB",
+"elanor moss":"0zyFWHrZsZXBupeqrDkLtz",
+"electric enemy":"2N1mByBMykfROrhwRVQV3v",
+"elijah delgado":"2Xx6jD7k7Tja7AIJolg98F",
+"elijah johnston":"50as9VMbiduY1sVn0d7z2T",
+"ella ion":"272IMnCmdF6vvXOkBofjmQ",
+"ellis·d":"6IYbOpElhnPpPnEQncHaxQ",
+"emi angeles":"7baCctOyCSURnVS08CmE8t",
+"emily frembgen":"6CuxpWPcMo6ES6EW5VQNFG",
+"endearments":"1hoZ57qKuV6JK6uPGVL0Dy",
+"enfants":"03ZFwTgzAUndCMkWtb2PCn",
+"enus sunne":"2GJH76I11GzuUmD55wT6K9",
+"era wadi":"3SwCI0XH9jdYWKJLfKEjTH",
+"eric zayne":"5HMNsIi6AQplZELW9jeLjd",
+"eydrey":"084shETK0ucyuDz0qpCxV4",
+"fama":"0vYXDaGn2E1NcgYQ1PVN7X",
+"famous friend":"6DaO8J2AaSwUHCRFBQNL9L",
+"feet":"7HeBQpJ3UmyybgEvqfdRAE",
+"femi temowo":"1SVvnxxsilOcr7W6wLMTML",
+"fifi knifefight":"6RI8CZjbXSeH8M0btjdv8z",
+"fime":"4qxuTPf9imHW4uQgDJbzXs",
+"fine food market":"5yLNDnaFmGzAQBjnWzdDET",
+"finlands":"5A3KcZGxH4Ej7MIwJLweb9",
+"firecracker":"5CqLwyolxTkXf4DTXD2Esg",
+"flesh juicer":"78ltY2tUrZpkWJ9CWYGZfl",
+"foliage":"6GO4Noo5C7TXVHxGNClp2w",
+"foolish ty":"61VaOK9lViIQilboP9JEPw",
+"forty feet tall":"5Y0hXvdIjFtKZ5UFYMAAeF",
+"frankfurt helmet":"6ZNcgKxuY1kOGS3GzIlqv9",
+"frivolousshara":"4BZbaSD54IoBseVr142kiH",
+"future nobodies":"4GMN5lzHF0l56piLOQXhBH",
+"gavin copeland":"6knNzJpx72u6cIwnjXCCTT",
+"gavin the hotrod":"4PRtvcfM2vKDdLFAyGUMP7",
+"georgia webster":"0SBVbPO2gePQlaDiIfaKDl",
+"gilt":"59nCDPMkSmF4iyBkMwzpzx",
+"gio":"2Qr7mPGgXLLnmqfreAKO7J",
+"girl tones":"1Tq0nryXkwLARcHDMIZbY6",
+"glass mansions":"6XtG1MRcjfYYRpnbqTMS5Y",
+"glassio":"6FK9mlh2JAB7kSBYS2CYHN",
+"glaze":"5gLtTxcMc99WAeidxGaFxu",
+"gokumon":"3EJLTLWBKED6IQdsGgOscG",
+"good flying birds":"4LnFAnA41BHrVfTWFKciVS",
+"grace sorensen":"6XjdHxIP4pcTyHs8C6gwwe",
+"graham reynolds":"6tMpMPtrimgQsbchahB2et",
+"gran moreno":"5PdpBzbxZ8ZNzIM9Q8yrI6",
+"grandmas house":"6BFppN7DZ1DR7zFyNTj7Nv",
+"grima":"6DyTFqXa8gxRB2H952Jdxj",
+"grocery bag":"3ORVkVwnjHDcUzOhekcaD7",
+"grrrl gang":"4GgA61hzcYno3GYTrjhZ6A",
+"gummy fang":"5HteCWo7220rXzFgtXTx4K",
+"gus baldwin":"1zh9pJ6h4CDnnZng6U3O3X",
+"gus baldwin & the sketch":"1zh9pJ6h4CDnnZng6U3O3X",
+"gus englehorn":"5DL9yEXrWKddfCe8SxM08Z",
+"h":"4CV75FDRjdURC36MEe4x9s",
+"haha laughing":"0K954Mj7UWNwR0xYZ7iFr7",
+"hana lili":"6irpcuKNgvg9Zyy62yXC7p",
+"hania derej":"2IU2updV8nCbwezu453ame",
+"hannah cohen":"7ovXNdlB2DNSC16TbKgros",
+"hanorah":"3RxOQic8AVfAfIb17hVKUo",
+"haters":"2Suh30bSl4jpGokOZI9xE1",
+"haylie davis":"0Q2pP2uTgpT8UsuGvB3wH3",
+"hector gannet":"2qXBP0gz1R6RscrTKs41Sx",
+"hemi hemingway":"3yla541s3AnBSCbGe02k56",
+"his lordship":"63QN05Q2Yff6mNAxOzPP3r",
+"hnry flwr":"0pnUBnRGjMZO4IPcHXtLDA",
+"holly macve":"2E51tnARTxTvmYznDHfE5V",
+"holy gabbana":"0FTHAY097uQnnn3D2egtZZ",
+"home counties":"7L0uKOuMgMCLXHW9RnyB8n",
+"honey i'm home":"4nOBSMvnstrNNr5Bl7z2OA",
+"honey made":"3RehHfN84w4V5v6aLKRW9j",
+"hoovaranas":"0sKfnHd9TuWcTfDEYresSf",
+"horsepower":"1ERf6Gecr1VWPzibnPJt1Y",
+"hot garbage":"3mkQAzyS7Xr6AF9JLvXnrc",
+"i see orange":"6cJ25fDskdm7xKrfr9TL6A",
+"i-sky":"63gBlNd34cOt1fMDEPTJ6w",
+"ichigorinahamu":"3B8MrNLUl1vK53CuEC3ofy",
+"ifeanyi elswith":"2OVnbu4hOeLswKOiUbGMhE",
+"ilusión":"0NqbvouIKHznONQAYK2Zvo",
+"iluvboyband":"6Flx11z2KSeUdXxXPVM2V9",
+"in color":"7zNEP2UROEGrRn43h46zTk",
+"in phases":"5BaRZAefSXD4yMsj9ZV6Hm",
+"ink":"4ZhFCxPekpmV12n2xMeF2z",
+"isak thomas and the stoop boys":"7gxsKHFFOFtx2zpx2Ur5Sa",
+"iscream never ground":"3VaWHUyDEoBjigERzadi1g",
+"isis destiny":"3LfbvKPdXc18DsiD6qyZWe",
+"iyla":"4LXBFNxqvOcdBVpbgKn6op",
+"j soulja":"06BANidbJ2Kn9t12vsyTDU",
+"j'ray":"7rNvqrkw7Ly4tDjiSoEeNK",
+"j-nice the kingdom builder":"0KJJ9khnefHPzW1t5IJVKA",
+"j. dash":"6bsEozzA1CHU0TIq2DXDxq",
+"jack powers":"6twufd5xYkIBp2qeC2UylI",
+"jacki daniels":"28OYulhOXH3vLmEWWx2LkR",
+"jadarrion":"1PdS9T0u98Xlro3tgr5eba",
+"jade omari":"0fZUmgpu6tcltO1UNaMEfS",
+"jakegatewood":"5LXg4aYVpSzUyYdUgPMkKw",
+"jamaica moana":"0kCAtshqpuXucHnqXehLfh",
+"jamie duffy":"2yvguoW65iZdUhca8yIfIo",
+"jana diab":"04U5nHCnl5ykOPWVrfHHZq",
+"jasmine jethwa":"6FLqwgd1Ks0JvEmqpewIpv",
+"jasno":"08InWcbGQ8hw2AjPCdDZCu",
+"javiera electra":"7c2QpfLeD8s647evep6Mbp",
+"jaxs":"77OPiCvxXcgZ8iGLSx88Ob",
+"jayahadadream":"1Zr6I0quVpqoCSTs6TRCpo",
+"jaylon ashaun":"5dhseP7KiICmkxT5waM1Md",
+"jeff akoh":"2dWJmDHk1CXQ4r5Pj4yQB5",
+"jenna cole":"7mSwLVefFYHQNbJK6CP1Zh",
+"jenna shaw":"4beftZ0Av0JWFj2FXBdGsn",
+"jessie chambers":"10kZ6WNqUGE1lQLUVisdVF",
+"joe harvey-whyte":"63ud5HSE9cDZlEwQzw0C2j",
+"joe patitucci":"3vManxn7MKYk0zJKWgMy48",
+"joel loredo":"49kEq1oKZEhrGD2gUGeJbm",
+"johnny falloon":"1pZttSrwBEcixSy7J7de8w",
+"jon langford (mekons)":"1Ag6UM6dow2OH9V06mxzV5",
+"joplyn":"32Jt1AK733JbFR82hEZ0Ih",
+"jordan patterson":"2yKKMwAPgYB51wlkM3sY5G",
+"joshua ray walker":"5SlqleEyFgUYZEZCJ5juDr",
+"joudy":"1nmeC4oDESCLqcBCZRV7Dh",
+"jovi greene":"6Z8GLJyECIvbklEGdZJWug",
+"joyeria":"4mECc7MwRyuIDdZdXRi5SB",
+"julia blair":"17F1fVk5OYojrr34hShu8R",
+"julie nolen":"11ZcVtbVDzxUg1Cf1w0SX3",
+"junerise":"5EVmQ9HMLhLZXi6GChdtR4",
+"just jim":"6xZd9SKaCkGK1YPixWPIaE",
+"j’cuuzi":"6ksDpuQVzGmC11y39fISGE",
+"kaash paige":"0f2YkMXwFNJNSX7MymevKE",
+"kal banx":"2TYRz7cFNZNPLUWRijsJNL",
+"kali horse":"4jJ32SGRvuM4jhQLrEePSE",
+"kanho yakushiji":"4zJWH4MVCi54N7PMcbU93z",
+"karina galicia":"0syMDHmkYbx5dG8bOnZ60z",
+"karma sheen":"5jKjC91GYS58L8hhnDiC4j",
+"kayanne peppa":"2slVGwJnIF9LS6pfQhcMIB",
+"keetheweeb":"6LLlQmW4tgefuMkHsyo5gQ",
+"keira vana":"3XJlj9YgsLe2F6mAYxUr8w",
+"kelvynboy":"5Oq2X3BjCbFKPex2GVSDpy",
+"kembe x":"4uc4iep3LqgSj8qN4kp7qD",
+"kenzzo":"69jAe2unvzpjqHV53Z1T8H",
+"kety fusco":"0zBxGJNVKeETQsG7prk6jR",
+"kid phenomenon":"0fDuN5RNp3ysq68Zdz17MV",
+"kid rain":"3JQMhGLU0F6IeOzlDZiUNW",
+"kids":"0m24vN4Q4B8TLQbhxOb3bX",
+"king cooley":"5MkNt63ZMFj5Q5Z8rCKesb",
+"king no-one":"6hWReUQlQwLTYlmZ1vltRB",
+"king savage":"6Wvza5j7bXNEr1XPhU7Bra",
+"knats":"0l2OFUKz7eXLlPfO1LrGt7",
+"koad":"5QQtovQzgOb1s1UQDnQfN0",
+"kodie shane":"1CUeN4GnHAGUk9nAXPorF4",
+"kofi stone":"0htlZDCG9I8LSENteF1TyQ",
+"koj":"3Ntj9xjU3aBDQzOKYtAMJa",
+"korda korder":"1SP4UeWJaEOaCJgFi08lyz",
+"kordelya":"3JmbGjGpi55FRnjvjH9ljV",
+"kuoko":"2h8Egzl8WxLijmpQtmuwHK",
+"la nueva ola de cumbia":"1i8V0JVW4GJxg5mgcocreK",
+"la rosa noir":"1kacmMIkcZ9b7AiSJn1EC7",
+"la texana":"7KXPjNDl2wveAmMIEZHQhB",
+"lainey wilson":"6tPHARSq45lQ8BSALCfkFC",
+"larry seaman":"0HUoUI2fiQrzJimeWStXc6",
+"lee bains":"1oTNCl6SRphYGb9NQ0toVE",
+"lee vasi":"4bkzAmMBYHBfpSIecicRhf",
+"lena dardelet":"37orxD8Q5PDm53FazTRpP7",
+"leo kalyan":"62lbPZcnp95moF4T4afcPn",
+"leo von sol":"1eX0j8FyVM0WsOMw3WpKG7",
+"les itinérantes":"lesitinerantes",
+"lew apollo":"1iclNC8eAt6q968DYNCmTY",
+"lexaay":"0rE5hn2vXUrTLvFxAXwhMr",
+"lightbath":"4AIr46FQ8PXGH880gA3g9I",
+"lil asian thiccie":"0j2BoCcPBX1B5vF8tp2nL7",
+"lila tristram":"7rz5KPHZbD3IvzpHqSg0PB",
+"liljayfromdao":"5LlKA6SHhHTgySaiPjuZDD",
+"little guilt":"7poBjSledYHe5LE2LgOhrv",
+"little wilderness":"3Vg9zjWSWTxrHGx5gQ8VND",
+"liz cooper":"58irgKwXTjCCuYQB58aXeH",
+"lluvii":"3fYbEcFGVGWRW9t9jTeOHq",
+"lodri":"67kP6rkT1i8jy26a2hJrzJ",
+"lofi legs":"2D7kfjhkgz3y3LBheDXtFu",
+"lola kinsey":"6EhN7za1UTDAYMFOR3Qiyj",
+"lola tried":"5qjI1xMELcDjsAASnUDtJg",
+"lola young":"67FB4n52MgexGQIG8s0yUH",
+"loren heat":"43Fg9z6zfjmsHQOwexx7wt",
+"los desechos":"7jH5eTVSYc4Q7yxxScxnhE",
+"los discorde":"4BntGQXK3uIM53sU6VTZr3",
+"los gran reyes":"33KIlbi83CtMDmo1YpZTj0",
+"los kemet":"5HPjnx4KQqaqMv0dkmpjCZ",
+"louie lee":"3LqiicgkAlpuAxTFhApqTx",
+"louiev t":"5gtuHVVYra9xmEIAuiossJ",
+"lovpune":"1UfH3Uz76j5fJ9NcrFGBWm",
+"lu got the taste":"0Ih7ixMmpYNjrqrZEEP8C1",
+"lucaa":"166LUuOuQ1wmBPsW5oGtEb",
+"lucid express":"0WwjT0WO2JQSXIq7EeDxXf",
+"lucky":"5TjbJmm1dc7PwF35V00Jtp",
+"lucky break":"19s67hCJgYq3lydu4aj5yq",
+"luke tyler shelton":"403x11RUETcMwsBZlbneLC",
+"lynn":"3YGjCVq7bfP2wT3jzbaxab",
+"léa the leox":"76yn7CZJcpG479LvqWHh8O",
+"mackwood":"30wolDXX2isw1IdyMGvGBD",
+"mae muller":"1BEUkE2CSUgHTLSBMZdnFB",
+"magic rockers of texas":"13Q8sScTKJ1X9IPVyD8VlX",
+"magnolian":"0Uj91EMXf9p6ha6pGl7XIp",
+"mama duke":"4KhbHTD4OgwnvIkMQ4LgXU",
+"manny phesto":"6HGDFvhtF4xdhGwM3XgPUd",
+"marco plus":"6Agwo4UWzZes5CDUMFFlvU",
+"mariae cassandra":"1IYXeH99vFlUjAXWUhFXhJ",
+"marijuana deathsquads":"6oc4nqIWvCfQQLnQfdQwmH",
+"marissa nadler":"5zjaF8JUdylMWrA7AVo3hJ",
+"mark cooper":"0FZqeA53FAPRYhACWS1V1F",
+"marketplace":"5oraEz0H7QrmVWl0Aj5TMT",
+"marley hale":"4iIanlrQyI7BnhONWfgKHb",
+"marni ct.":"612L39ez3K9o5S7tGUiDuu",
+"marry cherry":"0iqN6VCtLOiOxnIQBbkPou",
+"martin eyerer":"6qx8HhSNjrDvOV5CTjGr88",
+"marty":"5BfKKSmpGmj2moMNlaWeJK",
+"maru haru":"2XDIK0XJiVsd7KCsULP1a4",
+"mass minor":"6Cd1rZcISm03rau6uZMu8f",
+"mato wayuhi":"70rrdlPO77vFHx1GLER7WT",
+"mc danny":"3PZTvUS5fUUhV3EKAjqdZk",
+"mc frontalot":"0tRxVqFSJrai3XTMOiEHVn",
+"mc nito":"0EOOwVUWdPElrXOJyKOiBw",
+"meek":"1eg46ke5TEIuJpypjaSvi0",
+"meg elsier":"4rkAMhebcdsLwZKBriNerT",
+"melaina kol":"0t19UNl8aSQGryDSfuW5gT",
+"melanie dyer":"159pZhqLdWf1ttWtw0zBoL",
+"mer marcum":"1hD768RDip7WrExOXS5pLN",
+"merrick winter":"5saJxCU9CGqagElzzIXgfI",
+"michael the lion":"3Rc2dxaKUjFJT3t60KsrzG",
+"mid century modern":"6flD4rlm3DCzQKsSw4tCLz",
+"mika häkki & dark yonder":"7gR1uwapGqy2Xiyx7yj2cL",
+"mike checc":"1ZxKrlCXeMxd98O1SHJT5j",
+"milhd":"4GpCllezDUO8AXVndWXBBH",
+"minori":"5xRduEcc5lBBGCYr3z5cgq",
+"mission":"02gxa3HE5O0zBKRjeDh6Ba",
+"mita":"3Vyw4TdOwnqclNlcvAeeSS",
+"modern cinema master":"1Zho9gJQQCYaLYKkmWp337",
+"modern cult":"50pL5o4gSp21B1hbAmwyRY",
+"moio":"4D35LiRbeEHboAHa0bYUJb",
+"money mark":"6I2891HPq8zEnBEuwc5iAP",
+"monsieur van pratt":"7GnsPmRPcDeJ7MeF7DLeVX",
+"montclair":"2T0leAgVkjJTiGjo1qiz2q",
+"moreno x4":"2hsRaESCvrQfxYf5cCjZxN",
+"morgan":"7ltW5jYRnGOE4O1vcgW2DI",
+"mosmo":"72VOLmKfTw3AbBg4Nc7Inr",
+"mt jones":"0DLNLJyVZ55oPrSrsbiD5m",
+"mugger":"2BdW0YsIzEpKprHWF3Vy1I",
+"murty":"7LUzEKOp9oQMQm06BJZ1Dw",
+"mx lonely":"7JrQ7OeohqbGyqXwuLLEpW",
+"mypilotis":"3aev79LAKZCOqcYdTR2LG2",
+"mên an tol (state)":"4CFcHsL8xqUWQC4vIZWPOs",
+"n@te!":"0P157q5ao6n0ohHXjNhIed",
+"nathaniel stewart":"3qBX9rcr5zRlfdC5ixrzrt",
+"native leaves":"2HGbKZC5Nl4osBC6SAoOBg",
+"nattali rize":"0FomusKA1QZNUY5EdQdBbv",
+"new constellations":"5WF5jtgP0H31QTl5g4WxW9",
+"next of kin":"668OF7yLpmsPIL10HHKPFC",
+"nezza":"0cRKBhWUTEtR1vmA06kVKz",
+"night drive":"2n8weaczXlWFffGanDH4Xc",
+"nightbus":"1fbC8ATYVPUeFy2h5NOK8x",
+"niiasii":"4GqtVmzd5skQOVZx1vVsDz",
+"nikki gold":"230C0EYu0PB39zvxFWwTrX",
+"nilipek.":"1tgfi3YYoeXKehnjKaMsOo",
+"noa":"7uSjuw5azxG0JI0HMnXcoU",
+"noamz":"3BPczeMyrRHb0BnuKos5jc",
+"novelist":"4OPTZC24954HYBeHKeoLSc",
+"nudo":"1G5Jm7ltZ2Dn5adxPvupMO",
+"nug":"5cX4v8gf81bPzRqdRj487A",
+"néomí":"7bfwKXhmR1JF1PiBzaxY2b",
+"odanga":"5szpUqKM5RhmYh1jNlpFz0",
+"og ron c":"2LQF8AgyQUgLfquM92Rx8N",
+"okan":"3lzMXGRYV6IqjfU16Igakt",
+"olivia ellen lloyd":"0itd8fCSPL3NAu9CAhuHG0",
+"olivia morreale":"4wCajLPhQfmWc5U5aQOVLD",
+"ooz":"6MlNZ1R5GwYm0JRsuUXf1X",
+"oscar ortiz":"0FvHxb8a4I0A2i8jKCsFei",
+"oscar twins":"0NnVMsy9omJCaPk2UoCWtS",
+"otis wilkins":"6loAmVdFK5vPObIjS6e396",
+"our shame":"5vKIV2YjcVSf3wWUkcyCR5",
+"oya noire":"1ucnou2dDilxT5cxuv4um6",
+"ozer":"3J0qyBq8miao9sTXOlAkWp",
+"p.h.0":"2hSncFPWSRGcXh1dFnD2vC",
+"packaging":"0Ptdlmg0GmSHwgazEsZFZ0",
+"paisley fields":"6tzDsjuTpo8J7qsGfGZvPx",
+"panam":"panam",
+"panic shack":"26HCuM5PamldoaHII5Ifxc",
+"parker woodland":"22qolN8rm88ks4nGwwKNOO",
+"parris chariz":"2Vt6gyhUH7Vj2cybfQWOqM",
+"passion pit":"7gjAu1qr5C2grXeQFFOGeh",
+"pat g":"4Pl80opG62juIXwrby0HZS",
+"patrice pike band":"4KFQxYjKbqULQ2Rae8xW7r",
+"pedal steel noah":"6o4IMfwcif86AeTsDKmBzy",
+"peelander-z":"7fcXHn9gpoXvKE7WH8a5PB",
+"pehuenche":"7oXCcD0gC5pmtZk0HIxOhk",
+"pei-yu hung":"0rARfHZ4ZteUlzbAuxUwAs",
+"perdón amor":"3i0LLJewOCJ5pOSE9HUjJa",
+"piao":"3WRVVRVjdDenvXlJgs2WXb",
+"pierce washington":"5fq0bQm3FphiZFDFsqni5M",
+"pink breath of heaven":"1ygblEoH4n9IHwIaL2QbIp",
+"planeta no":"47hetBUhKhfBmk8nXeriqN",
+"pons":"3yrEFe2spoZ15eOUuWFvph",
+"popstar benny":"5PZD35H2aDtmF0GpBN4dTu",
+"posavant":"369CXRJMCu2vZRYWpOb91x",
+"pretty jane":"6epJ25SOjrUlNIH80KKluq",
+"prido":"213g7UIlbCLb4CRkTmBsFV",
+"promqueen":"5kwbwtyFw9fqMudNUCiFHl",
+"propain":"2hJIsGyAMyrircVHcLEj4y",
+"puzzled panther":"6eLqAV3aTYejiXgejCe3ME",
+"pyrex":"4ELZUuHRIUrAkko2cjpWB1",
+"python p":"0d3LE1OTP8wLpoVOsrl06S",
+"pär hagström and charlatans of love":"44bPAT3iTlocMzNGUadp4L",
+"q tha hero":"3gd1cxvop4mcruUbFb6yxd",
+"quanna":"5u45WwAFgOilf1hf3cYHva",
+"quiet money dot":"0JacImaOrvpwXcVHeagnI7",
+"quimikoz del son":"0BjcqaqrfzLOCit81GJhNg",
+"radium dolls":"5XdOr2J2sgTI4mEE6j9KYr",
+"rafa parra":"5AuDNPVomwMxxDWbGt93Zg",
+"randy perez":"6vEVVZO3Akn3h9YT4frCY3",
+"raq baby":"2MEiPjmRDl1ftTEaBD3B7D",
+"ray vaughn":"4yYYCSCDUTypErQMZv5iSg",
+"reaper":"47qrgNNbZRRCAK0ZrKcuZV",
+"redzed":"3FCo1sUkVbwKnO2m0Z7Bp9",
+"rehma":"528kmCx2HGqrT4G9sXCDuD",
+"reilly downes":"2vHmPCbGkKNLrKRP9nv3G3",
+"rejay":"4eepZmdBOvo2dDxaifOphe",
+"remey williams":"5PjEH2MNklNpDLPVtUvH0i",
+"reuben vincent":"50sU8LMWPibBo24HD8EmvJ",
+"ria":"21suutlchqrS2j8b2tjEWt",
+"rosa anschuetz":"1kjoxeQwJmoCfXT6j58MTm",
+"rosegarden funeral party":"30kQn8H0xfBtBGzDwnuaTx",
+"ruido selecto":"0KF0b0vIeTNPIzYSIAOAPu",
+"runo plum":"0pouttXEXIHvguV90fhB39",
+"ryan dove":"304fYx96lPv6MVfW5bFV8A",
+"ryley hall":"6PDqRZijDeHV8JYbXNsIm9",
+"saige davis":"3acAq5TmjJOyw2o1B6zKiS",
+"saint avangeline":"0j49VqyyFRbclqg8Jv3Sdq",
+"saint harison":"16AILHA3N2C3ngRuR2FdfH",
+"sam llanes":"5qnV93Pf7R7sTaEutWaIAH",
+"samwoy":"4khtCx57NpDeXO1miYSmvO",
+"samy sharif":"2Mzsx6Ss1YXrvigyijs3O6",
+"san charbel":"0rJoQxx72uqZsnNZAiaJUx",
+"sarah crean":"5tbb3BtKz6wc1qQmjmgfe0",
+"sarah meth":"2cveuRnx0cbS41GQTBcuRz",
+"sasha wrist":"3h4yzDa8Uj4ZplkApbgFAD",
+"sassy 009":"30gJ2CPCeUvghTg6TkfA4L",
+"scattrbrain":"6lWIyq5Kx1LORlaoCeDoIB",
+"scuttino":"1VE9sE72Tzs94Pc5e2W7JF",
+"selines":"3kO8EO3svNUQSQW8rDOjAb",
+"semisoft":"4mygwcmYf3hUdWMek9DFQL",
+"sertified":"27tQ7W9OWQPzzYXkqNRHRj",
+"seulement":"5SrFUIr1QjViWWHI4T3vEB",
+"sex mask":"58TcB8X9Cr1VpR9PrXJeTQ",
+"sexpop":"5YoMiOBqFD3ix30uj1fYyh",
+"shai gabriel":"4SwPobbVOUdmNgFSeBQUev",
+"shallowater":"3BV5N0bOmtkavYFUSHsfMQ",
+"shao dow":"6DDdZ3Ezd3Sd2q5yf3z6vJ",
+"shaunsolo":"7eMtKzd6t2LgKEvArEOFSN",
+"she23":"57YqRGYpWgAR05uJC94CHk",
+"short life":"0xRCyCqeWZmNSCrvpI0DnO",
+"shreea kaul":"1c203LuoIFKuIn2X5Uz5lE",
+"shunk":"7vDjs6C6FsJD7C2IFduA32",
+"silvertone":"3G0HIBBSSGQVMX7MDnSxob",
+"simone tang":"1ffZMMdNhHgMkn87I7K1jC",
+"sir eddie c":"48UJPsnr7QBAMeM5zM43R2",
+"slash need":"1AVQZcqi25SOXMYCqz1ZvY",
+"slomo drags":"1IeIiFaboYVvUKhtfeAbVo",
+"smooth nature":"1aeEGXRq539TOL0PCW8LRt",
+"social cig":"0KNhmP2Fvad6ym6UQ2MTDj",
+"social order":"7J3iqTNIMXafmNKtwfRQ48",
+"sofia and the antoinettes":"2Wmot0sq6wOOjvcYD4NRD7",
+"sofish":"2RDGc14pPXYlnN55kzJYeB",
+"somebody someone":"0VY87QuDRXTx6FgHfMyWwT",
+"someshiit":"1Se0FtmWSFmL81n85repGg",
+"sonido cachimbo":"sonidocachimbo",
+"sonora tukukuy":"551qOEQO4pWwZPBItUVVPB",
+"sorry youth":"6c4IBMTcnFDhsKHXNSBBvp",
+"sosocamo":"6hpztnbgmaneFFGGnEOVjd",
+"soucream":"52aOUaCckb2h6cjxsIr6LT",
+"soundmass":"4paz9ZhZMz5YhQEzWfBQnb",
+"southside hippie":"7JnL45b1RGl9ph3jODu8WL",
+"spacegoonz":"4BRwQ3KsIX1Orj5SrIDY5l",
+"spacestation":"0tC0VODFMyQLqetgajNbbh",
+"spike fuck":"1BCTAGmHZ4djDWQ0KtfKdZ",
+"spoon benders":"0xMp6RS1udvg0N3LQFsrN9",
+"sri":"56JH02uULTiy1Agv3PDwUE",
+"stalefish":"5vN1181q2stHSPlfgkCdhV",
+"stare away":"6s5RTqSten6un2nTvac5ID",
+"steven bamidele":"71MVm1MdM62WiEBkSIjIA6",
+"stockz":"7tVkoeijZhmwmvtlRrxAT0",
+"strange lot":"3IqWV1jEfJHTg9WosOQOeg",
+"subpar snatch":"7Gi0KoSSJ0ayuOVP5h8pul",
+"sugabooo":"0UVpX7NAx5NLuEhGNAluXS",
+"sultanes del yonke":"4gRAoBb8ZgoUTUpNffXyqm",
+"sun room":"4ANMwDtqwfkzPgFoUoLZ3Y",
+"sunforger":"1540fHyIUGBC7dbzJvFCfP",
+"sunshine spazz":"6XVMJHFZRqc3rrz6XlGOR7",
+"superfan":"3BO07jDo7Qs7qNLdwRoISM",
+"susannah joffe":"3JGxLjd5coSPknSlbYyNLw",
+"suuvi":"2Z69VotjS9931cszUDlmAr",
+"suxxy puxxy":"6ZqEBlljkDOtHcCVwKeHxt",
+"swapmeet":"02ngaZWfkvv0Fzmh7FhJqj",
+"sweeney":"0hiWXEuO5U1G2shdQ6RWd4",
+"switchfoot":"6S58b0fr8TkWrEHOH4tRVu",
+"sxsw djz":"1HY2Jd0NmPuamShAr6KMms",
+"t-low":"3tQzzidoPfVifoURnDfgmD",
+"talise":"2y5FoD2JGJB0CDtlVVfHPO",
+"talk":"6mx5dgNlLjrDDMyFsgrW87",
+"tavo rayo":"4V6Om8WdDxyoHGhpfgD9Mp",
+"texas string assembly":"4KFeeMEoksAphtaqQ27OAU",
+"the animeros":"5LTUoyFqp3m3i3xolfdwPI",
+"the band loula":"3BkvqhICmG3IyD4z9xGu7i",
+"the beatbox collective":"6Q9NXJYkMG6MzGfW5231Zr",
+"the braymores":"7CrVM33l2Pt32fCxJWGVw6",
+"the bures band":"67BYabRwsu3m4F1x5kohzV",
+"the chopstars":"1flnYYrdMqrzdi6XarXuJW",
+"the dharma chain":"1vtBMVcsRYr8a4dJAmKtLB",
+"the droptines":"5MKl9FP3O6MpQhVx7QRFyc",
+"the dumes":"1sDeMYlZRiudJljM1BKMWb",
+"the eric hisaw band":"4cvfgDZkTXgsT1JvaGSIgo",
+"the family battenberg":"769i8WlIx04arCTdFaIvbd",
+"the gasoline gypsies":"63g2PjfoP0Uj4YD27eEXTw",
+"the gringos":"75OJYQmAaeiSEitbQj8Adp",
+"the haunted youth":"2BJzRLleDH2jTAArbI4Xod",
+"the irrepressibles":"1v5bOzXbhrQ57qSvRwGA6s",
+"the kellows":"3tY4vhe4jQNeKICvgHElOO",
+"the last real circus":"5v5kEHDKDqV1dWQbmKQaKC",
+"the microphone misfitz":"5pGTmsC9wt9x64VtG0t38E",
+"the pink stones":"77xJf67Cuu7UPJgJoClESG",
+"the ramona flowers":"2wPSVzL9RmbR3g1MjWRjMe",
+"the red eye gamblers":"280mtMRi91OijyJ7IdQDII",
+"the reverent few":"2EouIrPAk4PVT3DLhPxPic",
+"the sophs":"2zX0ROHqU3TEfFtKBtqOAE",
+"the tiarras":"3mqFKiCvxacWEy7rzKSe12",
+"the tremolo beer gut":"1eQXpCboliMWa6VxBtCx1W",
+"the tullamarines":"4XD21vbRKQgevcDpWaDRw5",
+"thelma and the sleaze":"03VfdeLg04zHr8nmQ2rQ57",
+"thelonious love":"0ve18jYUzQt2I1aezmxP3s",
+"theo lawrence":"28eXJYBZVGDRy1c7j4dIw2",
+"tia tutt":"0UfahhfY1Df7qydsGFWVxO",
+"timmy skelly":"4jeNMayo3ERH8lqe2Cd8kb",
+"timothy howls":"1vL9vzpTrn9Q8kdmOk9pgr",
+"tom a smith":"6haZIHZVYI79wKvp6FCFML",
+"tomar and the fcs":"5dgZB4BAkUdo9RpM5C2nja",
+"torture and the desert spiders":"6cx4LU1A6Omvgn9Hy0ow4N",
+"total wife":"1JQhIj3MeXcTYorKsa5SBz",
+"trim":"1MwH3MAQ151gdKxnt5rErs",
+"troy campbell":"3tzf3BRce1Ot2RvT0RamP7",
+"true jackson":"5B415EJ481J15R96TqdTna",
+"ttbby":"7iQZSmY2GLAivue7ty2MRi",
+"ttssfu":"4u0g598Mtg9ch4HgEP2DFG",
+"twitch4eva":"1U9hi0kw9OcJiw7xvwE6go",
+"two-man giant squid":"5VKm0Y0YdwuMBi4JJdUqmF",
+"tye harris":"26qB5gw769cdV1k6n2hrYP",
+"tyla yaweh":"1MXZ0hsGic96dWRDKwAwdr",
+"unsafe space garden":"0zJQc1EIZ3JSqQajhVPb19",
+"urboi.":"6QhzVrbA9G5OZJ7u6Mq30L",
+"valee":"4hRL2QmahOYxXNmNKtG1AI",
+"valsian":"Valsian",
+"vanita leo":"1ygRaSoCU4Ph22Y4b7UfB9",
+"vertarias":"2dFPDZCAxfPMHQQ088iSbz",
+"very necessary":"2tu2cVUbeiD04HtMLrUVnx",
+"victor jones":"3qWUrXaaCWw9NohGOAKCbD",
+"victoryland":"63tTs259cHmrkQ7lGTmDdp",
+"vin zeal":"1StIWSF5dWu8SnVsr9j2kN",
+"vintage jay":"5NWBBj0ouc32yOvAG1KKdt",
+"vukovi":"1844Ua6R4gOuH6GLdlR4dt",
+"wacotron":"4CAL0nDGvLhUfQEpwSLnUz",
+"water damage":"4TjUJXgZJ2K1eepRhtWu4j",
+"wave chapelle & nilexnile":"5ob49OGyliiUTPl75MWrg3",
+"werkha":"5Mxf4advIPTDdAYqbJZBS0",
+"wesley wolffe":"7KZt27lFbCFQefy5izEc8p",
+"west texas exiles":"7Du2DuYP9MjzSgxQHtQoCO",
+"whisper":"38Zw00rfItDdu9ZvUgCWoZ",
+"whitelands":"4B9oWJTIts1eOPLGKy4mro",
+"wiardon":"7DNWAdCPicuaw9vhjudRlS",
+"wifeknife":"2XZ1yNxBgLddNe685Mi8QN",
+"wilby":"1Y6ECsGp8e5NR3v88UBIPT",
+"willoh":"6v2hMJj6ubSkm1Moc8zhTy",
+"willy j peso":"4haLOj6F2gCBcBN782glGf",
+"wilter":"2Dhzt5rI1go7tAIIlTAz7R",
+"wim tapley & the cannons":"0hBKnsxER0S51JUH21uYLi",
+"worlds worst":"61WE20UoQujMRZqzTOq3sI",
+"xbvalentine":"4THqvMsBc72amqxSB45LDu",
+"ximena soto":"2UMDsP7y51fWknYFriceqC",
+"yakiyan":"41lqavlwvb2IVsBpmCkh4E",
+"yard":"36aHdS6WBzKMBA9pt1FYFS",
+"yes and maybe":"3eeGgUP0pVi7bxVdNUbzc7",
+"yng naz":"3pGStZwQq6wzCgCPjT8YOC",
+"yoshi":"399j7KzhXlNysKZvb55lxd",
+"yoso":"1sNprSYk7cirqdqFL60VDr",
+"young clean":"42XiFRtZtNlIj87E5XE0li",
+"yung bryse":"2H9QmFs1zkTqA6v6IQcYNx",
+"yung d3mz":"2PWdxiDyY5rv1qBHEUfqQf",
+"zak blaine":"7ETfiJZtGM9RkfucOvVxrR",
+"zamaera":"615EQd7FBV6I9KZahoOttg",
+"zastava":"1ZiKWjTJZrzfnYldJdyAul",
+"zeñal nortex":"5nXJGc3U7zCgbcYMHFInBX",
+"zola marcelle":"3iH8OyEQJ0blsRGvuvcNWk",
+"¿qiensave?":"2zzLwsB8sY1dkIDAKevDrc"
+};
+
+export default function App(){
+  const[day,setDay]=useState("Thu");
+  const[gf,setGf]=useState(new Set(Object.keys(G)));
+  const allGenres=useMemo(()=>new Set(Object.keys(G)),[]);
+  const[hov,setHov]=useState(null);
+  const[hovRect,setHovRect]=useState(null);
+  const[expanded,setExpanded]=useState(false);
+  const[mp,setMp]=useState({x:0,y:0});
+  const[search,setSearch]=useState("");
+  const[mySched,setMySched]=useState(new Set());
+  const[viewMode,setViewMode]=useState("gantt"); // gantt | mysched
+  const[zoom,setZoom]=useState(1); // 1=normal, 1.25=large, 1.5=xl
+  const[tZoom,setTZoom]=useState(1); // timeline horizontal zoom 1-4x
+  const[audioState,setAudioState]=useState("idle");
+  const[scrollHint,setScrollHint]=useState(false);
+  const[showFilters,setShowFilters]=useState(false);
+  const[mob,setMob]=useState(typeof window!=="undefined"&&window.innerWidth<768);
+  const previewTimer=useRef(null);
+  const panelRef=useRef(null);
+  const ganttRef=useRef(null);
+  const audioRef=useRef(null);
+  const audioCache=useRef({});
+
+  // Responsive resize + audio warmup on first interaction
+  useMemo(()=>{
+    if(typeof window==="undefined") return;
+    const fn=()=>setMob(window.innerWidth<768);
+    window.addEventListener("resize",fn);
+    // Warm audio context on first user interaction (mobile requirement)
+    const warmOnTouch=()=>{
+      warmAudio();
+      window.removeEventListener("touchstart",warmOnTouch);
+      window.removeEventListener("click",warmOnTouch);
+    };
+    window.addEventListener("touchstart",warmOnTouch,{once:true});
+    window.addEventListener("click",warmOnTouch,{once:true});
+    return()=>{window.removeEventListener("resize",fn);};
+  },[]);
+
+  const vcW=mob?110:200*zoom;
+
+  const killAudio=useCallback(()=>{
+    if(audioRef.current){audioRef.current.pause();audioRef.current.src="";audioRef.current=null;}
+    setAudioState("idle");
+  },[]);
+
+  // Warm up audio context on first interaction (mobile requirement)
+  const audioCtxWarmed=useRef(false);
+  const warmAudio=useCallback(()=>{
+    if(audioCtxWarmed.current) return;
+    try{
+      const ctx=new (window.AudioContext||window.webkitAudioContext)();
+      ctx.resume().then(()=>{audioCtxWarmed.current=true;}).catch(()=>{});
+      const a=new Audio();a.volume=0;a.src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+      a.play().then(()=>{a.pause();audioCtxWarmed.current=true;}).catch(()=>{});
+    }catch(e){}
+  },[]);
+
+  const fetchWithTimeout=useCallback((url,ms=4000)=>{
+    const ctrl=new AbortController();
+    const timer=setTimeout(()=>ctrl.abort(),ms);
+    return fetch(url,{signal:ctrl.signal}).finally(()=>clearTimeout(timer));
+  },[]);
+
+  const playPreview=useCallback(async(name)=>{
+    killAudio();
+    warmAudio();
+    setAudioState("loading");
+    const key=name.toLowerCase().replace(/[^a-z0-9 ]/g,"").trim();
+    const nameClean=name.replace(/[()\[\]&+]/g," ").trim();
+    // Check cache
+    if(audioCache.current[key]){
+      const url=audioCache.current[key];
+      if(url==="NONE"){setAudioState("error");return;}
+      try{
+        const a=new Audio(url);a.volume=0.6;audioRef.current=a;
+        a.onplay=()=>setAudioState("playing");
+        a.onerror=()=>setAudioState("error");
+        a.onended=()=>setAudioState("idle");
+        await a.play();
+      }catch(e){setAudioState("error");}
+      return;
+    }
+    const doPlay=async(url)=>{
+      audioCache.current[key]=url;
+      const a=new Audio();a.volume=0.6;a.preload="auto";audioRef.current=a;
+      a.onplay=()=>setAudioState("playing");
+      a.onerror=()=>{audioCache.current[key]="NONE";setAudioState("error");};
+      a.onended=()=>setAudioState("idle");
+      a.src=url;
+      try{
+        await a.play();
+      }catch(e){
+        // Mobile autoplay blocked - show tap-to-play state
+        if(e.name==="NotAllowedError"){
+          setAudioState("blocked");
+        }else{
+          setAudioState("error");
+        }
+      }
+    };
+    // Try multiple strategies with timeouts and name variations
+    const queries=[nameClean];
+    if(nameClean.split(" ").length>2) queries.push(nameClean.split(" ").slice(0,2).join(" "));
+    const strategies=[
+      // 1. Deezer (best CORS support for previews)
+      async(q)=>{
+        const r=await fetchWithTimeout(`https://api.deezer.com/search?q=artist:"${encodeURIComponent(q)}"&limit=5`,5000);
+        const d=await r.json();
+        const track=d?.data?.find(t=>t.preview&&t.preview.length>10);
+        if(track?.preview) return track.preview;
+        // Fallback: try without artist: prefix
+        const r2=await fetchWithTimeout(`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=5`,5000);
+        const d2=await r2.json();
+        const track2=d2?.data?.find(t=>t.preview&&t.preview.length>10);
+        return track2?.preview||null;
+      },
+      // 2. iTunes via corsproxy.io
+      async(q)=>{
+        const r=await fetchWithTimeout(`https://corsproxy.io/?url=${encodeURIComponent(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=5`)}`,5000);
+        const d=await r.json();
+        const track=d?.results?.find(t=>t.previewUrl);
+        return track?.previewUrl||null;
+      },
+      // 3. iTunes via allorigins
+      async(q)=>{
+        const target=`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=5`;
+        const r=await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(target)}`,5000);
+        const wrapper=await r.json();
+        if(wrapper?.contents){
+          const d=JSON.parse(wrapper.contents);
+          const track=d?.results?.find(t=>t.previewUrl);
+          return track?.previewUrl||null;
+        }
+        return null;
+      },
+      // 4. Deezer via allorigins fallback
+      async(q)=>{
+        const target=`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=5`;
+        const r=await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(target)}`,5000);
+        const wrapper=await r.json();
+        if(wrapper?.contents){
+          const d=JSON.parse(wrapper.contents);
+          const track=d?.data?.find(t=>t.preview&&t.preview.length>10);
+          return track?.preview||null;
+        }
+        return null;
+      },
+    ];
+    // Try each strategy with primary name, then simplified name
+    for(const q of queries){
+      for(const strat of strategies){
+        try{
+          const url=await strat(q);
+          if(url){await doPlay(url);return;}
+        }catch(e){/* try next */}
+      }
+    }
+    audioCache.current[key]="NONE";
+    setAudioState("error");
+  },[killAudio,warmAudio,fetchWithTimeout]);
+
+  const startExpand=useCallback((evt)=>{
+    if(previewTimer.current) clearTimeout(previewTimer.current);
+    previewTimer.current=setTimeout(()=>{
+      setExpanded(true);
+      playPreview(evt.name);
+    },1200);
+  },[playPreview]);
+
+  const stopExpand=useCallback(()=>{
+    if(previewTimer.current){clearTimeout(previewTimer.current);previewTimer.current=null;}
+  },[]);
+
+  const toggleSched=useCallback((id)=>{
+    setMySched(prev=>{const next=new Set(prev);if(next.has(id))next.delete(id);else next.add(id);return next;});
+  },[]);
+
+  const dayEvts=useMemo(()=>EVENTS.filter(e=>e.day===day),[day]);
+
+  const venues=useMemo(()=>{
+    const vm={};
+    dayEvts.forEach(e=>{
+      if(!vm[e.venue]) vm[e.venue]=[];
+      vm[e.venue].push(e);
+    });
+    const entries=Object.entries(vm);
+    // Sort: district order first, then earliest start within district
+    const distOrder={};
+    DISTRICTS.forEach((d,i)=>distOrder[d.id]=i);
+    entries.sort((a,b)=>{
+      const da=VENUE_DISTRICT[a[0]];
+      const db=VENUE_DISTRICT[b[0]];
+      const oa=da?distOrder[da.id]:99;
+      const ob=db?distOrder[db.id]:99;
+      if(oa!==ob) return oa-ob;
+      const aMin=Math.min(...a[1].filter(e=>e.startH>=0).map(e=>e.startH<6?e.startH+24:e.startH).concat([99]));
+      const bMin=Math.min(...b[1].filter(e=>e.startH>=0).map(e=>e.startH<6?e.startH+24:e.startH).concat([99]));
+      return aMin-bMin;
+    });
+    return entries;
+  },[dayEvts]);
+
+  const genreCounts=useMemo(()=>{
+    const c={};
+    dayEvts.forEach(e=>{c[e.genre]=(c[e.genre]||0)+1;});
+    return c;
+  },[dayEvts]);
+
+  const searchLower=search.toLowerCase();
+  const filtered=search?dayEvts.filter(e=>e.name.toLowerCase().includes(searchLower)||e.venue.toLowerCase().includes(searchLower)||e.presenter.toLowerCase().includes(searchLower)):null;
+
+  const tStart=11,tEnd=26;
+  const tMarks=["11A","12P","1P","2P","3P","4P","5P","6P","7P","8P","9P","10P","11P","12A","1A"];
+
+  // Current time for "now" indicator
+  const nowH=useMemo(()=>{
+    if(!TODAY_CODE||day!==TODAY_CODE) return -1;
+    const d=new Date();
+    let h=d.getHours()+d.getMinutes()/60;
+    return h;
+  },[day]);
+
+  function timeToLeft(h){
+    if(h<0) return -1;
+    if(h<6) h+=24;
+    if(h<tStart) h=tStart;
+    return Math.max(0,Math.min(100,((h-tStart)/(tEnd-tStart))*100));
+  }
+
+  return(
+    <div style={{fontFamily:"'IBM Plex Sans','Helvetica Neue',sans-serif",background:"#08080d",color:"#d4d4d4",minHeight:"100vh"}}
+      onMouseMove={e=>setMp({x:e.clientX,y:e.clientY})}>
+      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+      <div style={{padding:mob?"10px 8px":"16px 20px",maxWidth:1500,margin:"0 auto"}}>
+        {/* Header */}
+        <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4,flexWrap:"wrap"}}>
+          <h1 style={{fontSize:mob?20:28,fontWeight:700,margin:0,background:"linear-gradient(90deg,#E63946,#FFB703,#06D6A0,#8338EC,#FF006E)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
+            SXSW 2026
+          </h1>
+          <span style={{fontSize:mob?10:14,color:"#555"}}>OFFICIAL SCHEDULE — GANTT BY VENUE</span>
+          <span style={{fontSize:11,color:"#444",marginLeft:"auto"}}>{EVENTS.length} total acts · {dayEvts.length} today · {gf.size<allGenres.size?`${venues.filter(([v,e])=>e.some(x=>gf.has(x.genre))).length}/`:""}{venues.length} venues</span>
+        </div>
+        {!mob&&<p style={{fontSize:11,color:"#7a7a88",margin:"0 0 12px",lineHeight:1.4}}>
+          Source: schedule.sxsw.com. Color = genre from your artist CSV. Hover for details. Click genre to filter. Search to find specific acts.
+        </p>}
+
+        {/* Controls */}
+        <div style={{display:"flex",gap:mob?3:6,marginBottom:mob?8:12,flexWrap:"wrap",alignItems:"center"}}>
+          {DAYS.map(d=>{
+            const cnt=EVENTS.filter(e=>e.day===d).length;
+            return(
+              <button key={d} onClick={()=>setDay(d)} style={{
+                padding:mob?"6px 8px":"8px 16px",borderRadius:6,cursor:"pointer",fontSize:mob?10:13,fontWeight:day===d?700:500,
+                fontFamily:"inherit",background:day===d?"#fff":"#13131d",color:day===d?"#08080d":"#777",
+                border:day===d?"1px solid #fff":"1px solid #222",transition:"all .15s",
+                flex:mob?"1 0 auto":"none",textAlign:"center"
+              }}>{mob?d:DAY_LABEL[d]}{d===TODAY_CODE&&<span style={{marginLeft:4,fontSize:mob?7:9,background:"#06D6A0",color:"#000",padding:"1px 5px",borderRadius:4,fontWeight:700,verticalAlign:"middle"}}> NOW</span>}{!mob&&<span style={{opacity:.5}}> ({cnt})</span>}</button>
+            );
+          })}
+        </div>
+        <div style={{display:"flex",gap:6,marginBottom:mob?8:12,flexWrap:"wrap",alignItems:"center"}}>
+          <div style={{position:"relative",flex:mob?"1 1 100%":"0 0 auto"}}>
+            <input placeholder={mob?"Search...":"Search artist, venue, presenter..."} value={search} onChange={e=>setSearch(e.target.value)}
+              style={{padding:"8px 12px",paddingRight:search?30:12,borderRadius:6,border:"1px solid #222",background:"#13131d",color:"#aaa",
+              fontSize:mob?12:13,fontFamily:"inherit",width:mob?"100%":280,outline:"none"}}/>
+            {search&&<button onClick={()=>setSearch("")} style={{position:"absolute",right:6,top:"50%",transform:"translateY(-50%)",
+              padding:"2px 6px",background:"transparent",color:"#E63946",border:"none",cursor:"pointer",fontSize:14,fontFamily:"inherit"}}>✕</button>}
+          </div>
+          <button onClick={()=>setViewMode(viewMode==="gantt"?"mysched":"gantt")} style={{
+            padding:mob?"8px 12px":"8px 16px",borderRadius:6,cursor:"pointer",fontSize:mob?11:13,fontWeight:700,
+            fontFamily:"inherit",transition:"all .15s",flex:mob?"1 1 100%":"none",
+            background:viewMode==="mysched"?"linear-gradient(135deg,#FFB703,#F77F00)":"#13131d",
+            color:viewMode==="mysched"?"#000":"#FFB703",
+            border:viewMode==="mysched"?"1px solid #FFB703":"1px solid #FFB70355",
+          }}>★ My Schedule{mySched.size>0?` (${mySched.size})`:""}</button>
+          {TODAY_CODE&&day===TODAY_CODE&&<button onClick={()=>{
+            const now=new Date();let h=now.getHours()+now.getMinutes()/60;
+            const scrollContainer=document.querySelector('[style*="overflowX"]')||document.querySelector('[style*="overflow-x"]');
+            if(scrollContainer){
+              let nh=h<6?h+24:h;
+              const frac=(nh-tStart)/(tEnd-tStart);
+              const totalW=scrollContainer.scrollWidth;
+              scrollContainer.scrollLeft=Math.max(0,totalW*frac-scrollContainer.clientWidth/2);
+            }
+          }} style={{
+            padding:mob?"8px 12px":"8px 16px",borderRadius:6,cursor:"pointer",fontSize:mob?11:13,fontWeight:700,
+            fontFamily:"inherit",transition:"all .15s",
+            background:"linear-gradient(135deg,#06D6A0,#049c76)",color:"#000",
+            border:"1px solid #06D6A0",animation:"pulse 2s ease infinite"
+          }}>⚡ What's On Now</button>}
+        </div>
+
+        {viewMode==="gantt"&&(<>
+        {/* Genre filter toggle (mobile) + controls */}
+        {mob&&<button onClick={()=>setShowFilters(!showFilters)} style={{width:"100%",padding:"8px",
+          background:"#13131d",border:"1px solid #222",borderRadius:6,cursor:"pointer",
+          fontSize:11,color:"#888",fontFamily:"inherit",fontWeight:600,marginBottom:8,
+          display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <span>Filters & Controls {gf.size<allGenres.size?`(${allGenres.size-gf.size} hidden)`:""}</span>
+          <span style={{transform:showFilters?"rotate(180deg)":"none",transition:"transform .2s"}}>▼</span>
+        </button>}
+        {/* Genre filter + Zoom controls */}
+        <div style={{display:mob&&!showFilters?"none":"block"}}>
+        <div style={{display:"flex",gap:4,marginBottom:6,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{fontSize:10,color:"#555",textTransform:"uppercase",letterSpacing:".08em",marginRight:3}}>Genre:</span>
+          {Object.entries(G).filter(([g])=>genreCounts[g]).sort((a,b)=>(genreCounts[b[0]]||0)-(genreCounts[a[0]]||0)).map(([genre,color])=>(
+            <button key={genre} onClick={()=>{const next=new Set(gf);if(next.has(genre))next.delete(genre);else next.add(genre);setGf(next);}} style={{
+              padding:"4px 10px",borderRadius:12,cursor:"pointer",fontSize:10,fontWeight:600,
+              fontFamily:"inherit",transition:"all .15s",whiteSpace:"nowrap",
+              background:gf.has(genre)?color:"transparent",
+              color:gf.has(genre)?"#fff":color,
+              border:`1px solid ${gf.has(genre)?color:color+"55"}`,
+              opacity:gf.has(genre)?1:0.35,
+              textDecoration:gf.has(genre)?"none":"line-through",
+            }}>
+              {genre} ({genreCounts[genre]||0})
+            </button>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:4,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
+          <button onClick={()=>setGf(new Set(Object.keys(G)))} style={{padding:"3px 9px",
+            background:gf.size===allGenres.size?"#222":"#118AB2",color:gf.size===allGenres.size?"#555":"#fff",
+            border:"1px solid #118AB255",borderRadius:8,cursor:"pointer",fontSize:9,fontWeight:600,fontFamily:"inherit"}}>
+            Select All
+          </button>
+          <button onClick={()=>setGf(new Set())} style={{padding:"3px 9px",
+            background:gf.size===0?"#222":"#E63946",color:gf.size===0?"#555":"#fff",
+            border:"1px solid #E6394655",borderRadius:8,cursor:"pointer",fontSize:9,fontWeight:600,fontFamily:"inherit"}}>
+            Clear All
+          </button>
+          <span style={{color:"#4a4a55",margin:"0 4px"}}>|</span>
+          <span style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:".08em"}}>DPI:</span>
+          <button onClick={()=>setZoom(z=>Math.max(0.5,z-0.25))} style={{width:28,height:28,
+            display:"flex",alignItems:"center",justifyContent:"center",
+            background:"#13131d",color:zoom<=0.5?"#333":"#aaa",border:"1px solid #222",borderRadius:6,
+            cursor:zoom<=0.5?"default":"pointer",fontSize:16,fontWeight:700,fontFamily:"inherit",lineHeight:1}}>−</button>
+          <div style={{padding:"3px 10px",background:"#1a1a2a",borderRadius:6,fontSize:10,fontWeight:600,
+            color:"#8338EC",minWidth:44,textAlign:"center",border:"1px solid #8338EC33"}}>
+            {Math.round(zoom*100)}%
+          </div>
+          <button onClick={()=>setZoom(z=>Math.min(4,z+0.25))} style={{width:28,height:28,
+            display:"flex",alignItems:"center",justifyContent:"center",
+            background:"#13131d",color:zoom>=4?"#333":"#aaa",border:"1px solid #222",borderRadius:6,
+            cursor:zoom>=4?"default":"pointer",fontSize:16,fontWeight:700,fontFamily:"inherit",lineHeight:1}}>+</button>
+          <span style={{color:"#4a4a55",margin:"0 4px"}}>|</span>
+          <span style={{fontSize:9,color:"#555",textTransform:"uppercase",letterSpacing:".08em"}}>Timeline:</span>
+          <button onClick={()=>{const g=ganttRef.current;const oldLeft=g?g.scrollLeft:0;const oldWidth=g?g.scrollWidth:1;setTZoom(z=>{const nz=Math.max(1,z-0.5);if(g)setTimeout(()=>{g.scrollLeft=oldLeft*(g.scrollWidth/oldWidth);},30);return nz;});}} style={{width:28,height:28,
+            display:"flex",alignItems:"center",justifyContent:"center",
+            background:"#13131d",color:tZoom<=1?"#333":"#aaa",border:"1px solid #222",borderRadius:6,
+            cursor:tZoom<=1?"default":"pointer",fontSize:16,fontWeight:700,fontFamily:"inherit",lineHeight:1}}>−</button>
+          <div style={{padding:"3px 10px",background:"#1a1a2a",borderRadius:6,fontSize:10,fontWeight:600,
+            color:"#06D6A0",minWidth:44,textAlign:"center",border:"1px solid #06D6A033"}}>
+            {tZoom}x
+          </div>
+          <button onClick={()=>{const g=ganttRef.current;const oldLeft=g?g.scrollLeft:0;const oldWidth=g?g.scrollWidth:1;setTZoom(z=>{const nz=Math.min(6,z+0.5);if(g)setTimeout(()=>{g.scrollLeft=oldLeft*(g.scrollWidth/oldWidth);},30);return nz;});setScrollHint(true);setTimeout(()=>setScrollHint(false),2000);}} style={{width:28,height:28,
+            display:"flex",alignItems:"center",justifyContent:"center",
+            background:"#13131d",color:tZoom>=6?"#333":"#aaa",border:"1px solid #222",borderRadius:6,
+            cursor:tZoom>=6?"default":"pointer",fontSize:16,fontWeight:700,fontFamily:"inherit",lineHeight:1}}>+</button>
+          <button onClick={()=>{setZoom(1);setTZoom(1);setGf(new Set(Object.keys(G)));setSearch("");if(ganttRef.current){ganttRef.current.scrollTo({left:0,top:0,behavior:"smooth"});}}} style={{padding:"3px 9px",
+            background:zoom===1&&tZoom===1?"#222":"#13131d",color:zoom===1&&tZoom===1?"#555":"#888",
+            border:"1px solid #33333355",borderRadius:6,cursor:"pointer",
+            fontSize:9,fontWeight:600,fontFamily:"inherit"}}>Reset All</button>
+          {gf.size<allGenres.size&&<span style={{fontSize:9,color:"#FFB703",marginLeft:8}}>
+            {allGenres.size-gf.size} genre{allGenres.size-gf.size>1?"s":""} hidden
+          </span>}
+          {tZoom>1&&<span style={{fontSize:9,color:"#06D6A0",marginLeft:4,display:"inline-flex",alignItems:"center",gap:3}}>
+            ⟵ scroll to see full timeline ⟶
+          </span>}
+        </div>
+
+        </div>
+        {/* Search results */}
+        {search.length>0&&filtered&&(
+          filtered.length>0?(
+            <div style={{marginBottom:12,padding:"8px 12px",background:"#12121a",borderRadius:6,border:"1px solid #222"}}>
+              <div style={{fontSize:11,color:"#666",marginBottom:5}}>Found {filtered.length} for \"{search}\":</div>
+              <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                {filtered.slice(0,25).map(e=>(
+                  <span key={e.id} style={{fontSize:10,padding:"3px 8px",borderRadius:4,
+                    background:G[e.genre]+"33",color:G[e.genre],fontWeight:600,border:`1px solid ${G[e.genre]}44`}}>
+                    {e.name} <span style={{color:"#666"}}>@ {e.venue} {e.time.split("--")[0].trim()}</span>
+                  </span>
+                ))}
+                {filtered.length>25&&<span style={{fontSize:10,color:"#444"}}>+{filtered.length-25} more</span>}
+              </div>
+            </div>
+          ):(
+            <div style={{marginBottom:12,padding:"12px 14px",background:"#12121a",borderRadius:6,border:"1px solid #E6394633",
+              display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:18}}>🔍</span>
+              <div>
+                <div style={{fontSize:12,fontWeight:600,color:"#999"}}>No results for \"{search}\" on {DAY_LABEL[day]}</div>
+                <div style={{fontSize:10,color:"#666",marginTop:2}}>
+                  {(()=>{const other=EVENTS.filter(e=>e.day!==day&&(e.name.toLowerCase().includes(search.toLowerCase())||e.venue.toLowerCase().includes(search.toLowerCase())));
+                    if(other.length>0){const days=[...new Set(other.map(e=>e.day))];
+                      return <span>Found on: {days.map(d=><button key={d} onClick={()=>setDay(d)}
+                        style={{background:"#222",color:"#aaa",border:"1px solid #444",borderRadius:4,padding:"2px 8px",
+                        marginLeft:4,cursor:"pointer",fontSize:10,fontFamily:"inherit",fontWeight:600}}>{DAY_LABEL[d]}</button>)}</span>;}
+                    return "Try a different spelling";
+                  })()}
+                </div>
+              </div>
+            </div>
+          )
+        )}
+
+        {/* Scroll hint */}
+        {scrollHint&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+          padding:"6px 14px",marginBottom:6,background:"#06D6A015",border:"1px solid #06D6A033",
+          borderRadius:6,animation:"fadeHint 2s ease forwards"}}>
+          <style>{`@keyframes fadeHint{0%{opacity:1}70%{opacity:1}100%{opacity:0}}`}</style>
+          <span style={{fontSize:16}}>↔</span>
+          <span style={{fontSize:11,color:"#06D6A0",fontWeight:600}}>Scroll horizontally to see the full timeline</span>
+        </div>}
+        {/* Gantt */}
+        <div ref={ganttRef} style={{overflowX:"auto",overflowY:"auto",position:"relative",
+          maxHeight:mob?"calc(100vh - 180px)":"calc(100vh - 220px)",
+          borderRadius:6,border:"1px solid #1a1a22"}}>
+          <div style={{minWidth:(1000+200*zoom)*tZoom}}>
+            {/* Time ruler - frozen row */}
+            <div style={{display:"flex",position:"sticky",top:0,zIndex:8,
+              background:"#0c0c14",borderBottom:"2px solid #222"}}>
+              {/* Frozen corner */}
+              <div style={{width:vcW,minWidth:vcW,position:"sticky",left:0,zIndex:9,
+                background:"#0c0c14",borderRight:"2px solid #1e1e2a",
+                padding:mob?"4px":"6px 10px",display:"flex",alignItems:"center",
+                boxShadow:"4px 0 12px rgba(0,0,0,0.4)"}}>
+                <span style={{fontSize:mob?8:10,color:"#666",fontWeight:600,textTransform:"uppercase",
+                  letterSpacing:".06em",fontFamily:"'IBM Plex Mono',monospace"}}>Venue</span>
+              </div>
+              <div style={{flex:1,display:"flex",paddingTop:4,paddingBottom:4,position:"relative"}}>
+              {tMarks.map((t,i)=>(
+                <div key={t} style={{flex:1,fontSize:Math.min(13,10*zoom),
+                  color:["12P","6P","12A"].includes(t)?"#aaa":"#555",
+                  fontWeight:["12P","6P","12A"].includes(t)?700:400,fontFamily:"'IBM Plex Mono',monospace",
+                  borderLeft:"1px solid #1e1e28",paddingLeft:5}}>
+                  {t}
+                </div>
+              ))}
+              {/* Single NOW marker in header */}
+              {nowH>0&&(()=>{
+                let nh=nowH<6?nowH+24:nowH;
+                if(nh>=tStart&&nh<=tEnd){
+                  const left=((nh-tStart)/(tEnd-tStart))*100;
+                  return <div style={{position:"absolute",left:`${left}%`,top:0,bottom:0,width:2,
+                    background:"#06D6A0",zIndex:10,pointerEvents:"none"}}>
+                    <div style={{position:"absolute",bottom:-1,left:"50%",transform:"translateX(-50%)",
+                      background:"#06D6A0",color:"#000",fontSize:8,fontWeight:800,
+                      padding:"1px 5px",borderRadius:"0 0 3px 3px",
+                      fontFamily:"'IBM Plex Mono',monospace",whiteSpace:"nowrap"}}>NOW</div>
+                  </div>;
+                }
+                return null;
+              })()}
+              </div>
+            </div>
+
+            {/* Venue rows grouped by district */}
+            {(()=>{
+              let lastDist=null;
+              const rows=[];
+              venues.forEach(([venue,evts],vi)=>{
+              // Hide venue if genre filter active and no events match
+              if(!evts.some(e=>gf.has(e.genre))) return;
+              // District header
+              const dist=VENUE_DISTRICT[venue];
+              const distId=dist?dist.id:"other";
+              if(distId!==lastDist){
+                lastDist=distId;
+                const d=dist||{name:"Other Venues",emoji:"📍",color:"#555",desc:""};
+                rows.push(
+                  <div key={"dist-"+distId} style={{display:"flex",alignItems:"stretch",
+                    background:`linear-gradient(90deg,${d.color}15,${d.color}08,transparent 60%)`,
+                    borderTop:vi>0?`2px solid ${d.color}44`:"none",borderBottom:`1px solid ${d.color}22`,
+                    position:"relative"}}>
+                    <div style={{width:vcW,minWidth:vcW,padding:mob?"6px 6px":"8px 12px",
+                      display:"flex",alignItems:"center",gap:mob?4:8,
+                      position:"sticky",left:0,zIndex:5,
+                      background:`linear-gradient(90deg,${d.color}18,#0a0a12)`,
+                      borderRight:"2px solid #1e1e2a",boxShadow:"4px 0 12px rgba(0,0,0,0.4)"}}>
+                      <span style={{fontSize:mob?12:14}}>{d.emoji}</span>
+                      <div>
+                        <div style={{fontSize:mob?9:11,fontWeight:800,color:d.color,letterSpacing:".03em",
+                          fontFamily:"'IBM Plex Sans',sans-serif"}}>{d.name}</div>
+                        {!mob&&d.desc&&<div style={{fontSize:8,color:"#666",marginTop:1,
+                          fontFamily:"'IBM Plex Sans',sans-serif"}}>{d.desc}</div>}
+                      </div>
+                    </div>
+                    <div style={{flex:1,minHeight:mob?24:28}}/>
+                  </div>
+                );
+              }
+              const sortedEvts=evts.filter(e=>e.startH>=0).sort((a,b)=>{
+                const ah=a.startH<6?a.startH+24:a.startH;
+                const bh=b.startH<6?b.startH+24:b.startH;
+                return ah-bh;
+              });
+              const eRows=[];
+              sortedEvts.forEach(evt=>{
+                const eStart=evt.startH<6?evt.startH+24:evt.startH;
+                const eEnd=evt.endH<6?evt.endH+24:(evt.endH<0?eStart+0.5:evt.endH);
+                let placed=false;
+                for(let r=0;r<eRows.length;r++){
+                  const last=eRows[r][eRows[r].length-1];
+                  const lEnd=last.endH<6?last.endH+24:(last.endH<0?(last.startH<6?last.startH+24:last.startH)+0.5:last.endH);
+                  if(eStart>=lEnd-0.05){eRows[r].push(evt);placed=true;break;}
+                }
+                if(!placed) eRows.push([evt]);
+              });
+              const numRows=Math.max(eRows.length,1);
+              const baseH=zoom>2?24:20;
+              const rowH=Math.max(baseH,Math.min(30,80/numRows));
+
+              rows.push(
+                <div key={venue} style={{display:"flex",borderBottom:"1px solid #141420",minHeight:numRows*rowH+6,
+                  background:vi%2===0?"#0a0a12":"#0c0c15"}}>
+                  {/* Sticky venue label */}
+                  <div style={{width:vcW,minWidth:vcW,padding:mob?"3px 4px":"5px 10px",borderRight:"2px solid #1e1e2a",
+                    display:"flex",flexDirection:"column",justifyContent:"center",
+                    position:"sticky",left:0,zIndex:5,
+                    background:vi%2===0?"#0a0a12":"#0c0c15",
+                    boxShadow:"4px 0 12px rgba(0,0,0,0.4)"}}>
+                    <div style={{fontSize:mob?8:11*zoom,fontWeight:700,color:"#ccc",lineHeight:1.2,
+                      overflow:"hidden",textOverflow:"ellipsis",whiteSpace:mob?"nowrap":"normal",
+                      display:"flex",alignItems:"center",gap:mob?3:5}}>
+                      {dist&&<span style={{width:mob?4:6,height:mob?4:6,borderRadius:"50%",
+                        background:dist.color,flexShrink:0,boxShadow:`0 0 4px ${dist.color}66`}}/>}
+                      <span>{venue}</span>
+                    </div>
+                    {!mob&&<div style={{fontSize:9*zoom,color:"#7a7a88",marginTop:2,lineHeight:1.2,
+                      whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:vcW-20}}>
+                      {[...new Set(evts.map(e=>e.presenter).filter(Boolean))].slice(0,2).join(" · ")}
+                    </div>}
+                  </div>
+                  {/* Timeline */}
+                  <div style={{flex:1,position:"relative",minHeight:numRows*rowH}}>
+                    {tMarks.map((t,i)=>(
+                      <div key={i} style={{position:"absolute",left:`${(i/tMarks.length)*100}%`,top:0,bottom:0,width:1,
+                        background:[1,7,13].includes(i)?"#1e1e28":"#12121a"}}/>
+                    ))}
+                    {/* NOW line (label is in the time ruler) */}
+                    {nowH>0&&(()=>{
+                      let nh=nowH<6?nowH+24:nowH;
+                      if(nh>=tStart&&nh<=tEnd){
+                        const left=((nh-tStart)/(tEnd-tStart))*100;
+                        return <div style={{position:"absolute",left:`${left}%`,top:0,bottom:0,width:2,
+                          background:"#06D6A0",zIndex:25,pointerEvents:"none",
+                          opacity:0.7}}/>;
+                      }
+                      return null;
+                    })()}
+                    {eRows.map((row,ri)=>row.map(evt=>{
+                      const color=G[evt.genre]||"#555";
+                      const filt=!gf.has(evt.genre);
+                      const searchHit=filtered&&filtered.some(f=>f.id===evt.id);
+                      const isHov=hov===evt.id;
+                      const isSaved=mySched.has(evt.id);
+                      let sH=evt.startH<6?evt.startH+24:evt.startH;
+                      let eH=evt.endH<6?evt.endH+24:(evt.endH<0?sH+0.5:evt.endH);
+                      if(eH>tEnd) eH=tEnd;
+                      const left=timeToLeft(evt.startH);
+                      const width=Math.max(1.5,((eH-sH)/(tEnd-tStart))*100);
+                      return(
+                        <div key={evt.id}
+                          onClick={(e)=>{warmAudio();if(mob){const r=e.currentTarget.getBoundingClientRect();if(hov===evt.id){toggleSched(evt.id);}else{setHov(evt.id);setHovRect(r);setExpanded(true);startExpand(evt);}}else{toggleSched(evt.id);}}}
+                          onMouseEnter={(e)=>{if(mob)return;const r=e.currentTarget.getBoundingClientRect();setHov(evt.id);setHovRect(r);setExpanded(false);startExpand(evt);}}
+                          onMouseLeave={()=>{if(mob)return;stopExpand();
+                            setTimeout(()=>{if(panelRef.current&&panelRef.current.matches(':hover'))return;setHov(null);setExpanded(false);killAudio();},300);}}
+                          style={{
+                            position:"absolute",left:`${left}%`,width:`${width}%`,
+                            top:ri*rowH+1,height:rowH-2,
+                            background:filt?"#14141c":isSaved?`linear-gradient(135deg,#FFB703cc,${color}cc)`:`linear-gradient(135deg,${color}cc,${color}88)`,
+                            borderRadius:3,
+                            border:isSaved?`2px solid #FFB703`:isHov?`1.5px solid ${color}`:searchHit?`1.5px solid #fff`:`1px solid ${color}22`,
+                            display:"flex",alignItems:"center",padding:"0 5px",gap:3,
+                            overflow:"hidden",cursor:"pointer",
+                            opacity:filt?0.08:1,transition:"opacity .2s",
+                            zIndex:isSaved?15:isHov?20:searchHit?10:1,
+                            boxShadow:isSaved?`0 0 8px #FFB70344`:isHov?`0 2px 10px ${color}55`:searchHit?"0 0 6px #fff44":"none",
+                          }}>
+                          {isSaved&&<span style={{fontSize:Math.min(14,rowH-4),lineHeight:1,flexShrink:0,filter:"drop-shadow(0 0 3px #FFB703)"}}>★</span>}
+                          <span style={{fontSize:Math.min(10+zoom,Math.max(7+zoom*0.5,width*0.9)),fontWeight:600,
+                            color:filt?"#222":"#fff",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",
+                            textShadow:filt?"none":"0 1px 2px rgba(0,0,0,.5)",fontFamily:"'IBM Plex Mono',monospace"}}>{evt.name}</span>
+                        </div>
+                      );
+                    }))}
+                  </div>
+                </div>
+              );
+            });return rows;})()}
+          </div>
+        </div>
+
+        {/* Unified Artist Panel */}
+        {hov!==null&&(()=>{
+          const evt=EVENTS.find(e=>e.id===hov);
+          if(!evt) return null;
+          const color=G[evt.genre]||"#555";
+          const spotifyId=SPOTIFY[evt.name.toLowerCase()]||SPOTIFY[evt.name.toLowerCase().replace(/^the /,'')];
+          const px=hovRect?Math.min(hovRect.right+10,window.innerWidth-390):mp.x+14;
+          const py=hovRect?Math.max(hovRect.top-20,10):Math.max(mp.y-100,10);
+          return(
+            <>
+            {mob&&<div onClick={()=>{setHov(null);setExpanded(false);killAudio();}}
+              style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:199}}/>}
+            <div ref={panelRef}
+              onMouseEnter={()=>{if(!mob&&previewTimer.current)clearTimeout(previewTimer.current);}}
+              onMouseLeave={()=>{if(!mob){setHov(null);setExpanded(false);killAudio();}}}
+              style={mob?{position:"fixed",bottom:0,left:0,right:0,
+                zIndex:200,background:"#12121e",borderRadius:"16px 16px 0 0",
+                border:`1px solid ${color}66`,borderBottom:"none",
+                overflow:"hidden",maxHeight:"85vh",overflowY:"auto",
+                boxShadow:`0 -8px 32px rgba(0,0,0,.8),0 0 24px ${color}33`,
+                animation:"slideUp .25s ease"}
+              :{position:"fixed",left:px,top:Math.min(py,window.innerHeight-(expanded?420:200)),
+                zIndex:200,width:370,background:"#12121e",borderRadius:10,
+                border:`1px solid ${expanded&&audioState==="playing"?color:color+"66"}`,
+                overflow:"hidden",
+                boxShadow:`0 12px 32px rgba(0,0,0,.8),0 0 ${expanded?"24":"12"}px ${color}${expanded?"33":"18"}`,
+                transition:"box-shadow .3s, border .3s"}}>
+              <style>{`
+                @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+                @keyframes eqBar1{0%,100%{height:4px}50%{height:18px}}
+                @keyframes eqBar2{0%,100%{height:12px}50%{height:6px}}
+                @keyframes eqBar3{0%,100%{height:8px}50%{height:20px}}
+                @keyframes eqBar4{0%,100%{height:14px}50%{height:4px}}
+                @keyframes eqBar5{0%,100%{height:6px}50%{height:16px}}
+                @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+                @keyframes spin{to{transform:rotate(360deg)}}
+              `}</style>
+              {/* Mobile close handle */}
+              {mob&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"8px 14px 0",
+                background:`linear-gradient(135deg,${color}12,#12121e)`}}>
+                <div style={{width:40,height:4,borderRadius:2,background:"#444",marginBottom:6}}/>
+                <button onClick={()=>{setHov(null);setExpanded(false);killAudio();}} style={{position:"absolute",
+                  right:12,top:10,background:"#ffffff22",border:"none",color:"#aaa",fontSize:18,
+                  width:32,height:32,borderRadius:16,cursor:"pointer",fontFamily:"inherit",display:"flex",
+                  alignItems:"center",justifyContent:"center"}}>✕</button>
+              </div>}
+              {/* Artist info - always visible */}
+              <div style={{display:"flex",gap:12,padding:"12px 14px",
+                background:`linear-gradient(135deg,${color}12,#12121e)`}}>
+                {evt.img&&<img src={evt.img} alt="" style={{width:68,height:68,borderRadius:8,objectFit:"cover",
+                  flexShrink:0,border:`2px solid ${color}44`}}
+                  onError={(e)=>{e.target.style.display="none";}}/>}
+                <div style={{minWidth:0,flex:1}}>
+                  <div style={{fontSize:15,fontWeight:800,color:"#fff",overflow:"hidden",textOverflow:"ellipsis",
+                    whiteSpace:"nowrap"}}>{mySched.has(evt.id)?"★ ":""}{evt.name}</div>
+                  <div style={{fontSize:11,color:"#999",marginTop:3}}>
+                    <span style={{color,fontSize:13}}>●</span> {evt.genre}
+                    {evt.gp?` — ${evt.gp}`:""}
+                    {evt.gs&&evt.gs!=="None"?` / ${evt.gs}`:""}
+                  </div>
+                  <div style={{fontSize:11,color:"#777",marginTop:3}}>📍 {evt.venue}</div>
+                  <div style={{fontSize:11,color:"#777"}}>🕐 {evt.time}</div>
+                  {evt.presenter&&<div style={{fontSize:10,color:"#555",marginTop:2,fontStyle:"italic",
+                    overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{evt.presenter}</div>}
+                </div>
+              </div>
+              {/* Expandable section */}
+              <div style={{maxHeight:expanded?500:0,overflow:"hidden",transition:"max-height .4s ease"}}>
+                {/* Audio visualizer */}
+                <div style={{padding:"10px 14px",background:"#0a0a14",display:"flex",alignItems:"center",gap:12,
+                  borderTop:"1px solid #1a1a2a",borderBottom:"1px solid #1a1a2a",minHeight:48}}>
+                  {audioState==="playing"?(
+                    <>
+                      <div style={{display:"flex",alignItems:"flex-end",gap:3,height:22}}>
+                        {[1,2,3,4,5].map(i=>(
+                          <div key={i} style={{width:4,borderRadius:2,background:color,
+                            animation:`eqBar${i} ${0.4+i*0.15}s ease-in-out infinite`}}/>
+                        ))}
+                      </div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:12,fontWeight:700,color:"#fff"}}>Now Playing</div>
+                        <div style={{fontSize:9,color:"#888",marginTop:1}}>30-sec preview</div>
+                      </div>
+                      <button onClick={killAudio} style={{background:color+"33",border:`1px solid ${color}55`,
+                        borderRadius:6,padding:"4px 10px",color:color,fontSize:10,fontWeight:600,
+                        cursor:"pointer",fontFamily:"inherit"}}>◼ Stop</button>
+                    </>
+                  ):audioState==="blocked"?(
+                    <>
+                      <button onClick={async()=>{warmAudio();if(audioRef.current){try{await audioRef.current.play();setAudioState("playing");}catch(e){setAudioState("error");}}else{playPreview(evt.name);}}}
+                        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+                        background:`linear-gradient(135deg,${color},${color}88)`,
+                        border:"none",borderRadius:8,padding:"14px 24px",cursor:"pointer",
+                        fontFamily:"inherit",color:"#fff",fontSize:14,fontWeight:700,
+                        flex:1,animation:"pulse 1.5s ease infinite"}}>
+                        ▶ Tap to Play Preview
+                      </button>
+                    </>
+                  ):audioState==="loading"?(
+                    <>
+                      <div style={{width:18,height:18,border:`2px solid ${color}44`,borderTop:`2px solid ${color}`,
+                        borderRadius:"50%",animation:"spin .8s linear infinite"}}/>
+                      <div style={{fontSize:11,color:"#888",animation:"pulse 1.2s ease infinite"}}>Finding preview...</div>
+                    </>
+                  ):audioState==="error"?(
+                    <>
+                      <span style={{fontSize:16}}>🔇</span>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:11,color:"#666"}}>No audio preview found</div>
+                        <div style={{fontSize:9,color:"#444",marginTop:2}}>Try YouTube or Spotify below</div>
+                      </div>
+                      <button onClick={()=>{audioCache.current[evt.name.toLowerCase().replace(/[^a-z0-9 ]/g,"").trim()]=undefined;playPreview(evt.name);}} style={{background:"#ffffff11",border:"1px solid #333",
+                        borderRadius:6,padding:"4px 10px",color:"#888",fontSize:10,fontWeight:600,
+                        cursor:"pointer",fontFamily:"inherit"}}>Retry</button>
+                    </>
+                  ):(
+                    <>
+                      <span style={{fontSize:16,opacity:.5}}>🎵</span>
+                      <div style={{flex:1,fontSize:11,color:"#555"}}>Preview ended</div>
+                      <button onClick={()=>playPreview(evt.name)} style={{background:"#ffffff11",border:"1px solid #333",
+                        borderRadius:6,padding:"4px 10px",color:"#888",fontSize:10,fontWeight:600,
+                        cursor:"pointer",fontFamily:"inherit"}}>Play again</button>
+                    </>
+                  )}
+                </div>
+                {/* Action buttons */}
+                <div style={{padding:"8px 10px 10px",display:"flex",gap:6,flexWrap:"wrap"}}>
+                  <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(evt.name+" music")}`}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{flex:"1 0 60px",display:"flex",alignItems:"center",justifyContent:"center",gap:5,padding:"8px 6px",
+                      background:"linear-gradient(135deg,#FF0000,#cc0000)",borderRadius:6,
+                      textDecoration:"none",cursor:"pointer",border:"none"}}>
+                    <span style={{fontSize:13}}>▶</span>
+                    <span style={{fontSize:10,fontWeight:700,color:"#fff"}}>YouTube</span>
+                  </a>
+                  <a href={spotifyId?`https://open.spotify.com/artist/${spotifyId}`:`https://open.spotify.com/search/${encodeURIComponent(evt.name)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{flex:"1 0 60px",display:"flex",alignItems:"center",justifyContent:"center",gap:5,padding:"8px 6px",
+                      background:"linear-gradient(135deg,#1DB954,#169c46)",borderRadius:6,
+                      textDecoration:"none",cursor:"pointer",border:"none"}}>
+                    <span style={{fontSize:12}}>●</span>
+                    <span style={{fontSize:10,fontWeight:700,color:"#fff"}}>Spotify</span>
+                  </a>
+                  {evt.url&&<a href={evt.url} target="_blank" rel="noopener noreferrer"
+                    style={{flex:"1 0 60px",display:"flex",alignItems:"center",justifyContent:"center",gap:5,padding:"8px 6px",
+                      background:"linear-gradient(135deg,#F77F00,#E36300)",borderRadius:6,
+                      textDecoration:"none",cursor:"pointer",border:"none"}}>
+                    <span style={{fontSize:10,fontWeight:700,color:"#fff"}}>SXSW</span>
+                  </a>}
+                  {audioState!=="playing"&&audioState!=="loading"&&(
+                    <button onClick={()=>playPreview(evt.name)}
+                      style={{flex:"1 0 60px",display:"flex",alignItems:"center",justifyContent:"center",gap:5,padding:"8px 6px",
+                        background:`linear-gradient(135deg,${color}cc,${color}88)`,borderRadius:6,
+                        cursor:"pointer",border:"none",color:"#fff",fontSize:10,fontWeight:700,fontFamily:"inherit"}}>
+                      🔄 Replay
+                    </button>
+                  )}
+                  <button onClick={()=>toggleSched(evt.id)}
+                    style={{flex:"1 0 60px",display:"flex",alignItems:"center",justifyContent:"center",gap:5,padding:"8px 6px",
+                      background:mySched.has(evt.id)?"linear-gradient(135deg,#FFB703,#F77F00)":"linear-gradient(135deg,#1a1a2a,#222238)",
+                      borderRadius:6,cursor:"pointer",fontFamily:"inherit",
+                      border:mySched.has(evt.id)?"none":"1px solid #FFB70355",
+                      color:mySched.has(evt.id)?"#000":"#FFB703",fontSize:10,fontWeight:700}}>
+                    {mySched.has(evt.id)?"★ Saved":"☆ Add"}
+                  </button>
+                </div>
+              </div>
+              {/* Footer hint */}
+              {!expanded&&<div style={{padding:"4px 14px 6px",background:color+"08",borderTop:`1px solid ${color}15`,
+                fontSize:9,color:"#555",textAlign:"center"}}>
+                Click to {mySched.has(evt.id)?"remove from":"add to"} schedule · Keep hovering for music
+              </div>}
+            </div>
+            </>
+          );
+        })()}
+
+
+        <div style={{marginTop:12,fontSize:10,color:"#6a6a77",lineHeight:1.5}}>
+          Source: schedule.sxsw.com via Thunderbit. {EVENTS.length} acts across all 7 days (Thu Mar 12 – Wed Mar 18).
+        </div>
+        </>)}
+
+        {/* ===== MY SCHEDULE VIEW ===== */}
+        {viewMode==="mysched"&&(
+          <div id="my-schedule-view">
+            {mySched.size===0?(
+              <div style={{textAlign:"center",padding:"60px 20px"}}>
+                <div style={{fontSize:48,marginBottom:16}}>★</div>
+                <div style={{fontSize:18,fontWeight:700,color:"#888",marginBottom:8}}>Your schedule is empty</div>
+                <div style={{fontSize:13,color:"#555",maxWidth:400,margin:"0 auto",lineHeight:1.6}}>
+                  Switch back to the Gantt view and click on any act to add it to your schedule.
+                  You can also add from the preview popup that appears on hover.
+                </div>
+                <button onClick={()=>setViewMode("gantt")} style={{marginTop:20,padding:"10px 24px",
+                  background:"#FFB703",color:"#000",border:"none",borderRadius:8,fontSize:14,
+                  fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+                  ← Browse Schedule
+                </button>
+              </div>
+            ):(
+              <div>
+                {/* Controls */}
+                <div style={{display:"flex",alignItems:"center",gap:mob?8:12,marginBottom:16,flexWrap:"wrap"}} className="no-print">
+                  <div style={{fontSize:mob?15:18,fontWeight:700,color:"#FFB703",flex:mob?"1 1 100%":"none"}}>★ My Schedule — {mySched.size} acts</div>
+                  <button onClick={()=>{
+                    const el=document.getElementById("print-schedule");
+                    if(!el) return;
+                    const w=window.open("","_blank","width=900,height=700");
+                    w.document.write(`<!DOCTYPE html><html><head><title>My SXSW 2026 Schedule</title>
+                      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+                      <style>
+                        *{margin:0;padding:0;box-sizing:border-box}
+                        body{font-family:'IBM Plex Mono',monospace;padding:24px;color:#111;font-size:11px}
+                        h1{font-size:22px;margin-bottom:4px}
+                        h2{font-size:15px;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #222}
+                        .evt{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid #ddd;align-items:baseline}
+                        .time{font-weight:700;min-width:140px;font-size:11px}
+                        .name{font-weight:700;font-size:13px;min-width:200px}
+                        .venue{color:#555;font-size:11px;min-width:180px}
+                        .genre{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block}
+                        .presenter{color:#888;font-size:10px}
+                        @media print{body{padding:12px;font-size:10px}h1{font-size:18px}h2{font-size:13px}.name{font-size:11px}}
+                      </style></head><body>`);
+                    w.document.write(el.innerHTML);
+                    w.document.write("</body></html>");
+                    w.document.close();
+                    setTimeout(()=>w.print(),500);
+                  }}
+                    style={{padding:"8px 20px",background:"#fff",color:"#000",border:"none",borderRadius:6,
+                    fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",
+                    flex:mob?"1 1 45%":"none"}}>
+                    🖨 Print / PDF
+                  </button>
+                  <button onClick={()=>{if(confirm("Clear all saved acts?"))setMySched(new Set());}}
+                    style={{padding:"8px 16px",background:"transparent",color:"#E63946",
+                    border:"1px solid #E63946",borderRadius:6,fontSize:12,fontWeight:600,
+                    cursor:"pointer",fontFamily:"inherit",flex:mob?"1 1 45%":"none"}}>
+                    Clear All
+                  </button>
+                </div>
+
+                {/* Schedule content (visible + used for print) */}
+                <div id="print-schedule">
+                  {/* Mini visual timeline */}
+                  <div style={{marginBottom:20,padding:"12px 14px",background:"#0e0e18",borderRadius:8,border:"1px solid #1a1a2a"}} className="no-print">
+                    <div style={{fontSize:12,fontWeight:700,color:"#888",marginBottom:10}}>Visual Timeline</div>
+                    {DAYS.map(d=>{
+                      const de=EVENTS.filter(e=>mySched.has(e.id)&&e.day===d&&e.startH>=0)
+                        .sort((a,b)=>(a.startH<6?a.startH+24:a.startH)-(b.startH<6?b.startH+24:b.startH));
+                      if(de.length===0) return null;
+                      return <div key={d} style={{marginBottom:6}}>
+                        <div style={{fontSize:10,fontWeight:600,color:"#FFB703",marginBottom:3}}>{DAY_LABEL[d]}</div>
+                        <div style={{position:"relative",height:28,background:"#111",borderRadius:4,overflow:"hidden"}}>
+                          {/* Hour markers */}
+                          {[12,14,16,18,20,22,24].map(h=>(
+                            <div key={h} style={{position:"absolute",left:`${((h-11)/15)*100}%`,top:0,bottom:0,
+                              width:1,background:"#1a1a22"}}/>
+                          ))}
+                          {[12,16,20,24].map(h=>(
+                            <span key={h} style={{position:"absolute",left:`${((h-11)/15)*100}%`,top:1,
+                              fontSize:7,color:"#444",transform:"translateX(-50%)"}}>{h>12?(h>24?`${h-24}a`:h>12?`${h-12}p`:"12p"):"12p"}</span>
+                          ))}
+                          {de.map(evt=>{
+                            const color=G[evt.genre]||"#555";
+                            let s=evt.startH<6?evt.startH+24:evt.startH;
+                            let e2=evt.endH<6?evt.endH+24:(evt.endH<0?s+0.5:evt.endH);
+                            const l=Math.max(0,((s-11)/15)*100);
+                            const w=Math.max(2,((e2-s)/15)*100);
+                            return <div key={evt.id} title={`${evt.name} ${evt.time}`}
+                              style={{position:"absolute",left:`${l}%`,width:`${w}%`,top:10,height:16,
+                              background:color,borderRadius:2,border:"1px solid #fff2",
+                              display:"flex",alignItems:"center",padding:"0 2px",overflow:"hidden"}}>
+                              <span style={{fontSize:7,color:"#fff",fontWeight:600,whiteSpace:"nowrap",
+                                overflow:"hidden",textOverflow:"ellipsis"}}>{evt.name}</span>
+                            </div>;
+                          })}
+                        </div>
+                      </div>;
+                    })}
+                  </div>
+                  <h1 style={{fontSize:mob?18:22,fontWeight:800,color:"#fff",marginBottom:2}}>My SXSW 2026 Schedule</h1>
+                  <div style={{fontSize:11,color:"#666",marginBottom:16}}>{mySched.size} acts selected · March 12–18, Austin TX</div>
+                  {DAYS.map(d=>{
+                    const dayEvts=EVENTS.filter(e=>mySched.has(e.id)&&e.day===d)
+                      .sort((a,b)=>{
+                        const ah=a.startH<6?a.startH+24:a.startH;
+                        const bh=b.startH<6?b.startH+24:b.startH;
+                        return ah-bh;
+                      });
+                    if(dayEvts.length===0) return null;
+                    return(
+                      <div key={d} style={{marginBottom:20}}>
+                        <h2 style={{fontSize:mob?13:15,fontWeight:800,color:"#FFB703",marginBottom:8,
+                          paddingBottom:4,borderBottom:"2px solid #FFB70333"}}>{DAY_LABEL[d]} — {dayEvts.length} acts</h2>
+                        {dayEvts.map(evt=>{
+                          const color=G[evt.genre]||"#555";
+                          return(
+                            <div key={evt.id} style={{display:"flex",gap:mob?6:10,padding:mob?"8px 2px":"8px 4px",
+                              borderBottom:"1px solid #1a1a22",alignItems:"center",flexWrap:"wrap"}}>
+                              <div style={{fontSize:mob?9:11,fontWeight:700,color:"#aaa",fontVariantNumeric:"tabular-nums",
+                                flex:mob?"1 1 100%":"none",minWidth:mob?"auto":130}}>
+                                {evt.time}
+                              </div>
+                              <div style={{fontSize:mob?12:13,fontWeight:700,color:"#fff",
+                                flex:mob?"1 1 auto":"none",minWidth:mob?"auto":180}}>{evt.name}</div>
+                              <div style={{fontSize:mob?9:11,color:"#777",flex:mob?"1 1 100%":"none",
+                                minWidth:mob?"auto":160}}>{evt.venue}</div>
+                              <span style={{fontSize:mob?8:10,padding:"2px 8px",borderRadius:10,
+                                background:color+"28",color:color,fontWeight:600}}>{evt.genre}</span>
+                              <button onClick={()=>toggleSched(evt.id)} className="no-print"
+                                style={{marginLeft:"auto",padding:"4px 10px",background:"transparent",
+                                color:"#E63946",border:"1px solid #E6394644",borderRadius:4,
+                                fontSize:10,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>✕</button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Conflict detection */}
+                {(()=>{
+                  const saved=EVENTS.filter(e=>mySched.has(e.id)&&e.startH>=0);
+                  const conflicts=[];
+                  for(let i=0;i<saved.length;i++){
+                    for(let j=i+1;j<saved.length;j++){
+                      const a=saved[i],b=saved[j];
+                      if(a.day!==b.day) continue;
+                      const aS=a.startH<6?a.startH+24:a.startH;
+                      const aE=a.endH<6?a.endH+24:(a.endH<0?aS+0.5:a.endH);
+                      const bS=b.startH<6?b.startH+24:b.startH;
+                      const bE=b.endH<6?b.endH+24:(b.endH<0?bS+0.5:b.endH);
+                      if(aS<bE&&bS<aE) conflicts.push([a,b]);
+                    }
+                  }
+                  if(conflicts.length===0) return null;
+                  return(
+                    <div style={{marginTop:16,padding:"12px 14px",background:"#E6394615",border:"1px solid #E6394644",
+                      borderRadius:8}} className="no-print">
+                      <div style={{fontSize:13,fontWeight:700,color:"#E63946",marginBottom:8}}>
+                        ⚠ {conflicts.length} Time Conflict{conflicts.length>1?"s":""}
+                      </div>
+                      {conflicts.slice(0,10).map(([a,b],i)=>(
+                        <div key={i} style={{fontSize:11,color:"#cc8888",marginBottom:4}}>
+                          <strong>{a.name}</strong> ({a.time}) overlaps with <strong>{b.name}</strong> ({b.time}) on {DAY_LABEL[a.day]}
+                        </div>
+                      ))}
+                      {conflicts.length>10&&<div style={{fontSize:10,color:"#666"}}>+{conflicts.length-10} more</div>}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
