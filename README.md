@@ -32,7 +32,10 @@ The `SXSW-Schedule-by-Genre.jsx` file contains the full React source code if you
 - **Genre Filters** — Click any genre badge to show/hide that genre on the chart
 - **Search** — Search by artist name, venue, or presenter/showcase
 - **30-Second Song Previews** — Hover over any act for 1.2 seconds and a preview panel pops up with a Spotify/Deezer audio preview (where available)
-- **Personal Schedule Builder** — Click any act to add it to your saved schedule. Acts highlight in gold when saved
+- **Personal Schedule Builder** — Click any act to add it to your saved schedule.
+- - **Venue District Grouping** — Venues organized by Austin districts (Red River, Dirty Sixth, etc.) for better navigation
+  - - **Live Wednesday Updates** — Latest Wednesday lineup additions and schedule changes
+    - - **Bug Fixes** — Performance improvements and interface enhancements Acts highlight in gold when saved
 - **My Schedule View** — Switch to a clean list view of all your saved acts sorted by day/time
 - **Print to PDF** — Export your personal schedule as a printable PDF
 - **Links** — Each act links to YouTube, Spotify, and the official SXSW schedule page
